@@ -1,0 +1,37 @@
+.btn-recorrer{
+    width: 50px;
+    height: 34px;
+}
+
+.select2-results{
+    color: rgb(60, 118, 61);
+}
+
+.tbl-resultado{
+    color: #0D3349;
+    font-size: larger;
+}
+
+.pnl-heading-custom{
+    padding: 4px 15px;
+}
+
+.frm-control-custom{
+    display: inline;
+    width: 50%;
+    height: 25px;
+    padding: 0px 12px;
+}
+
+.frm-group-custom{
+    margin-bottom: 2px;
+}
+
+.lbl-custom{
+    color: black;
+    width: 25%;
+}
+
+.pnl-custom{
+    background-image: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%)
+}

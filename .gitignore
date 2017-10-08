@@ -1,0 +1,6 @@
+/vendor
+/node_modules
+.env
+.idea/
+DB_Tramite_version2_blanco.bak
+DB_Tramite_version2_llena.bak

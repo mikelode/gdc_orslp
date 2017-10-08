@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: aidocs
+        psr4_prefix: aidocs
+        src_path: app

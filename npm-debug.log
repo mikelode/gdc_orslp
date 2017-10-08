@@ -1,0 +1,261 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'msnodesql' ]
+2 info using npm@2.11.3
+3 info using node@v0.12.7
+4 verbose install initial load of C:\xampp\htdocs\rh-mdv-pruebas\package.json
+5 verbose installManyTop reading scoped package data from C:\xampp\htdocs\rh-mdv-pruebas\node_modules\express\package.json
+6 verbose installManyTop reading scoped package data from C:\xampp\htdocs\rh-mdv-pruebas\node_modules\ioredis\package.json
+7 verbose installManyTop reading scoped package data from C:\xampp\htdocs\rh-mdv-pruebas\node_modules\socket.io\package.json
+8 info package.json socket.io@1.3.6 No license field.
+9 verbose readDependencies loading dependencies from C:\xampp\htdocs\rh-mdv-pruebas\package.json
+10 silly cache add args [ 'msnodesql', null ]
+11 verbose cache add spec msnodesql
+12 silly cache add parsed spec { raw: 'msnodesql',
+12 silly cache add   scope: null,
+12 silly cache add   name: 'msnodesql',
+12 silly cache add   rawSpec: '',
+12 silly cache add   spec: '*',
+12 silly cache add   type: 'range' }
+13 silly addNamed msnodesql@*
+14 verbose addNamed "*" is a valid semver range for msnodesql
+15 silly addNameRange { name: 'msnodesql', range: '*', hasData: false }
+16 silly mapToRegistry name msnodesql
+17 silly mapToRegistry using default registry
+18 silly mapToRegistry registry https://registry.npmjs.org/
+19 silly mapToRegistry uri https://registry.npmjs.org/msnodesql
+20 verbose addNameRange registry:https://registry.npmjs.org/msnodesql not in flight; fetching
+21 verbose request uri https://registry.npmjs.org/msnodesql
+22 verbose request no auth needed
+23 info attempt registry request try #1 at 12:24:48
+24 verbose request id 990c5fa55a28a9c1
+25 http request GET https://registry.npmjs.org/msnodesql
+26 http 200 https://registry.npmjs.org/msnodesql
+27 silly get cb [ 200,
+27 silly get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+27 silly get     etag: '"4L19HIGSPL5HI2SFXXBPUQ6BY"',
+27 silly get     'content-type': 'application/json',
+27 silly get     'cache-control': 'max-age=60',
+27 silly get     'content-length': '12965',
+27 silly get     'accept-ranges': 'bytes',
+27 silly get     date: 'Thu, 20 Aug 2015 17:24:49 GMT',
+27 silly get     via: '1.1 varnish',
+27 silly get     age: '0',
+27 silly get     connection: 'keep-alive',
+27 silly get     'x-served-by': 'cache-atl6227-ATL',
+27 silly get     'x-cache': 'MISS',
+27 silly get     'x-cache-hits': '0',
+27 silly get     'x-timer': 'S1440091489.382823,VS0,VE33',
+27 silly get     vary: 'Accept' } ]
+28 verbose get saving msnodesql to C:\Users\HP i5\AppData\Roaming\npm-cache\registry.npmjs.org\msnodesql\.cache.json
+29 silly addNameRange number 2 { name: 'msnodesql', range: '*', hasData: true }
+30 silly addNameRange versions [ 'msnodesql', [ '0.1.0', '0.2.0', '0.2.1' ] ]
+31 silly addNamed msnodesql@0.2.1
+32 verbose addNamed "0.2.1" is a plain semver version for msnodesql
+33 silly mapToRegistry name msnodesql
+34 silly mapToRegistry using default registry
+35 silly mapToRegistry registry https://registry.npmjs.org/
+36 silly mapToRegistry uri https://registry.npmjs.org/msnodesql
+37 verbose addRemoteTarball https://registry.npmjs.org/msnodesql/-/msnodesql-0.2.1.tgz not in flight; adding
+38 verbose addRemoteTarball [ 'https://registry.npmjs.org/msnodesql/-/msnodesql-0.2.1.tgz',
+38 verbose addRemoteTarball   '3ce8ade4a8c016a9aa9f942810135a73c0f2c8eb' ]
+39 info retry fetch attempt 1 at 12:24:50
+40 info attempt registry request try #1 at 12:24:50
+41 http fetch GET https://registry.npmjs.org/msnodesql/-/msnodesql-0.2.1.tgz
+42 http fetch 200 https://registry.npmjs.org/msnodesql/-/msnodesql-0.2.1.tgz
+43 silly fetchAndShaCheck shasum 3ce8ade4a8c016a9aa9f942810135a73c0f2c8eb
+44 verbose addTmpTarball C:\Users\HPI5~1\AppData\Local\Temp\npm-5012-1eda387e\registry.npmjs.org\msnodesql\-\msnodesql-0.2.1.tgz not in flight; adding
+45 verbose addTmpTarball already have metadata; skipping unpack for msnodesql@0.2.1
+46 silly cache afterAdd msnodesql@0.2.1
+47 verbose afterAdd C:\Users\HP i5\AppData\Roaming\npm-cache\msnodesql\0.2.1\package\package.json not in flight; writing
+48 verbose afterAdd C:\Users\HP i5\AppData\Roaming\npm-cache\msnodesql\0.2.1\package\package.json written
+49 silly install resolved [ { name: 'msnodesql',
+49 silly install resolved     description: 'Microsoft Driver for Node.js for SQL Server',
+49 silly install resolved     author: { name: 'Microsoft Corp.' },
+49 silly install resolved     contributors: [ [Object], [Object], [Object], [Object], [Object] ],
+49 silly install resolved     version: '0.2.1',
+49 silly install resolved     keywords:
+49 silly install resolved      [ 'sql',
+49 silly install resolved        'database',
+49 silly install resolved        'mssql',
+49 silly install resolved        'azure',
+49 silly install resolved        'sqlserver',
+49 silly install resolved        'tds',
+49 silly install resolved        'microsoft',
+49 silly install resolved        'msnodesql',
+49 silly install resolved        'node-sqlserver' ],
+49 silly install resolved     homepage: 'https://github.com/WindowsAzure/node-sqlserver',
+49 silly install resolved     bugs: 'https://github.com/WindowsAzure/node-sqlserver/issues',
+49 silly install resolved     licenses: [ [Object] ],
+49 silly install resolved     main: './lib/sql.js',
+49 silly install resolved     repository:
+49 silly install resolved      { type: 'git',
+49 silly install resolved        url: 'git://github.com/WindowsAzure/node-sqlserver.git' },
+49 silly install resolved     engines: { node: '>=0.6' },
+49 silly install resolved     devDependencies: { mocha: '0.14.x', async: '0.1.x' },
+49 silly install resolved     os: [ 'win32' ],
+49 silly install resolved     scripts: { install: 'node scripts/install.js' },
+49 silly install resolved     readme: '# Microsoft Driver for Node.js for SQL Server\r\n\r\nThe Microsoft Driver for Node.js for SQL Server allows Node.js applications on\r\nMicrosoft Windows and Microsoft Windows Azure to access Microsoft SQL Server \r\nand Microsoft Windows Azure SQL Database.\r\n\r\nThis is an initial preview release, and is not production ready. We welcome any\r\nfeedback, fixes and contributions from the community at this very early stage.\r\n\r\n## Prerequisites\r\n\r\nThe following prerequisites are necessary prior to using the driver:\r\n\r\n* Node.js - use the latest version if possible, but it has been tested on node\r\n0.6.10 and later\r\n\r\n* node-gyp - latest version installed globally (npm install -g node-gyp)\r\n\r\n* python 2.7.x - for node-gyp (make sure it is in the path)\r\n\r\n* Visual C++ 2010 - the Express edition is freely available from \r\n[Microsoft][visualstudio]\r\n\r\n* SQL Server Native Client 11.0 - available as Microsoft SQL Server 2012 \r\nNative Client found in the [SQL Server 2012 Feature Pack][sqlncli]\r\n\r\n## Build\r\n\r\nTo build the driver, first node-gyp must configure the appropriate build files.\r\n\r\n    node-gyp configure\r\n\r\nUse node-gyp to build the driver:\r\n\r\n    node-gyp build\r\n\r\nOr to build the debug version:\r\n\r\n    node-gyp build --debug\r\n\r\nThen copy the sqlserver.node file from the build\\\\(Release|Debug) directory to\r\nthe lib directory.  If you would like to use Visual C++ to debug the driver,\r\nalso copy the sqlserver.pdb file from the same directory.\r\n\r\n## Test\r\n\r\nIncluded are a few unit tests.  They require mocha, async, and assert to be \r\ninstalled via npm.  Also, set the variables in test-config.js, then run the \r\ntests as follows:\r\n\r\n    cd test\r\n    node runtests.js\r\n\r\n## Known Issues\r\n\r\nWe are aware that many features are still not implemented, and are working to\r\nupdate these. Please visit the [project on Github][project] to view \r\noutstanding [issues][issues].\r\n\r\n## Usage\r\n\r\nFor now, please see the unit tests for usage examples.\r\n\r\n## Contribute Code\r\n\r\nIf you would like to become an active contributor to this project please follow the instructions provided in [the Contribution Guidelines][contribute].\r\n\r\n## License\r\n\r\nThe Microsoft Driver for Node.js for SQL Server is licensed under the Apache\r\n2.0 license.  See the LICENSE file for more details.\r\n\r\n[visualstudio]: http://www.microsoft.com/visualstudio/\r\n\r\n[sqlncli]: http://www.microsoft.com/en-us/download/details.aspx?id=29065\r\n\r\n[project]: https://github.com/windowsazure/node-sqlserver\r\n\r\n[issues]: https://github.com/windowsazure/node-sqlserver/issues\r\n\r\n[contribute]: https://github.com/WindowsAzure/node-sqlserver/blob/master/CONTRIBUTING.md\r\n\r\n\r\n\r\n',
+49 silly install resolved     _id: 'msnodesql@0.2.1',
+49 silly install resolved     dist:
+49 silly install resolved      { shasum: '3ce8ade4a8c016a9aa9f942810135a73c0f2c8eb',
+49 silly install resolved        tarball: 'http://registry.npmjs.org/msnodesql/-/msnodesql-0.2.1.tgz' },
+49 silly install resolved     _npmVersion: '1.1.62',
+49 silly install resolved     _npmUser: { name: 'jguerin', email: 'jguerin@microsoft.com' },
+49 silly install resolved     maintainers: [ [Object], [Object] ],
+49 silly install resolved     directories: {},
+49 silly install resolved     _shasum: '3ce8ade4a8c016a9aa9f942810135a73c0f2c8eb',
+49 silly install resolved     _resolved: 'https://registry.npmjs.org/msnodesql/-/msnodesql-0.2.1.tgz',
+49 silly install resolved     _from: 'msnodesql@*' } ]
+50 info install msnodesql@0.2.1 into C:\xampp\htdocs\rh-mdv-pruebas
+51 info installOne msnodesql@0.2.1
+52 verbose installOne of msnodesql to C:\xampp\htdocs\rh-mdv-pruebas not in flight; installing
+53 verbose lock using C:\Users\HP i5\AppData\Roaming\npm-cache\_locks\msnodesql-54dfce439d8a813e.lock for C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+54 silly install write writing msnodesql 0.2.1 to C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+55 verbose unbuild node_modules\msnodesql
+56 silly gentlyRm C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql is being purged from base C:\xampp\htdocs\rh-mdv-pruebas
+57 verbose gentlyRm don't care about contents; nuking C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+58 verbose tar unpack C:\Users\HP i5\AppData\Roaming\npm-cache\msnodesql\0.2.1\package.tgz
+59 verbose tar unpacking to C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+60 silly gentlyRm C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql is being purged
+61 verbose gentlyRm don't care about contents; nuking C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+62 silly gunzTarPerm modes [ '777', '666' ]
+63 silly gunzTarPerm extractEntry package.json
+64 silly gunzTarPerm modified mode [ 'package.json', 420, 438 ]
+65 silly gunzTarPerm extractEntry .npmignore
+66 silly gunzTarPerm modified mode [ '.npmignore', 420, 438 ]
+67 silly gunzTarPerm extractEntry README.md
+68 silly gunzTarPerm modified mode [ 'README.md', 420, 438 ]
+69 silly gunzTarPerm extractEntry LICENSE
+70 silly gunzTarPerm modified mode [ 'LICENSE', 420, 438 ]
+71 silly gunzTarPerm extractEntry key
+72 silly gunzTarPerm modified mode [ 'key', 420, 438 ]
+73 silly gunzTarPerm extractEntry lib/sql.js
+74 silly gunzTarPerm modified mode [ 'lib/sql.js', 420, 438 ]
+75 silly gunzTarPerm extractEntry lib/sqlserver.native.js
+76 silly gunzTarPerm modified mode [ 'lib/sqlserver.native.js', 420, 438 ]
+77 silly gunzTarPerm extractEntry binding.gyp
+78 silly gunzTarPerm modified mode [ 'binding.gyp', 420, 438 ]
+79 silly gunzTarPerm extractEntry CONTRIBUTORS
+80 silly gunzTarPerm modified mode [ 'CONTRIBUTORS', 420, 438 ]
+81 silly gunzTarPerm extractEntry CONTRIBUTING.md
+82 silly gunzTarPerm modified mode [ 'CONTRIBUTING.md', 420, 438 ]
+83 silly gunzTarPerm extractEntry scripts/install.js
+84 silly gunzTarPerm modified mode [ 'scripts/install.js', 420, 438 ]
+85 silly gunzTarPerm extractEntry src/OdbcHandle.h
+86 silly gunzTarPerm modified mode [ 'src/OdbcHandle.h', 420, 438 ]
+87 silly gunzTarPerm extractEntry src/Column.cpp
+88 silly gunzTarPerm modified mode [ 'src/Column.cpp', 420, 438 ]
+89 silly gunzTarPerm extractEntry src/Connection.cpp
+90 silly gunzTarPerm modified mode [ 'src/Connection.cpp', 420, 438 ]
+91 silly gunzTarPerm extractEntry src/Connection.h
+92 silly gunzTarPerm modified mode [ 'src/Connection.h', 420, 438 ]
+93 silly gunzTarPerm extractEntry src/CriticalSection.h
+94 silly gunzTarPerm modified mode [ 'src/CriticalSection.h', 420, 438 ]
+95 silly gunzTarPerm extractEntry src/OdbcConnection.cpp
+96 silly gunzTarPerm modified mode [ 'src/OdbcConnection.cpp', 420, 438 ]
+97 silly gunzTarPerm extractEntry src/OdbcConnection.h
+98 silly gunzTarPerm modified mode [ 'src/OdbcConnection.h', 420, 438 ]
+99 silly gunzTarPerm extractEntry src/OdbcConnectionBridge.h
+100 silly gunzTarPerm modified mode [ 'src/OdbcConnectionBridge.h', 420, 438 ]
+101 silly gunzTarPerm extractEntry src/OdbcError.cpp
+102 silly gunzTarPerm modified mode [ 'src/OdbcError.cpp', 420, 438 ]
+103 silly gunzTarPerm extractEntry src/OdbcError.h
+104 silly gunzTarPerm modified mode [ 'src/OdbcError.h', 420, 438 ]
+105 silly gunzTarPerm extractEntry src/Column.h
+106 silly gunzTarPerm modified mode [ 'src/Column.h', 420, 438 ]
+107 silly gunzTarPerm extractEntry src/OdbcOperation.cpp
+108 silly gunzTarPerm modified mode [ 'src/OdbcOperation.cpp', 420, 438 ]
+109 silly gunzTarPerm extractEntry src/OdbcOperation.h
+110 silly gunzTarPerm modified mode [ 'src/OdbcOperation.h', 420, 438 ]
+111 silly gunzTarPerm extractEntry src/Operation.h
+112 silly gunzTarPerm modified mode [ 'src/Operation.h', 420, 438 ]
+113 silly gunzTarPerm extractEntry src/ResultSet.cpp
+114 silly gunzTarPerm modified mode [ 'src/ResultSet.cpp', 420, 438 ]
+115 silly gunzTarPerm extractEntry src/ResultSet.h
+116 silly gunzTarPerm modified mode [ 'src/ResultSet.h', 420, 438 ]
+117 silly gunzTarPerm extractEntry src/sqlncli.h
+118 silly gunzTarPerm modified mode [ 'src/sqlncli.h', 420, 438 ]
+119 silly gunzTarPerm extractEntry src/stdafx.cpp
+120 silly gunzTarPerm modified mode [ 'src/stdafx.cpp', 420, 438 ]
+121 silly gunzTarPerm extractEntry src/stdafx.h
+122 silly gunzTarPerm modified mode [ 'src/stdafx.h', 420, 438 ]
+123 silly gunzTarPerm extractEntry src/Utility.cpp
+124 silly gunzTarPerm modified mode [ 'src/Utility.cpp', 420, 438 ]
+125 silly gunzTarPerm extractEntry src/Utility.h
+126 silly gunzTarPerm modified mode [ 'src/Utility.h', 420, 438 ]
+127 silly gunzTarPerm extractEntry test/CommonTestFunctions.js
+128 silly gunzTarPerm modified mode [ 'test/CommonTestFunctions.js', 420, 438 ]
+129 silly gunzTarPerm extractEntry test/connect.js
+130 silly gunzTarPerm modified mode [ 'test/connect.js', 420, 438 ]
+131 silly gunzTarPerm extractEntry test/datatypes.js
+132 silly gunzTarPerm modified mode [ 'test/datatypes.js', 420, 438 ]
+133 silly gunzTarPerm extractEntry test/dates.js
+134 silly gunzTarPerm modified mode [ 'test/dates.js', 420, 438 ]
+135 silly gunzTarPerm extractEntry test/compoundqueries.js
+136 silly gunzTarPerm modified mode [ 'test/compoundqueries.js', 420, 438 ]
+137 silly gunzTarPerm extractEntry test/query.js
+138 silly gunzTarPerm modified mode [ 'test/query.js', 420, 438 ]
+139 silly gunzTarPerm extractEntry test/runtests.js
+140 silly gunzTarPerm modified mode [ 'test/runtests.js', 420, 438 ]
+141 silly gunzTarPerm extractEntry test/test-config.js
+142 silly gunzTarPerm modified mode [ 'test/test-config.js', 420, 438 ]
+143 silly gunzTarPerm extractEntry test/txn.js
+144 silly gunzTarPerm modified mode [ 'test/txn.js', 420, 438 ]
+145 silly gunzTarPerm extractEntry test/params.js
+146 silly gunzTarPerm modified mode [ 'test/params.js', 420, 438 ]
+147 silly gunzTarPerm extractEntry test/testlist.txt
+148 silly gunzTarPerm modified mode [ 'test/testlist.txt', 420, 438 ]
+149 verbose write writing to C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql\package.json
+150 info preinstall msnodesql@0.2.1
+151 verbose readDependencies loading dependencies from C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql\package.json
+152 verbose readDependencies loading dependencies from C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql\package.json
+153 silly install resolved []
+154 verbose about to build C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+155 info build C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+156 info linkStuff msnodesql@0.2.1
+157 silly linkStuff msnodesql@0.2.1 has C:\xampp\htdocs\rh-mdv-pruebas\node_modules as its parent node_modules
+158 verbose linkBins msnodesql@0.2.1
+159 verbose linkMans msnodesql@0.2.1
+160 verbose rebuildBundles msnodesql@0.2.1
+161 info install msnodesql@0.2.1
+162 verbose unsafe-perm in lifecycle true
+163 info msnodesql@0.2.1 Failed to exec install script
+164 verbose unlock done using C:\Users\HP i5\AppData\Roaming\npm-cache\_locks\msnodesql-54dfce439d8a813e.lock for C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+165 verbose stack Error: msnodesql@0.2.1 install: `node scripts/install.js`
+165 verbose stack Exit status 1
+165 verbose stack     at EventEmitter.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\lifecycle.js:213:16)
+165 verbose stack     at EventEmitter.emit (events.js:110:17)
+165 verbose stack     at ChildProcess.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\spawn.js:24:14)
+165 verbose stack     at ChildProcess.emit (events.js:110:17)
+165 verbose stack     at maybeClose (child_process.js:1015:16)
+165 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1087:5)
+166 verbose pkgid msnodesql@0.2.1
+167 verbose cwd C:\xampp\htdocs\rh-mdv-pruebas
+168 error Windows_NT 6.2.9200
+169 error argv "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "msnodesql"
+170 error node v0.12.7
+171 error npm  v2.11.3
+172 error code ELIFECYCLE
+173 error msnodesql@0.2.1 install: `node scripts/install.js`
+173 error Exit status 1
+174 error Failed at the msnodesql@0.2.1 install script 'node scripts/install.js'.
+174 error This is most likely a problem with the msnodesql package,
+174 error not with npm itself.
+174 error Tell the author that this fails on your system:
+174 error     node scripts/install.js
+174 error You can get their info via:
+174 error     npm owner ls msnodesql
+174 error There is likely additional logging output above.
+175 verbose exit [ 1, true ]
+176 verbose unbuild node_modules\msnodesql
+177 info preuninstall msnodesql@0.2.1
+178 info uninstall msnodesql@0.2.1
+179 verbose unbuild rmStuff msnodesql@0.2.1 from C:\xampp\htdocs\rh-mdv-pruebas\node_modules
+180 info postuninstall msnodesql@0.2.1
+181 silly gentlyRm C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql is being purged from base C:\xampp\htdocs\rh-mdv-pruebas
+182 verbose gentlyRm don't care about contents; nuking C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+183 silly vacuum-fs purging C:\xampp\htdocs\rh-mdv-pruebas\node_modules\msnodesql
+184 silly vacuum-fs quitting because other entries in C:\xampp\htdocs\rh-mdv-pruebas\node_modules

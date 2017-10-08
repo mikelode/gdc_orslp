@@ -1,0 +1,35 @@
+.noticecss
+{
+    font-weight:bold;
+    text-decoration:none;
+    text-transform:uppercase;
+    color:#3b5998;
+    cursor: pointer;
+    font-size:14px;
+    text-align:center;
+    font-family: helvetica, arial, sans-serif;
+    line-height:0.5;
+    display: inline-block;
+}
+
+.chat-box
+{
+    bottom: 0;
+    right: 0;
+    left: auto;
+    width: 250px;
+    float: right;
+    margin-left: 10px;
+}
+#chat-box-container
+{
+    display: block;
+    position: relative;
+}
+
+#main-box-container
+{
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}

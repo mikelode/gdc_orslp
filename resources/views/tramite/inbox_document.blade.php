@@ -61,7 +61,7 @@
                                     <td>{{ $doc->depDsc }}</td>
                                     <td>{{ $doc->tarcDatePres }}</td>
                                     <td>
-                                        <?php $link = 'doc/tracking/'.$doc->tdocId ?>
+                                        <?php $link = 'doc/tracking/'.$doc->tdocId; ?>
                                         <a href="javascript:void(0)" onclick="change_menu_to('{{ $link }}')">{{ $doc->tdocStatus }}</a>
                                     </td>
                                     <td>
@@ -185,7 +185,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Atender y derivar mediante documento</h4>
                 </div>
-                <form class="form-horizontal" id="sendFormDc" name="sendFormDc">
+                <form class="form-horizontal" id="sendFormDc" name="sendFormDc" enctype="multipart/form-data">
                     <div class="modal-body">
                         {!! csrf_field() !!}
                         <div><input type="hidden" id="kyIdDc" name="kyId"></div>
@@ -244,6 +244,12 @@
                             <div class="col-xs-6">
                                 <textarea class="form-control text-uppercase" id="nta_derivedDc" name="nta_derived" style="height: 100px; max-height: 100px; max-width: 270px" placeholder="Mensaje, nota o alguna observación"></textarea>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-9">
+                                <input type="file" class="form-control" name="file_derived" accept="application/pdf"></input>
+                            </div>
+                            <div class="col-xs-3"><progress class="form-control" value="0"></progress></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -379,13 +385,20 @@ $(function(){
     });
 
     $('button#saveDc').click(function(e){
+        
         e.preventDefault();
+        
         var rowId = $('form#sendFormDc input[name=kyId]').val(); // Row's number
+        var form = $('#sendFormDc')[0];
+        var formdata = new FormData(form);
 
         $.ajax({
             type:'POST',
             url:'hist/registerdc',
-            data: $('form#sendFormDc').serialize(),
+            data: formdata,
+            cache: false,
+            contentType: false,
+            processData: false,
             success: function(msg){
                 //$('td#row' + rowId).html('DERIVADO');
                 $('#sendModalDc').modal('hide');
@@ -393,7 +406,21 @@ $(function(){
             },
             error: function(e, textStatus, xhr){
                 bootbox.alert('Error: <br> Revise los campos ingresados. <br> Código: ' + xhr);
-            }
+            },
+            xhr: function(){
+                var myXhr = $.ajaxSettings.xhr();
+                if(myXhr.upload){
+                    myXhr.upload.addEventListener('progress', function(ev){
+                        if(ev.lengthComputable){
+                            $('progress').attr({
+                                value: ev.loaded,
+                                max: ev.total,
+                            });
+                        }
+                    }, false);
+                }
+                return myXhr;
+            },
         });
     });
 

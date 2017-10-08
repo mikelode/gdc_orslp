@@ -15,7 +15,7 @@
 
     @include('partials.messages')
 
-    <form id="frm_reg_doc" method="post" enctype="multipart/form-data">
+    <form id="frm_reg_doc" enctype="multipart/form-data">
     {!! csrf_field() !!}
         <div class="row">
             <div class="col-md-6">
@@ -109,48 +109,65 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="file" class="form-control" name="file_doc" accept="application/pdf">
+                    <progress class="form-control" value="0"></progress>
+                </div>
+            </div>
+        </div>
         <div class="row" style="text-align: center;">
             <div class="col-md-12">
-                <button type="submit" id="btnSubmit" class="btn btn-primary btn-lg">Registrar</button>
+                <!--<button type="submit" id="btnSubmit" class="btn btn-primary btn-lg">Registrar</button>-->
+                <input type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-primary btn-lg" value="Registrar"    >
             </div>
         </div>
     </form>
 </section>
 
 <script>
-$(function(){
-    $(document).ready(function(){
-        $('#asocId').select2({
-            width: '100%'
-        });
+$(document).ready(function(){
+    
+    $('#asocId').select2({
+        width: '100%'
     });
 
-    $('#btnSubmit').click(function(e){
-/*
+    $('#frm_reg_doc').submit(function(e){
+
+        e.preventDefault();
+
+        var form = $('#frm_reg_doc')[0];
+        var formdata = new FormData(form);
+
         $.ajax({
+            type: 'post',
             url: 'doc/register',
-            type: 'POST',
-            data: new FormData($('#frm_reg_doc')[0]),
+            data: formdata,
             cache: false,
             contentType: false,
             processData: false,
-
+            success: function(response){
+                bootbox.alert(response);
+                change_menu_to('doc/outbox');
+            },
             xhr: function(){
                 var myXhr = $.ajaxSettings.xhr();
                 if(myXhr.upload){
-                    myXhr.upload.addEventListener('progress', function(e){
-                        if(e.lengthComputable){
+                    myXhr.upload.addEventListener('progress', function(ev){
+                        if(ev.lengthComputable){
                             $('progress').attr({
-                                value: e.loaded,
-                                max: e.total,
+                                value: ev.loaded,
+                                max: ev.total,
                             });
                         }
-                    });
+                    }, false);
                 }
+                return myXhr;
             },
         });
 
-        */
+        /*
 
         e.preventDefault();
 
@@ -164,7 +181,7 @@ $(function(){
             bootbox.alert({
                 message: 'Error:<br>Revise los campos ingresados.<br>Código: ' + xhr
             });
-        });
+        });*/
     });
 
     $('input#dni_sender_input').keypress(function(evt){
@@ -177,7 +194,7 @@ $(function(){
             if(dni == '') return;
 
             $.getJSON('doc/sender/' + dni,function(response){
-                console.log(response);
+                
                 $('#name_sender_input').val(response.tdocSenderName);
                 $('#patern_sender_input').val(response.tdocSenderPaterno);
                 $('#matern_sender_input').val(response.tdocSenderMaterno);

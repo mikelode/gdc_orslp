@@ -77,6 +77,9 @@ class HistorialController extends Controller {
         DB::transaction(function($request) use ($request){
 
             /*DOCUMENTO CREADO PARA DERIVAR EL DOCUMENTO ORIGINAL, este documento no se registra en el historial porque corresponde a la cadena de historial del primer documento*/
+
+            $file = $request->file('file_derived');
+
             $doc = new Document();
             
             $pref = 'DOC';
@@ -86,7 +89,7 @@ class HistorialController extends Controller {
             $stmt->bindParam(2,$code_doc,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
             $stmt->execute();
             unset($stmt);
-            
+                
             $doc->tdocId = $code_doc;
             $doc->tdocExp = $request->expedient;
             $doc->tdocSenderName = Auth::user()->tusNames;
@@ -102,6 +105,16 @@ class HistorialController extends Controller {
             $doc->tdocDate = Carbon::now();
             $doc->tdocStatus = 'Pendiente';
             $doc->tdocRegisterBy = Auth::user()->tusId;
+
+            if($file){
+                $doc->tdocFileExt = $file->getClientOriginalExtension();
+                $doc->tdocPathFile = 'docscase/'.$request->expedient;
+                $doc->tdocFileMime = $file->getMimeType();
+                $doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
+
+                $filename = '/'.$request->expedient.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
+                \Storage::disk('local')->put($filename, \File::get($file));
+            }
 
             $doc->save();
 

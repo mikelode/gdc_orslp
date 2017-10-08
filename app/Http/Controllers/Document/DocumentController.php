@@ -94,87 +94,99 @@ class DocumentController extends Controller {
 
 	public function storeDocument(StoreDocumentRequest $request)
 	{
-			DB::transaction(function($request) use ($request){
+		DB::transaction(function($request) use ($request){
 
-				$exp = new Archivador();
-				$correlative_exp = Archivador::all()->count() + 1;
-				//$code_exp = $this->makeUniqueCode('EXP',Carbon::now()->year,$correlative_exp);
-				$pref = 'EXP';
-				$code_exp = '';
-				$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
-				$stmt->bindParam(1,$pref);
-				$stmt->bindParam(2,$code_exp,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
-				$stmt->execute();
-				unset($stmt);
-				
-				$exp->tarcExp = $code_exp;
-				$exp->tarcDatepres = Carbon::now();; // Fecha de creacion del archivador
-				$exp->tarcStatus = 'Aperturado';
-				$exp->created_at = Carbon::now();
-				$exp->created_time_at = Carbon::now()->toTimeString();
-				$exp->updated_at = Carbon::now();
-				$exp->tarcSource = 'int';
-				$exp->tarcYear = Carbon::now()->year;
-				$exp->tarcAsoc = $request->asoc_doc;
+			$exp = new Archivador();
+			$correlative_exp = Archivador::all()->count() + 1;
+			//$code_exp = $this->makeUniqueCode('EXP',Carbon::now()->year,$correlative_exp);
+			$pref = 'EXP';
+			$code_exp = '';
+			$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
+			$stmt->bindParam(1,$pref);
+			$stmt->bindParam(2,$code_exp,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
+			$stmt->execute();
+			unset($stmt);
+			
+			$exp->tarcExp = $code_exp;
+			$exp->tarcDatepres = Carbon::now();; // Fecha de creacion del archivador
+			$exp->tarcStatus = 'Aperturado';
+			$exp->created_at = Carbon::now();
+			$exp->created_time_at = Carbon::now()->toTimeString();
+			$exp->updated_at = Carbon::now();
+			$exp->tarcSource = 'int';
+			$exp->tarcYear = Carbon::now()->year;
+			$exp->tarcAsoc = $request->asoc_doc;
 
-				$exp->save();
+			$exp->save();
 
-				$doc = new Document();
-				//$code_doc = $this->makeUniqueCode('DOC',Carbon::now()->year,$this->numberDocument());
-				$pref = 'DOC';
-				$code_doc = '';
-				$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
-				$stmt->bindParam(1,$pref);
-				$stmt->bindParam(2,$code_doc,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
-				$stmt->execute();
-				unset($stmt);
-				
-				$doc->tdocId = $code_doc;
-				$doc->tdocExp = $code_exp;
-				$doc->tdocSenderName = strtoupper($request->name_sender);
-				$doc->tdocSenderPaterno = strtoupper($request->patern_sender);
-				$doc->tdocSenderMaterno = strtoupper($request->matern_sender);
-				$doc->tdocDni = $request->dni_sender;
-				$doc->tdocSubject = strtoupper($request->subject_doc);
-				$doc->tdocAsoc = $request->asoc_doc;
-				$doc->tdocFolio = $request->folio_doc;
-				$doc->tdocType = $request->type_doc;
-				$doc->tdocRegistro = $request->nreg_doc;
-				$doc->tdocDate = $request->date_doc;
-				$doc->tdocStatus = 'Pendiente';
-				$doc->tdocRegisterBy = Auth::user()->tusId;
+			$file = $request->file('file_doc');
 
-				$doc->save();
+			$doc = new Document();
+			//$code_doc = $this->makeUniqueCode('DOC',Carbon::now()->year,$this->numberDocument());
+			$pref = 'DOC';
+			$code_doc = '';
+			$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
+			$stmt->bindParam(1,$pref);
+			$stmt->bindParam(2,$code_doc,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
+			$stmt->execute();
+			unset($stmt);
+			
+			$doc->tdocId = $code_doc;
+			$doc->tdocExp = $code_exp;
+			$doc->tdocSenderName = strtoupper($request->name_sender);
+			$doc->tdocSenderPaterno = strtoupper($request->patern_sender);
+			$doc->tdocSenderMaterno = strtoupper($request->matern_sender);
+			$doc->tdocDni = $request->dni_sender;
+			$doc->tdocSubject = strtoupper($request->subject_doc);
+			$doc->tdocAsoc = $request->asoc_doc;
+			$doc->tdocFolio = $request->folio_doc;
+			$doc->tdocType = $request->type_doc;
+			$doc->tdocRegistro = $request->nreg_doc;
+			$doc->tdocDate = $request->date_doc;
+			$doc->tdocStatus = 'Pendiente';
+			$doc->tdocRegisterBy = Auth::user()->tusId;
 
-				$pexp = new Arcparticular();
+			if($file){
+				$doc->tdocFileExt = $file->getClientOriginalExtension();
+				$doc->tdocPathFile = 'docscase/'.$code_exp;
+				$doc->tdocFileMime = $file->getMimeType();
+				$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
 
-				$correlative_pexp = Arcparticular::where('tarpDep',Auth::user()->tusWorkDep)->count() + 1;
-				$code_pexp = $this->makeUniqueCode('PXP',Carbon::now()->year,$correlative_pexp);
+				$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
+				\Storage::disk('local')->put($filename, \File::get($file));
+			}
 
-				$pexp->tarpPexp = $code_pexp;
-				$pexp->tarpGexp = $code_exp;
-				$pexp->tarpDep = Auth::user()->tusWorkDep;
-				$pexp->tarpDoc = $code_doc;
-				$pexp->created_at = Carbon::now()->toDateString();
-				$pexp->tarpYear = Carbon::now()->year;
+			$doc->save();
 
-				$pexp->save();
+			$pexp = new Arcparticular();
 
-				$hist = new Historial();
+			$correlative_pexp = Arcparticular::where('tarpDep',Auth::user()->tusWorkDep)->count() + 1;
+			$code_pexp = $this->makeUniqueCode('PXP',Carbon::now()->year,$correlative_pexp);
 
-				$hist->thisExp = $code_exp;
-				$hist->thisDoc = $code_doc;
-				$hist->thisDepS = Auth::user()->tusWorkDep;
-				$hist->thisDepT = Auth::user()->tusWorkDep;
-				$hist->thisFlagR = true;
-				$hist->thisFlagA = false;
-				$hist->thisFlagD = false;
-				$hist->rec_date_at = Carbon::now()->toDateString();
-				$hist->rec_time_at = Carbon::now()->toTimeString();
-				$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+			$pexp->tarpPexp = $code_pexp;
+			$pexp->tarpGexp = $code_exp;
+			$pexp->tarpDep = Auth::user()->tusWorkDep;
+			$pexp->tarpDoc = $code_doc;
+			$pexp->created_at = Carbon::now()->toDateString();
+			$pexp->tarpYear = Carbon::now()->year;
 
-				$hist->save();
-			});
+			$pexp->save();
+
+			$hist = new Historial();
+
+			$hist->thisExp = $code_exp;
+			$hist->thisDoc = $code_doc;
+			$hist->thisDepS = Auth::user()->tusWorkDep;
+			$hist->thisDepT = Auth::user()->tusWorkDep;
+			$hist->thisFlagR = true;
+			$hist->thisFlagA = false;
+			$hist->thisFlagD = false;
+			$hist->rec_date_at = Carbon::now()->toDateString();
+			$hist->rec_time_at = Carbon::now()->toTimeString();
+			$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+
+			$hist->save();
+		});
 
 
 		if($request->ajax())

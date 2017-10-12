@@ -63,6 +63,7 @@ Route::get('doc/register', [
 Route::post('doc/register', 'Document\DocumentController@storeDocument');
 Route::get('doc/manager', 'Document\DocumentController@getManagerDocument');
 Route::get('doc/sender/{dni}', 'Document\DocumentController@getSenderDocument');
+Route::get('doc/edit','Document\DocumentController@getEditDocument');
 
 /*
  *  BANDEJA DE ENTRADA DE DOCUMENTOS
@@ -174,6 +175,8 @@ Route::post('settings/updt_pass', 'Document\SettingsController@postUpdatePasswor
 Route::get('settings/reset_pass', 'Document\SettingsController@getResetPasswordUser');
 Route::get('settings/list_asoc','Document\SettingsController@getListAsoc');
 Route::post('settings/new_asoc','Document\SettingsController@postRegisterAsociacion');
+Route::get('settings/new_afil','Document\SettingsController@getFormularioAfiliado');
+Route::post('settings/new_afil','Document\SettingsController@postRegisterAfiliado');
 
 /*
  *  TIPO DE DOCUMENTO

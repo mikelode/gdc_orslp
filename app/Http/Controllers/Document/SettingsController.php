@@ -2,6 +2,7 @@
 
 namespace aidocs\Http\Controllers\Document;
 
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -15,6 +16,9 @@ use aidocs\Models\Dependencia;
 use aidocs\Models\Rol;
 use aidocs\Models\TipoDocumento;
 use aidocs\Models\Asociacion;
+use aidocs\Models\Cargo;
+use aidocs\Models\Persona;
+use aidocs\Models\Afiliado;
 use aidocs\User;
 
 class SettingsController extends Controller
@@ -69,7 +73,7 @@ class SettingsController extends Controller
             switch($request->profile_user)
             {
                 case 'user1': /* assistant */
-                    for($i=1; $i<=7; $i++)
+                    for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
                         $rol->trolIdUser = $request->dni_user;
@@ -85,7 +89,7 @@ class SettingsController extends Controller
                     }
                     break;
                 case 'user2': /* boss */
-                    for($i=1; $i<=7; $i++)
+                    for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
                         $rol->trolIdUser = $request->dni_user;
@@ -101,13 +105,13 @@ class SettingsController extends Controller
                     }
                     break;
                 case 'admin': /* administrator system */
-                    for($i=1; $i<=7; $i++)
+                    for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
                         $rol->trolIdUser = $request->dni_user;
                         $rol->trolIdSyst = $i;
 
-                        if($i>=7)
+                        if($i>=8)
                             $rol->trolEnable = false;
                         else
                             $rol->trolEnable = true;
@@ -117,7 +121,7 @@ class SettingsController extends Controller
                     }
                     break;
                 case 'super': /* VIP user */
-                    for($i=1; $i<=7; $i++)
+                    for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
                         $rol->trolIdUser = $request->dni_user;
@@ -327,5 +331,49 @@ class SettingsController extends Controller
         }
 
         return false;
+    }
+
+    public function getFormularioAfiliado(Request $request)
+    {
+        $cargo = Cargo::all();
+        $asociacion = Asociacion::all();
+        $view = view('setting.register_afiliado',compact('cargo','asociacion'));
+
+        $sections = $view->renderSections();
+
+        return $sections['sub-content'];
+    }
+
+    public function postRegisterAfiliado(Request $request)
+    {
+        try{
+
+            $exception = DB::transaction(function($request) use($request){
+
+                $persona = new Persona();
+                $persona->tprDni = $request->dni_afil;
+                $persona->tprPaterno = $request->patern_afil;
+                $persona->tprMaterno = $request->matern_afil;
+                $persona->tprNombres = $request->name_afil;
+                $persona->tprCelular = $request->celular_afil;
+                $persona->tprCorreo = $request->email_afil;
+                $persona->tprRegisterBy = Auth::user()->tudId;
+                $persona->tprRegisterAt = Carbon::now()->format('d/m/Y h:i:s A');
+                $persona->save();
+
+                $afiliado = new Afiliado();
+                $afiliado->tafAsociacion = $request->asociacion_afil;
+                $afiliado->tafPersona = $request->dni_afil;
+                $afiliado->tafRelacion = $request->cargo_afil;
+                $afiliado->tafHabilitado = true;
+                $afiliado->save();
+
+            });
+
+            return is_null($exception)?'Afiliado registrado correctamente':$exception;
+
+        }catch(Exception $e){
+            return 'Error detectado: ' . $e->getMessage() . "\n";
+        }
     }
 }

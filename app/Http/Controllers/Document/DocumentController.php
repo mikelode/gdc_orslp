@@ -197,9 +197,21 @@ class DocumentController extends Controller {
 		return false;
 	}
 
+	public function getEditDocument(Request $request)
+	{
+		$tipos = TipoDocumento::where('ttypShow',true)->get();
+		$assoc = Asociacion::select('tasId','tasOrganizacion')->get();
+
+		$view = view('tramite.edit_document', compact('tipos','assoc'));
+
+		$sections = $view->renderSections();
+		
+		return $sections['main-content'];
+	}
+
 	public function detailDocument($idDoc, Request $request)
 	{
-		$document = Document::where('tdocId',$idDoc)->get();
+		$document = Document::find($idDoc);// where('tdocId',$idDoc)->get();
 		$anexos = Anexo::where('tdaDocId', $idDoc)->get();
 
 		if($request->ajax())

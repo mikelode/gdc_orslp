@@ -7,7 +7,7 @@
     <!-- Bootstrap 3.3.4 -->
     <link href="{{ asset('/css/bootstrap-3.3.5-dist/css/bootstrap.css') }}" rel="stylesheet" type="text/css" />
     <!-- Font Awesome Icons -->
-    <link href="{{ asset('/css/font-awesome-4.3.0/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/css/font-awesome-4.7.0/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- Ionicons -->
     <link href="{{ asset('/css/ionicons-2.0.1/css/ionicons.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- Theme style -->

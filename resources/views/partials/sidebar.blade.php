@@ -36,6 +36,9 @@
             @if(Auth::user()->can(1))
             <li><a href="javascript:void(0)" onclick="change_menu_to('doc/register')"><i class='glyphicon glyphicon-edit'></i> <span>Registrar Documento</span></a></li>
             @endif
+            @if(Auth::user()->can(8))
+            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/edit')"><i class='glyphicon glyphicon-list-alt'></i> <span>Modificar Documento</span></a></li>
+            @endif
             @if(Auth::user()->can(2))
             <li><a href="javascript:void(0)" onclick="change_menu_to('doc/menu')"><i class='glyphicon glyphicon-inbox'></i> <span>Bandeja de Entrada</span></a></li>
             @endif

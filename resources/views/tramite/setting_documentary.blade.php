@@ -25,7 +25,8 @@
                         <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/list_users')"><i class="fa fa-users"></i>Relación de Usuarios</a></li>
                         <!--<li><a href="javascript:void(0)"><i class="fa fa-suitcase"></i>Agregar Personal</a></li>-->
                         <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/add_doc')"><i class="fa fa-file-pdf-o"></i>Crear Tipos de Documento</a></li>
-                        <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/list_asoc')"><i class="fa fa-file-pdf-o"></i>Listar Asociaciones</a></li>
+                        <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/list_asoc')"><i class="fa  fa-university"></i>Listar Asociaciones</a></li>
+                        <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/new_afil')"><i class="fa fa fa-address-card-o"></i>Registrar Afiliado</a></li>
                     </ul>
                 </div>
             </div>

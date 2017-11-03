@@ -8,7 +8,7 @@
 
 <section class="content-header">
     <h1>
-        GESTION DOCUMENTARIA
+        GESTION DOCUMENTARIAAAAA
         <small>@yield('contentheader_description')</small>
     </h1>
 </section>

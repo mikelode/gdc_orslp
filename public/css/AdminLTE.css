@@ -2995,7 +2995,8 @@ table.text-center th {
 }
 .login-page,
 .register-page {
-  background: #d2d6de;
+  background: linear-gradient(#2783af,rgb(0, 0, 0),#2783af);
+  /*background: linear-gradient(#4276b2,rgb(0, 0, 0),#4276b2);*/
 }
 .login-box,
 .register-box {

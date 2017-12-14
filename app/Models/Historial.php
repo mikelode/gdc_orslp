@@ -10,8 +10,8 @@ class Historial extends Model
     protected $primaryKey = 'thisId';
     public $timestamps = false;
 
-    public function expedient()
+    /*public function expedient()
     {
         return $this->belongsTo('aidocs\Models\Archivador','thisExp','tarcExp');
-    }
+    }*/
 }

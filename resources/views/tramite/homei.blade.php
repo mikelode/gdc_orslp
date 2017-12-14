@@ -19,9 +19,9 @@
         <div class="row" style="padding-left: 1%">
             @if(Auth::user()->can(1))
             <div class="col-md-3" style="text-align: center;">
-                <a href="javascript:void(0)" onclick="change_menu_to('doc/register')">
+                <a href="javascript:void(0)" onclick="change_menu_register('doc/register')">
                     <img src="{{ asset('img/registro.png') }}" width="100" height="100">
-                    <p>Registrar Documento</p>
+                    <p>Gestión de Documentos</p>
                 </a>
             </div>
             @endif
@@ -29,7 +29,7 @@
             <div class="col-md-3" style="text-align: center;">
                 <a href="javascript:void(0)" onclick="change_menu_to('doc/menu')">
                     <img src="{{ asset('img/email_inbox.png') }}" width="100" height="100">
-                    <p>Bandeja de Entrada</p>
+                    <p>Bandeja de Documentos</p>
                 </a>
             </div>
             @endif

@@ -20,6 +20,7 @@ use aidocs\Models\Arcparticular;
 use aidocs\Models\Dependencia;
 use aidocs\Models\Document;
 use aidocs\Models\Historial;
+use aidocs\Models\Proyecto;
 use Illuminate\Support\Facades\DB;
 use aidocs\Models\TipoDocumento;
 
@@ -227,6 +228,33 @@ class HistorialController extends Controller {
         });
     }
 
+    public function envioHistorial(Request $request)
+    {
+        DB::transaction(function($request) use ($request){
+
+            $doc = Document::select('*')
+                    ->join('tramHistorial','tdocId','=','thisDoc')
+                    ->where('tdocId',$request->ndocEnvioExp)
+                    ->where('thisFlagR',true)
+                    ->get(); //ndocEnvioExp recibe el codigo del documento id
+
+
+            $hist = Historial::find($doc[0]->thisId);
+            $hist->thisDepT = $request->ndocEnvioDestino;
+            $hist->thisFlagD = true;
+            $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+            $hist->thisDscD = trim($request->ndocEnvioMensaje);
+            $hist->rec_date_at = Carbon::now()->toDateString();
+            $hist->rec_time_at = Carbon::now()->toTimeString();
+            $hist->save();
+
+            $update_filer = Archivador::find($doc[0]->tdocExp);
+            $update_filer->tarcStatus = 'En Proceso';
+            $update_filer->updated_at = Carbon::now()->toDateString();
+            $update_filer->save();
+        });
+    }
+
     public function getDetailDerivation($histId, Request $request)
     {
         $historial = Historial::find($histId);
@@ -252,25 +280,34 @@ class HistorialController extends Controller {
         return $new_code;
     }
 
-    public function getHistorialDoc(Request $request)
+    public function getHistorialDoc(Request $request) // para mostrar la bandeja de entrada
     {
-        $inbox = Historial::select('*')
-            ->join('tramDocumento','tdocId','=','thisDoc')
-            ->join('tramArchivador','tarcExp','=','tdocExp')
-            ->join('TLogGrlDep','thisDepS','=','depID')
-            ->where('thisDepT',Auth::user()->tusWorkDep)
-            ->where('thisDepS','<>',Auth::user()->tusWorkDep)
+        /*$inbox = Historial::select('*')
+            ->join('tramDocumento','tdocCod','=','thisDoc1')
+            ->join('tramArchivador','tarcExp','=','tdocExp1')
+            //->join('tramDependencia','thisDepS','=','depId')
+            //->where('thisDepT',Auth::user()->tusWorkDep)
+            //->where('thisDepS','<>',Auth::user()->tusWorkDep)
             ->where('tarcYear',$request->period)
             ->orderby('tdocId','DESC')
-            ->get();
+            ->get();*/
+        $inbox = Document::select(DB::raw('*,DATEDIFF(day,tdocDate,GETDATE()) as plazo'))
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->join('tramProyecto','tpyId','=','tdocProject')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->where('tarcYear',$request->period)
+                    ->where('tdocRef',null)
+                    ->orderby('tdocId','DESC')
+                    ->get();
 
         $dependencys = Dependencia::select('*')
             ->where('depActive',1)
             ->get();
 
         $tipos = TipoDocumento::where('ttypShow',true)->get();
+        $proyectos = Proyecto::all();
 
-        $view = view('tramite.inbox_document',compact('inbox'),['dependencys' => $dependencys, 'tipos' => $tipos]);
+        $view = view('tramite.inbox_document',compact('inbox','proyectos'),['dependencys' => $dependencys, 'tipos' => $tipos]);
 
         if($request->ajax())
         {

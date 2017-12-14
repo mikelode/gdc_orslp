@@ -110,18 +110,32 @@ class ArchivadorController extends Controller {
         $startDate = $request->startDate;
         $endDate = $request->endDate;
 
+        $funcion = $request->nidFuncion;
+
         $docs = Document::select('*')
             ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-            ->join('tramArchivador','tarcDoc','=','tdocId')
-            ->wherebetween('tarcDatePres',[$startDate,$endDate])
+            //->join('tramArchivador','tarcDoc','=','tdocId')
+            ->wherebetween('tdocDate',[$startDate,$endDate])
             ->get();
 
-        if($request->ajax())
-        {
-            return $docs;
+        if($docs){
+            if($docs->count() == 0){
+                $resultado = 'No se ha encontrado ningún registro';
+            }
+            else{
+                $view = view('tramite.tabla_resultado_documentos',compact('docs','funcion'));
+                $resultado = $view->render();
+            }
+            $msg = "Recuperado correctamente";
+            $Respuesta = 200;
+        }
+        else{
+            $resultado = '';
+            $msg = 'Error: no se pudo recuperar la información solicitada';
+            $Respuesta = 500;
         }
 
-        return false;
+        return response()->json(array('Respuesta' => $Respuesta, 'msg' => $msg, 'resultado' => $resultado));
     }
 
     public function findBySender(Request $request)

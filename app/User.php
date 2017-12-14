@@ -49,7 +49,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function workplace()
     {
-        return $this->hasOne('aidocs\Models\Dependencia','depID','tusWorkDep');
+        return $this->hasOne('aidocs\Models\Dependencia','depId','tusWorkDep');
     }
 
     public function can($permission = null)

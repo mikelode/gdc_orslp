@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dependencia extends Model
 {
-    protected $table = 'TLogGrlDep';
-    protected $primaryKey = 'depID';
+    protected $table = 'tramDependencia';
+    protected $primaryKey = 'depId';
     public $timestamps = false;
 
     public  function getNameDep()

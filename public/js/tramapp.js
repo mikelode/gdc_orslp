@@ -89,6 +89,29 @@ function showTrackingDoc(code)
     $.get('tracking/' + code);
 }
 
+function change_menu_register(path)
+{
+    var year = $('#period_sys').val();
+
+    //console.log(year);
+
+    $.get(path, {period : year}, function(data){
+
+        if(data == '401')
+        {
+            bootbox.alert('USTED NO ESTA AUTORIZADO PARA INGRESAR A ESTA SECCION.');
+        }
+        else
+        {
+            $('.content-wrapper').html(data.view);
+
+            /* llenando el formulario */
+            //pantallazo_documento(data.lastdoc);
+            mostrar_documento(data.lastdoc[0].tdocId,'busqueda');
+        }
+    });
+}
+
 function change_menu_to(path)
 {
     var year = $('#period_sys').val();
@@ -257,4 +280,343 @@ function open_chat_box(id, user)
     //console.log('Antes de agregar el chat box');
 
     $('#chat-box-container').append(chatbox);
+}
+
+function nuevo_documento(origen)
+{
+    var estado = $('#btnNuevoDoc').html();
+
+    if(estado == "Nuevo")
+    {
+        $('#btnNuevoDoc').html('Cancelar');
+        $('#btnNuevoDoc').prop('class','btn btn-warning');
+        $('#btnEditarDoc').hide();
+        $('#btnEliminarDoc').hide();
+
+        $('#operacionEnviar').hide();
+
+        $('#docId').val('');
+        $('#docDepend').prop('disabled', false).val(1);
+        $('#docProy').prop('disabled', false).val(1).trigger('change');
+        $('#docSender').prop('readonly', false).val('');
+        $('#docJob').prop('readonly', false).val('');
+        $('#docReg').prop('readonly', false).val('');        
+        $('#docTipo').prop('disabled', false);
+        $('#docNro').prop('readonly', false).val('');
+        $('#docFecha').prop('readonly', false).val('');
+        $('#docAsunto').prop('readonly', false).val('');
+        $('#docDetalle').prop('readonly', false).val('');
+        $('#docFolio').prop('readonly', false).val('');
+
+        $('#withDigFile').empty();
+        $('#docFile').prop('disabled', false);
+        $('#withoutDigFile').show();
+
+        $('#docProceso').prop('disabled', false).val('na').trigger('change');
+        $('#docTitulo').prop('readonly', false).val('');
+        $('#docAccion').prop('disabled', false).val('');
+        $('#docRefRegistro').prop('readonly', false).val('');
+        $('#docReferencia').prop('readonly', false).val('');
+
+        $('#btnGuardarDoc').show();
+    }
+    else
+    {
+        change_menu_register('doc/register');
+    }
+
+}
+
+function editar_documento(origen)
+{
+    var estado = $('#btnEditarDoc').html();
+
+    if(estado == "Editar")
+    {
+        $('#btnEditarDoc').html('Cancelar');
+        $('#btnEditarDoc').prop('class','btn btn-warning');
+
+        $('#operacionEnviar').hide();
+
+        $('#docDepend').prop('disabled', false);
+        $('#docProy').prop('disabled', false);
+        $('#docSender').prop('readonly', false);
+        $('#docJob').prop('readonly', false);
+        $('#docReg').prop('readonly', false);
+        $('#docTipo').prop('disabled', false);
+        $('#docNro').prop('readonly', false);
+        $('#docFecha').prop('readonly', false);
+        $('#docAsunto').prop('readonly', false);
+        $('#docDetalle').prop('readonly', false);
+        $('#docFolio').prop('readonly', false);
+
+        $('#withDigFile').empty();
+        $('#docFile').prop('disabled', false);
+        $('#withoutDigFile').show();
+
+        $('#docProceso').prop('disabled', false);
+        $('#docTitulo').prop('readonly', false);
+        $('#docAccion').prop('disabled', false);
+        $('#docRefRegistro').prop('readonly', false);
+        $('#docReferencia').prop('readonly', false);
+
+        $('#btnGuardarEdicionDoc').show();
+    }
+    else
+    {
+        change_menu_register('doc/register');
+    }
+}
+
+function guardar_documento(origen)
+{
+    var form = $('#frm_reg_doc')[0];
+    var formdata = new FormData(form);
+
+    /*var verificar = validar_formulario(form, origen);
+    verificar = $.parseJSON(verificar);
+
+    if(!verificar.valido)
+    {
+        $.each(verificar.elemento,function(i,elem){
+            var grupo = $('#' + elem).closest('div.form-group');
+            var mensaje = grupo.find('div.error-message').show();
+        });
+
+        return;
+    }*/
+
+    $.ajax({
+        type: 'post',
+        url: 'doc/register',
+        data: formdata,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(response){
+            bootbox.alert(response);
+            change_menu_to('doc/outbox');
+        },
+        xhr: function(){
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){
+                myXhr.upload.addEventListener('progress', function(ev){
+                    if(ev.lengthComputable){
+                        $('progress').attr({
+                            value: ev.loaded,
+                            max: ev.total,
+                        });
+                    }
+                }, false);
+            }
+            return myXhr;
+        },
+    });
+}
+
+function terminar_edicion_documento(origen)
+{
+    var form = $('#frm_reg_doc')[0];
+    var formdata = new FormData(form);
+
+    $.ajax({
+        type: 'post',
+        url: 'doc/edit',
+        data: formdata,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(response){
+            if(res.Respuesta == 200)
+            {
+                pantallazo_documento(res.cadena);
+                $('#btnEditarDoc').html('Editar');
+                $('#btnEditarDoc').prop('class','btn btn-info');
+                $('#btnGuardarEdicionDoc').hide();
+                $('#operacionEnviar').show();
+            }
+            else
+            {
+                alert(res.msg);
+            }
+        },
+        xhr: function(){
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){
+                myXhr.upload.addEventListener('progress', function(ev){
+                    if(ev.lengthComputable){
+                        $('progress').attr({
+                            value: ev.loaded,
+                            max: ev.total,
+                        });
+                    }
+                }, false);
+            }
+            return myXhr;
+        },
+    });
+}
+
+function habilitar_busqueda(tipo)
+{
+    $('form.frm-busqueda-rapida').hide();
+    if(tipo == 'fecha')
+    {
+        $('form#frmEncontrarDocFechas').show();
+    }
+    else if(tipo == 'asunto')
+    {
+        $('form#frmEncontrarDocAsunto').show();
+    }
+    else if(tipo == 'codigo')
+    {
+        $('form#frmEncontrarDocCodigo').show();
+    }
+    else if(tipo == 'remitente-persona')
+    {
+        $('form#frmEncontrarDocRemitP').show();
+    }
+}
+
+function encontrar_documento(origen, frm)
+{
+    var url = frm.prop('action');
+    var data = frm.serialize();
+
+    $.post(url, data, function(response){
+        
+        //var response = $.parseJSON(response);
+        
+        if(response.Respuesta == 200 )
+        {
+            $('#tbl-resultado-encontrar').html(response.resultado);
+        }
+        else if(response.Respuesta == 500)
+        {
+            alert(response.msg);
+        }
+    });
+}
+
+function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|referencia)
+{
+    var actual = $('#docId').val();
+    var url = 'doc/show';
+    var data = {'posicion': pos, 'docActual': actual, 'origen': origen};
+
+    //if(actual == '') return;
+    if($('#btnEditarDoc').html() == 'Cancelar') return;
+
+    $.get(url, data, function(response){
+        
+        if(origen == "referencia"){
+            $('#docRefRegistro').val(response.docElegido[0].tdocRegistro);
+            $('#docReferencia').val(response.docElegido[0].tdocId);
+        }
+        else{
+            pantallazo_documento(response);
+        }
+        $('#modalEncontrarDocumento').modal('hide');
+        //$('body').removeClass('modal-open');
+        //$('.modal-backdrop').remove();
+    });
+}
+
+function pantallazo_documento(cadena)
+{
+    /* SENDER DATA */
+    $('#docId').prop('readonly',true).val(cadena.docElegido[0].tdocId);
+    $('#docDepend').prop('disabled',true).val(cadena.docElegido[0].tdocDependencia);
+    $('#docProy').prop('disabled',true).val(cadena.docElegido[0].tdocProject).trigger('change');// change cambia tmbn las acciones de docProy | change.select2 solo cambia el select
+    $('#docSender').prop('readonly',true).val(cadena.docElegido[0].tdocSender);
+    $('#docJob').prop('readonly',true).val(cadena.docElegido[0].tdocJobSender);
+
+    /* DOC SENDER */
+    $('#docReg').prop('readonly',true).val(cadena.docElegido[0].tdocRegistro);
+    $('#docTipo').prop('disabled',true).val(cadena.docElegido[0].tdocType);
+    $('#docNro').prop('readonly',true).val(cadena.docElegido[0].tdocNumber);
+    $('#docFecha').prop('readonly',true).val(cadena.docElegido[0].tdocDate);
+    $('#docAsunto').prop('readonly',true).val(cadena.docElegido[0].tdocSubject);
+    $('#docDetalle').prop('readonly',true).val(cadena.docElegido[0].tdocDetail);
+    $('#docFolio').prop('readonly',true).val(cadena.docElegido[0].tdocFolio);
+    //para el input file podemos cambiar file a text y poner el link al documento ahi
+    if(cadena.docElegido[0].tdocFileName != null){
+        $('#withoutDigFile').hide();
+        $('#withDigFile').html('<a href="'+cadena.docElegido[0].tdocPathFile+'/'+cadena.docElegido[0].tdocFileName+'" target="_blank">Ver documento</a>')
+    }
+    else{
+        $('#withoutDigFile').show();
+        $('#withDigFile').empty();
+    }
+
+    /* REFERENCIA DATA */
+    if(cadena.docElegido[0].tdocRef == null){
+        $('#docProceso').prop('disabled',true).val('no').trigger('change');
+        $('#docTitulo').prop('readonly',true).val(cadena.docElegido[0].tarcTitulo);
+    }
+    else{
+        $('#docProceso').prop('disabled',true).val('si').trigger('change');
+        $('#docAccion').prop('disabled',true).val(cadena.docElegido[0].tdocAccion);
+        $('#docRefRegistro').prop('readonly',true).val(cadena.docReferencia.tdocRegistro);
+        $('#docReferencia').prop('readonly',true).val(cadena.docElegido[0].tdocRef);
+    }
+
+
+    $("#docEnvioExp").html(cadena.docElegido[0].tdocRegistro);
+    $("#hdocEnvioExp").val(cadena.docElegido[0].tdocId);
+
+    if(cadena.docElegido[0].tdocStatus == 'Registrado'){
+        $('#operacionEnviar').show();
+        $('#btnEditarDoc').show();
+        $('#btnEliminarDoc').show();
+    }
+    else{
+        $('#operacionEnviar').hide();
+        $('#btnEditarDoc').hide();
+        $('#btnEliminarDoc').hide();
+    }
+}
+
+function enviar_documento(origen)
+{
+    var url = $('#frmEnvDoc').prop('action');
+    var data = $('#frmEnvDoc').serialize() + '&send=1';
+
+    $.post(url, data, function(response){
+        /*
+        if(res.Respuesta == '200')
+        {
+            alert(res.msg);
+            $('#modalOperacionEnviar').modal('hide');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+            if(origen == 'interno')
+                cargarSubmodulo(1,'.html/modulo1/m1submod1.html');
+            else
+                cargarSubmodulo(2,'.html/modulo1/m1submod2.html');
+        }
+        else
+        {
+            alert(res.msg);
+        }*/
+
+    });
+
+}
+
+function historial(fila){
+    var tr = $(fila).closest('tr');
+    var row = $('#docBandeja').DataTable().row(tr);
+    var claves = tr.data('keys');
+
+    if(row.child.isShown()){
+        row.child.hide();
+        tr.removeClass('shown');
+    }
+    else{
+        $.get('doc/expediente',{'claves': claves}, function(data) {
+            row.child(data).show();
+            tr.addClass('shown');
+        });
+    }
 }

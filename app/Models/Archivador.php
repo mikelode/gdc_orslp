@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Archivador extends Model
 {
     protected $table = 'tramArchivador';
-    protected $primaryKey = 'tarcExp';
+    protected $primaryKey = 'tarcId';
     public $timestamps = false;
 
     public function document()

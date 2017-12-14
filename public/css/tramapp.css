@@ -33,3 +33,30 @@
     width: 100%;
     bottom: 0;
 }
+
+.backgore{
+    background: url(../img/gore_sede.jpg) no-repeat center top scroll;
+    background-size: 100% auto;
+    padding-bottom: 80%;
+}
+
+.loginTitle{
+    position: relative;
+    font-size: 30px;
+    margin-top: 0;
+    font-family: 'Lobster', helvetica, arial;
+}
+
+.loginTitle a{
+    text-decoration: none;
+    color: #666;
+    position: absolute;
+     
+    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), color-stop(50%, rgba(0,0,0,.5)), to(rgba(0,0,0,1)));
+}
+
+.loginTitle:after {
+    content : 'Oficina Regional de Supervisión y Liquidación de Obras';
+    color: #d6d6d6;
+    text-shadow: 0 1px 0 white;
+}

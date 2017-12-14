@@ -3,125 +3,108 @@
 @endsection
 
 @section('main-content')
-<section class="content-header">
-    <h1>
-        Bandeja de Entrada de Documentos
-        <small>@yield('contentheader_description')</small>
-    </h1>
-</section>
 <section class="content" style="font-size: 12px">
     <div class="row">
-        <div class="col-md-8">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Documentos</h3>
-                    <div class="box-tools pull-right">
-                        <div class="has-feedback">
-                            <input type="text" class="form-control input-sm" placeholder="Buscar Documento">
-                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Buscar Documento</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="col-md-2"><label class="lbl-frm">Proyecto:</label></div>
+                            <div class="col-md-10">
+                                <select class="form-control" name="ndocProy" id="ldocProy">
+                                    <option value="all" selected>-- Todos los proyectos --</option>
+                                    @foreach($proyectos as $py)
+                                        <option value="{{ $py->tpyId }}">{{ $py->tpyName }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
+                        <div class="col-md-2">
+                            <div class="col-md-4"><label class="lbl-frm">Registro:</label></div>
+                            <div class="col-md-8">
+                                <input type="tex" id="ldocReg" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6"></div>
                     </div>
                 </div>
-                <div class="box-body no-padding">
-                    <div class="mailbox-controls">
-                        <div class="btn-group">
-                            <button class="btn btn-default btn-sm"><i class="fa fa-reply"></i></button>
-                            <button class="btn btn-default btn-sm"><i class="fa fa-share"></i></button>
-                        </div>
-                        <button class="btn btn-default btn-sm" onclick="change_menu_to('doc/menu')"><i class="fa fa-refresh"></i></button>
-                        <div class="pull-right">
-                            -
-                            <div class="btn-group">
-                                <button class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
-                                <button class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </div>            
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Bandeja de Documentos</h3>
+                    <div class="box-tools pull-right">
+                        <div class="has-feedback">
+                            <div class="mailbox-controls">
+                                <label class="lbl-frm">Vigente:&nbsp</label><button class="btn btn-success btn-sm"></button>
+                                <label class="lbl-frm">Por vencer:&nbsp</label><button class="btn btn-warning btn-sm"></button>
+                                <label class="lbl-frm">Vencido:&nbsp</label><button class="btn btn-danger btn-sm"></button>
+                                <button class="btn btn-default btn-sm" onclick="change_menu_to('doc/menu')"><i class="fa fa-refresh"></i></button>
                             </div>
                         </div>
                     </div>
-                    <div class="table-responsive mailbox-messages">
-                        <table class="table table-hover table-striped"  id="btn-options">
-                            <tbody>
+                </div>
+                <div class="box-body">
+                    <div id="tblBandeja">
+                        <table class="display compact" cellspacing="0" width="100%" id="docBandeja">
+                            <thead>
                                 <tr>
-                                    <th>Documento</th>
-                                    <th>Dependencia Remitente</th>
-                                    <th>Fecha Presentación</th>
-                                    <th>Estado</th>
-                                    <th>Mensaje</th>
-                                    <th>Acción</th>
                                     <th></th>
+                                    <th>Reg.</th>
+                                    <th>Doc.</th>
+                                    <th>Remitente</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Plazo</th>
+                                    
                                 </tr>
+                            </thead>
+                            <tbody>
                                 @foreach ($inbox as $doc)
-                                <tr data-id = "{{ $doc->thisId }}">
-                                    <input type="hidden" id="{{ 'id'.$doc->thisId }}" value="{{ $doc->thisId }}">
-                                    <input type="hidden" id="{{ 'xp'.$doc->thisId }}" value="{{ $doc->tdocExp }}">
-                                    <input type="hidden" id="{{ 'dc'.$doc->thisId }}" value="{{ $doc->tdocId }}">
-                                    <input type="hidden" id="{{ 'sc'.$doc->thisId }}" value="{{ $doc->tdocAsoc }}">
-                                    <td>
-                                        <a href="javascript:void(0)" onclick="showDocDetail('{{ $doc->tdocId }}')">{{ $doc->tdocId }}</a>
-                                    </td>
-                                    <td>{{ $doc->depDsc }}</td>
-                                    <td>{{ $doc->tarcDatePres }}</td>
-                                    <td>
-                                        <?php $link = 'doc/tracking/'.$doc->tdocId; ?>
-                                        <a href="javascript:void(0)" onclick="change_menu_to('{{ $link }}')">{{ $doc->tdocStatus }}</a>
+                                <tr data-keys = "{{ $doc->tdocId.'-'.$doc->tdocExp }}">
+                                    <td class="details-control" onclick="historial(this)">
                                     </td>
                                     <td>
-                                        <a href="#" data-target="#showDetailOperation" data-toggle="modal" data-keydoc = "{{ $doc->thisId }}" onclick="showOperationDetail('{{ $doc->thisIdSourceD }}')">ver</a>
+                                        <a href="javascript:void(0)" onclick="showDocDetail('{{ $doc->tdocId }}')">{{ $doc->tdocRegistro }}</a>
                                     </td>
-                                    <td id="{{ 'row'.$doc->thisId }}">
-                                        <div id="{{ 'ky'.$doc->thisId }}">
-                                    @if($doc->thisFlagR == false)
-                                        <button type="button" class="btn btn-warning btn-xs">Aceptar Documento</button>
-                                    @else
-                                        @if($doc->thisFlagD == true)
-                                            <a href="javascript:void(0)" onclick="showDerivDetail('{{ $doc->tarcDoc }}','{{ $doc->thisId }}')">DERIVADO</a>
-                                        @elseif($doc->thisFlagA == true)
-                                            ATENDIDO
-                                        @else
-                                            <div class="btn-group-xs">
-                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#attendModal" data-any="{{ $doc->thisId }}" id="btnAtender">Cerrar</button>
-                                                <div class="btn-group">
-                                                    <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="btnDerivar">Derivar <span class='caret'></span></button>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#" data-toggle="modal" data-target="#sendModal" data-whatever="{{ $doc->thisId }}">Simple</a></li>
-                                                        <li><a href="#" data-toggle="modal" data-target="#sendModalDc" data-whatever="{{ $doc->thisId }}">Mediante documento</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endif
-                                        </div>
-                                    </td>
+                                    <td>{{ $doc->ttypDesc.' - '.$doc->tdocNumber }}</td>
+                                    <td>{{ $doc->tdocSender }}</td>
+                                    <td>{{ $doc->tdocDate }}</td>
                                     <td>
-                                        <a href="javascript:void(0)" data-keydoc = "{{ $doc->thisId }}" class="ctrl_z_task">
-                                            @if(!$doc->thisFlagR)
-                                                -
-                                            @else
-                                                @if($doc->thisFlagD)
-                                                    Deshacer
-                                                @elseif($doc->thisFlagA)
-                                                    Deshacer
-                                                @else
-                                                    -
-                                                @endif
+                                        @if($doc->tarcStatus != 'atendido')
+                                            @if($doc->plazo <= 4)
+                                                <button type="button" class="btn btn-success btn-xs">{{ $doc->tarcStatus }}</button>
                                             @endif
-                                        </a>
+                                            @if($doc->plazo > 4 && $doc->plazo <= 7)
+                                                <button type="button" class="btn btn-warning btn-xs">{{ $doc->tarcStatus }}</button>
+                                            @endif
+                                            @if($doc->plazo >= 7)
+                                                <button type="button" class="btn btn-danger btn-xs">{{ $doc->tarcStatus }}</button>
+                                            @endif
+                                        @else
+                                            <button type="button" class="btn btn-default btn-xs">{{ $doc->tarcStatus }}</button>
+                                        @endif
+
                                     </td>
+                                    <td>{{ $doc->plazo }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Detalles Documento</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="detail_document">
-
+                        <script>
+                            $('#docBandeja').DataTable({
+                                "language":{
+                                    "url": "plugins/DataTables/Spanish.json"
+                                }
+                            });
+                        </script>
                     </div>
                 </div>
             </div>
@@ -318,7 +301,7 @@
 {!! Form::close() !!}
 
 <script>
-$(function(){
+$(document).ready(function(){  
 
     $('#sendModal').on('show.bs.modal', function(event){
         var button = $(event.relatedTarget);
@@ -493,6 +476,39 @@ $(function(){
 
     $('#select2').select2();
     $('#select2Dc').select2();
+    $('#ldocProy').select2().on('change', function(){
+        var py = $(this).val();
+        var periodo = $('#period_sys').val();
+
+        if(py == 'all'){
+            change_menu_to('doc/menu');
+            return;
+        }
+
+        $.get('doc/filtrar',{'key': py, 'period': periodo, 'campo': 'proyecto'}, function(data) {
+            $('#tblBandeja').empty();
+            $('#tblBandeja').html(data);
+        });
+    });
+
+    $('#ldocReg').keypress(function(event) {
+        if(event.which == 13){
+            event.preventDefault();
+            var reg = $(this).val();
+            var periodo = $('#period_sys').val();
+
+            if(reg == 0){
+                change_menu_to('doc/menu');
+                return;
+            }
+
+            $.get('doc/filtrar',{'key': reg, 'period': periodo, 'campo': 'registro'}, function(data) {
+                $('#tblBandeja').empty();
+                $('#tblBandeja').html(data);
+            });
+
+        }
+    });
 });
 </script>
 @endsection

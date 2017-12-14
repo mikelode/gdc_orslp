@@ -31,16 +31,16 @@
         <ul class="sidebar-menu">
             <li class="header">MENU</li>
             <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="javascript:void(0)" onclick="change_menu_to('homei')"><i class='fa fa-home'></i> <span>Inicio</span></a></li>
+            <li class="active treeview"><a href="javascript:void(0)" onclick="change_menu_to('homei')"><i class='fa fa-home'></i> <span>Inicio</span></a></li>
 
             @if(Auth::user()->can(1))
-            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/register')"><i class='glyphicon glyphicon-edit'></i> <span>Registrar Documento</span></a></li>
+            <li><a href="javascript:void(0)" onclick="change_menu_register('doc/register')"><i class='glyphicon glyphicon-edit'></i> <span>Gestión de Documentos</span></a></li>
             @endif
             @if(Auth::user()->can(8))
             <li><a href="javascript:void(0)" onclick="change_menu_to('doc/edit')"><i class='glyphicon glyphicon-list-alt'></i> <span>Modificar Documento</span></a></li>
             @endif
             @if(Auth::user()->can(2))
-            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/menu')"><i class='glyphicon glyphicon-inbox'></i> <span>Bandeja de Entrada</span></a></li>
+            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/menu')"><i class='glyphicon glyphicon-inbox'></i> <span>Bandeja de Documentos</span></a></li>
             @endif
             @if(Auth::user()->can(3))
             <li><a href="javascript:void(0)" onclick="change_menu_to('doc/outbox')"><i class='glyphicon glyphicon-send'></i> <span>Bandeja de Salida</span></a></li>

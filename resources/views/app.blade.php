@@ -4,9 +4,8 @@
 
 @include('partials.htmlheader')
 
-<body class="skin-blue-light sidebar-mini">
+<body class="skin-blue sidebar-mini sidebar-collapse">
 <div class="wrapper">
-
     @include('partials.mainheader')
 
     @include('partials.sidebar')

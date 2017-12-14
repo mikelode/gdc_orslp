@@ -63,7 +63,8 @@ Route::get('doc/register', [
 Route::post('doc/register', 'Document\DocumentController@storeDocument');
 Route::get('doc/manager', 'Document\DocumentController@getManagerDocument');
 Route::get('doc/sender/{dni}', 'Document\DocumentController@getSenderDocument');
-Route::get('doc/edit','Document\DocumentController@getEditDocument');
+Route::post('doc/edit','Document\DocumentController@storeEditDocument');
+Route::get('doc/expediente','Document\DocumentController@getExpediente');
 
 /*
  *  BANDEJA DE ENTRADA DE DOCUMENTOS
@@ -78,6 +79,7 @@ Route::post('hist/register', 'Document\HistorialController@storeHistorialDerived
 Route::post('hist/registerdc', 'Document\HistorialController@storeHistorialDerivedDc');
 
 Route::post('fhist/register', 'Document\HistorialController@firstHistorialDerived');
+Route::post('hist/envio','Document\HistorialController@envioHistorial');
 
 Route::put('hist/update/{id}', [
     'as' => 'receive', 'uses' => 'Document\HistorialController@acceptDocumentDerived'
@@ -119,6 +121,8 @@ Route::get('doc/consult',[
     'uses' => 'Document\DocumentController@consultDocument'
 ]);
 
+Route::get('doc/show','Document\DocumentController@showDocumentData');
+
 Route::post('doc/find/{year}','Document\DocumentController@retrieveDocumentData');
 
 Route::get('doc/list','Document\DocumentController@listDocument');
@@ -148,6 +152,8 @@ Route::post('doc/sender',[
 Route::post('doc/attach',[
     'as' => 'findAttach', 'uses' => 'Document\ArchivadorController@findByAttaches'
 ]);
+
+Route::get('doc/filtrar','Document\DocumentController@filtrarDocumento');
 
 /*
  *  NOTIFICACIONES y MURO DE PUBLICACION

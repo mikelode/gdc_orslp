@@ -4,9 +4,9 @@
     <!-- Logo -->
     <a href="{{ url('/') }}" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>AI</b></span>
+        <span class="logo-mini"><b>SUP</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>AGRO</b>IDEAS</span>
+        <span class="logo-lg"><b>OFI.</b>SUPERVISIÓN</span>
     </a>
 
     <!-- Header Navbar -->
@@ -43,7 +43,7 @@
                                     <a>
                                         <div class="pull-left">
                                             <!-- User Image -->
-                                            <img src="{{ asset('img/agroideas.jpg') }}" class="img-circle" alt="MDV"/>
+                                            <img src="{{ asset('img/gore3.jpg') }}" class="img-circle" alt="MDV"/>
                                         </div>
                                         <!-- Message title and timestamp -->
                                         <h4>
@@ -64,14 +64,14 @@
                     <!-- Menu Toggle Button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <!-- The user image in the navbar-->
-                        <img src="{{ asset('/img/usuario.png') }}" class="user-image" alt="AGROIDEAS"/>
+                        <img src="{{ asset('/img/usuario.png') }}" class="user-image" alt="GORE"/>
                         <!-- hidden-xs hides the username on small devices so only the image appears. -->
                         <span class="hidden-xs">{{ Auth::user()->tusNames }}</span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- The user image in the menu -->
                         <li class="user-header">
-                            <img src="{{ asset('/img/agroideas2.jpg') }}" class="img-circle" alt="User Image" />
+                            <img src="{{ asset('/img/gore3.jpg') }}" class="img-circle" alt="User Image" />
                             <p>
                                 {{ Auth::user()->tusNames }}
                                 <small>{{ Auth::user()->workplace->depDsc }}</small>

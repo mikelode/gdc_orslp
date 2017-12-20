@@ -31,9 +31,9 @@
                     @endif
                 </td>
                 <td>{{ $doc->tdocSender }}</td>
-                <td>{{ Carbon\Carbon::parse($doc->thisDateTimeR)->format('Y-m-d H:i:s a') }}</td>
+                <td>{{ $doc->thisDateTimeR ? Carbon\Carbon::parse($doc->thisDateTimeR)->format('d-m-Y H:i a') : null }}</td>
                 <td>{{ $doc->tdocSubject }}</td>
-                <td>{{ Carbon\Carbon::parse($doc->thisDateTimeD)->format('Y-m-d H:i:s a') }} </td>
+                <td>{{ $doc->thisDateTimeD ? Carbon\Carbon::parse($doc->thisDateTimeD)->format('d-m-Y H:i a') : null }} </td>
                 <td>{{ $doc->destino }}</td>
                 <td>{{ $doc->thisDscD }}</td>
                 <td>{{ $doc->ref }}</td>

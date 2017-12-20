@@ -221,7 +221,9 @@ class DocumentController extends Controller {
 					$hist->thisFlagD = false;
 					$hist->rec_date_at = Carbon::now()->toDateString();
 					$hist->rec_time_at = Carbon::now()->toTimeString();
-					$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+					/* SQL Version: $hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A'); */
+					/* MySQL Version */
+					$hist->thisDateTimeR = Carbon::now();
 
 					$hist->save();
 
@@ -240,7 +242,7 @@ class DocumentController extends Controller {
 					$hist->thisFlagD = false;
 					$hist->rec_date_at = Carbon::now()->toDateString();
 					$hist->rec_time_at = Carbon::now()->toTimeString();
-					$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+					$hist->thisDateTimeR = Carbon::now();//->format('d/m/Y h:i:s A');
 
 					$hist->save();
 

@@ -61,7 +61,7 @@ class HistorialController extends Controller {
             $update_hist = Historial::find($request->kyId);
             $update_hist->thisFlagD = true;
             $update_hist->thisDscD = strtoupper($request->dsc_derived);
-            $update_hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+            $update_hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
             $update_hist->save();
 
             $update_filer = Archivador::find($request->expedient);
@@ -160,7 +160,7 @@ class HistorialController extends Controller {
             $update_hist = Historial::find($request->kyId);
             $update_hist->thisFlagD = true;
             $update_hist->thisDscD = strtoupper($request->nta_derived);
-            $update_hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+            $update_hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
             $update_hist->thisDocD = $code_doc;
             $update_hist->save();
 
@@ -204,7 +204,7 @@ class HistorialController extends Controller {
 
             $update_hist = Historial::find($request->kyId);
             $update_hist->thisFlagD = true;
-            $update_hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+            $update_hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
             $update_hist->thisDscD = trim($request->nota_derivado);
             $update_hist->save();
 
@@ -245,7 +245,7 @@ class HistorialController extends Controller {
                     $hist = Historial::find($doc[0]->thisId);
                     $hist->thisDepT = $request->ndocEnvioDestino;
                     $hist->thisFlagD = true;
-                    $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+                    $hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
                     $hist->thisDscD = trim($request->ndocEnvioMensaje);
                     $hist->rec_date_at = Carbon::now()->toDateString();
                     $hist->rec_time_at = Carbon::now()->toTimeString();
@@ -266,7 +266,7 @@ class HistorialController extends Controller {
 
                     $histOrigen = Historial::find($docOrigen[0]->thisId);
                     $histOrigen->thisFlagA = true;
-                    $histOrigen->thisDateTimeA = Carbon::now()->format('d/m/Y h:i:s A');
+                    $histOrigen->thisDateTimeA = Carbon::now();//->format('d/m/Y h:i:s A');
                     $histOrigen->thisDscA = trim($request->ndocEnvioMensaje);
                     $histOrigen->rec_date_at = Carbon::now()->toDateString();
                     $histOrigen->rec_time_at = Carbon::now()->toTimeString();
@@ -283,7 +283,7 @@ class HistorialController extends Controller {
                     $hist = Historial::find($doc[0]->thisId);
                     $hist->thisDepT = $request->ndocEnvioDestino;
                     $hist->thisFlagD = true;
-                    $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+                    $hist->thisDateTimeD = Carbon::now(); //->format('d/m/Y h:i:s A');
                     $hist->thisDscD = trim($request->ndocEnvioMensaje);
                     $hist->rec_date_at = Carbon::now()->toDateString();
                     $hist->rec_time_at = Carbon::now()->toTimeString();
@@ -305,7 +305,7 @@ class HistorialController extends Controller {
                     $hist = Historial::find($doc[0]->thisId);
                     $hist->thisDepT = $request->ndocEnvioDestino;
                     $hist->thisFlagD = true;
-                    $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+                    $hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
                     $hist->thisDscD = trim($request->ndocEnvioMensaje);
                     $hist->rec_date_at = Carbon::now()->toDateString();
                     $hist->rec_time_at = Carbon::now()->toTimeString();
@@ -427,7 +427,7 @@ class HistorialController extends Controller {
 
             $FlagR = Historial::find($idExp);
             $FlagR->thisFlagR = true;
-            $FlagR->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+            $FlagR->thisDateTimeR = Carbon::now();//->format('d/m/Y h:i:s A');
             $FlagR->save();
 
         });
@@ -444,7 +444,7 @@ class HistorialController extends Controller {
 
             $flagA = Historial::find($idExp);
             $flagA->thisFlagA = true;
-            $flagA->thisDateTimeA = Carbon::now()->format('d/m/Y h:i:s A');
+            $flagA->thisDateTimeA = Carbon::now();//->format('d/m/Y h:i:s A');
             $flagA->thisDscA = strtoupper($request->dsc_attend);
             $flagA->save();
 

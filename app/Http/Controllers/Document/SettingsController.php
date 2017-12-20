@@ -66,7 +66,7 @@ class SettingsController extends Controller
             $user->tusWorkDep = $request->dependency_user;
             $user->tusTypeUser = $request->profile_user;
             $user->tusRegisterBy = Auth::user()->tusId;
-            $user->tusRegisterAt = Carbon::now()->format('d/m/Y h:i:s A');
+            $user->tusRegisterAt = Carbon::now();//->format('d/m/Y h:i:s A');
             $user->tusState = true;
 
             $user->save();
@@ -382,7 +382,7 @@ class SettingsController extends Controller
                 $persona->tprCelular = $request->nprsCel;
                 $persona->tprCargo = $request->nprsJob;
                 $persona->tprRegisterBy = Auth::user()->tudId;
-                $persona->tprRegisterAt = Carbon::now()->format('d/m/Y h:i:s A');
+                $persona->tprRegisterAt = Carbon::now();//->format('d/m/Y h:i:s A');
                 $persona->save();
             });
 

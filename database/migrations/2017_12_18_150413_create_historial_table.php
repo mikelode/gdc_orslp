@@ -32,7 +32,7 @@ class CreateHistorialTable extends Migration
             $table->boolean('thisFlagA');
             $table->boolean('thisFlagD');
             $table->date('rec_date_at');
-            $table->time('rec_time-at');
+            $table->time('rec_time_at');
             $table->datetime('thisDateTimeR')->nullable();
             $table->datetime('thisDateTimeA')->nullable();
             $table->datetime('thisDateTimeD')->nullable();

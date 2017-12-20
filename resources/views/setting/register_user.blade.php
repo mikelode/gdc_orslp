@@ -11,7 +11,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Perfil de Usuario</label>
                         <div class="col-md-10">
-                            <select class="form-control imput-sm" name="profile_user">
+                            <select class="form-control imput-sm" name="profile_user" id="profUser">
                                 <option value="user1" selected>Operador</option>
                                 <option value="user2">Superior</option>
                                 <option value="admin">Administrador del Sistema</option>
@@ -68,6 +68,11 @@ $(function(){
         e.preventDefault();
         $.post('settings/new_user',$('#frm_reg_user').serialize(), function(response){
             bootbox.alert(response);
+            $('#profUser').val('user1');
+            $('#dni_user_input').val('');
+            $('#name_user_input').val('');
+            $('#patern_user_input').val('');
+            $('#matern_user_input').val('');
         }).fail(function(result, textStatus, xhr){
             var errors = result.responseJSON;
             console.log(errors);

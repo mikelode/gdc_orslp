@@ -10,13 +10,13 @@ class TramAdminTableSeeder extends Seeder {
         $faker = Faker::create();
 
         \DB::table('tramUsuario')->insert(array(
-            'tusId' => '44768268',
-            'tusNickName' => 'ymiguel',
-            'password' => \Hash::make('123456'),
-            'tusNames' => 'Miguel',
-            'tusPaterno' => 'Velasquez',
-            'tusMaterno' => 'Alanoca',
-            'tusWorkDep' => 'DP001',
+            'tusId' => '00000000',
+            'tusNickName' => 'admin',
+            'password' => \Hash::make('supervision'),
+            'tusNames' => 'Usuario',
+            'tusPaterno' => 'Administrador',
+            'tusMaterno' => 'Sistema',
+            'tusWorkDep' => '1',
             'tusTypeUser'=> 'admin',
             'tusRegisterBy'=> 'admin',
             'tusRegisterAt'=> \Carbon\Carbon::now()->format('d/m/Y h:i:s A'),

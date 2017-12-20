@@ -1,4 +1,4 @@
-<table class="table table-condensed tbl-resultado" style="font-size: smaller;">
+<table class="display compact" cellspacing="0" width="100%" id="docEncontrado">
     <thead>
     <tr>
         <th colspan="6">DOCUMENTOS</th>
@@ -27,3 +27,11 @@
         @endforeach
     </tbody>
 </table>
+
+<script>
+    $('#docEncontrado').DataTable({
+        "language":{
+            "url": "plugins/DataTables/Spanish.json"
+        }
+    });
+</script>

@@ -28,15 +28,71 @@
                 <button type="button" onclick="mostrar_documento('anterior','interno')" class="btn btn-success btn-recorrer" style="float: left; margin-left: 10px;"><span class="glyphicon glyphicon-step-backward"></span></button>
                 <button type="button" onclick="mostrar_documento('posterior','interno')" class="btn btn-success btn-recorrer" style="float: left;"><span class="glyphicon glyphicon-step-forward"></span></button>
                 <div class="pull-right">
+                    @if(Auth::user()->can(1))
                     <button type="button" id="btnNuevoDoc" class="btn btn-success" style="width: 100px;" onclick="nuevo_documento('interno')">Nuevo</button>
+                    @endif
+                    @if(Auth::user()->can(2))
                     <button type="button" id="btnEditarDoc" class="btn btn-info" style="width: 100px; display: none;" onclick="editar_documento('interno')">Editar</button>
+                    @endif
+                    @if(Auth::user()->can(3))
                     <button type="button" id="btnEliminarDoc" class="btn btn-danger" style="width: 100px; display: none;" onclick="eliminar_documento('interno')">Eliminar</button>
+                    @endif
                 </div>
             </div>
         </div>
         <div id="mod_register">
             <div class="panel panel-default">
                 <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box box-primary">
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <label class="lbl-frm">¿Refiere a otro documento?</label>
+                                            <select name="ndocProceso" class="form-control input-sm" id="docProceso" disabled="required">
+                                                <option value="na">-- Seleccionar --</option>
+                                                <option value="no">NO</option>
+                                                <option value="si">SI</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div id="con_referencia" style="display: none;">
+                                                <div class="col-md-2">
+                                                    <label class="lbl-frm">¿Que acción representa?</label>
+                                                    <select name="ndocAccion" id="docAccion" class="form-control input-sm">
+                                                        <option value="na" selected>-- Seleccionar --</option>
+                                                        <option value="respuesta">Respuesta</option>
+                                                        <option value="reapertura">Reapertura</option>
+                                                        <option value="atendido-salida">Atendido (salida)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="lbl-frm">Documento de Referencia (Nro de registro):</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-btn">
+                                                            <button class="btn btn-default btn-sm" type="button" id="btnFindDoc" data-toggle="modal" data-target="#modalEncontrarDocumento" data-origen="referencia"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                                        </span>
+                                                        <input type="text" name="ndocRefRegistro" id="docRefRegistro" class="form-control input-sm" readonly>
+                                                        <input type="hidden" name="ndocReferencia" id="docReferencia">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="sin_referencia" style="display: none;">
+                                                <div class="col-md-5">
+                                                    <label class="lbl-frm">Esta a punto de registrar un documento que dará inicio a un nuevo proceso documentario, si desea puede asignarle un nombre a dicho proceso para su fácil ubicación</label>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="lbl-frm">Nombre del Proceso Documentario</label>
+                                                    <input type="text" name="ndocTitulo" id="docTitulo" class="form-control input-sm">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-5">
                             <div class="box box-primary">
@@ -66,8 +122,17 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label class="lbl-frm">Remitente</label>
-                                            <input type="text" name="ndocSender" id="docSender" class="form-control input-sm" placeholder="Nombres y apellidos" readonly required>
+                                            <label class="lbl-frm">Remitente</label><br>
+                                            <div class="input-group">
+                                                <input type="hidden" name="ndocSenderId" id="docSenderId">
+                                                <input type="text" name="ndocSender" id="docSender" class="form-control input-sm" placeholder="Nombres y apellidos" autocomplete="off" readonly required>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default btn-sm" type="button" data-toggle="modal" data-target="#modalAgregarPersona">
+                                                        <i class="glyphicon glyphicon-user"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <div class="row">
@@ -88,7 +153,7 @@
                                     <div class="row">
                                         <div class="col-md-2" style="padding-right: 3px;">
                                             <label class="lbl-frm">N° de Registro</label>
-                                            <input type="number" name="ndocReg" id="docReg" class="form-control input-sm" placeholder="Registro en el cuaderno" readonly required>
+                                            <input type="text" name="ndocReg" id="docReg" class="form-control input-sm" placeholder="Registro en el cuaderno" readonly required>
                                         </div>
                                         <div class="col-md-3" style="padding: 0 3px 0 3px;">
                                             <label class="lbl-frm">Tipo Documento</label>
@@ -139,55 +204,15 @@
                         <div class="col-md-12">
                             <div class="box box-primary">
                                 <div class="box-body">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <label class="lbl-frm">¿Refiere a otro documento?</label>
-                                            <select name="ndocProceso" class="form-control input-sm" id="docProceso" disabled="required">
-                                                <option value="na">-- Seleccionar --</option>
-                                                <option value="no">NO</option>
-                                                <option value="si">SI</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-10">
-                                            <div id="con_referencia" style="display: none;">
-                                                <div class="col-md-2">
-                                                    <label class="lbl-frm">¿Que acción representa?</label>
-                                                    <select name="ndocAccion" id="docAccion" class="form-control input-sm">
-                                                        <option value="na" selected>-- Seleccionar --</option>
-                                                        <option value="respuesta">Respuesta</option>
-                                                        <option value="reapertura">Reapertura</option>
-                                                        <option value="atendido-salida">Atendido (salida)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label class="lbl-frm">Documento de Referencia (Nro de registro):</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-default btn-sm" type="button" id="btnFindDoc" data-toggle="modal" data-target="#modalEncontrarDocumento" data-origen="referencia"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                                                        </span>
-                                                        <input type="text" name="ndocRefRegistro" id="docRefRegistro" class="form-control input-sm" readonly>
-                                                        <input type="hidden" name="ndocReferencia" id="docReferencia">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="sin_referencia" style="display: none;">
-                                                <div class="col-md-5">
-                                                    <label class="lbl-frm">Esta a punto de registrar un documento que dará inicio a un nuevo proceso documentario, si desea puede asignarle un nombre a dicho proceso para su fácil ubicación</label>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="lbl-frm">Nombre del Proceso Documentario</label>
-                                                    <input type="text" name="ndocTitulo" id="docTitulo" class="form-control input-sm">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="row" id="operacionEnviar" style="display: none;">
                                         <div class="col-md-8">
                                             <div class="form-group">
                                                 <label class="control-label">ESTADO DE ENVIO: Documento registrado pero NO enviado</label>
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalOperacionEnviar" onclick="abrir_modal_envio(this)">
+                                                @if(Auth::user()->can(4))
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalOperacionEnviar">
                                                     Enviar Documento
                                                 </button>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -205,6 +230,76 @@
         </div>
     </div>
 </form>
+
+<div class="modal fade" id="modalAgregarPersona" tabindex="-1" role="dialog" aria-labelledby="agregarPersona" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="enviarDocumento">Agregar Nueva Persona</h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmAddPerson" method="post" action="settings/new_prs">
+                    {!! csrf_field() !!}
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="lbl-frm">Documento</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" name="nprsDni" id="prsDni" class="form-control input-sm" placeholder="DNI">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="lbl-frm">Nombres</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" name="nprsName" id="prsName" class="form-control input-sm" placeholder="Nombres">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="lbl-frm">Ap.Paterno</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" name="nprsPaterno" id="prsPaterno" class="form-control input-sm" placeholder="Apellido Paterno">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="lbl-frm">Ap.Materno</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" name="nprsMaterno" id="prsMaterno" class="form-control input-sm" placeholder="Apellido Materno">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="lbl-frm">Celular</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="number" name="nprsCel" id="prsCel" class="form-control input-sm" placeholder="Número de celular">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="lbl-frm">Cargo</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="email" name="nprsJob" id="prsJob" class="form-control input-sm" placeholder="Cargo laboral">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary"  onclick="registrar_persona()">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="modalOperacionEnviar" role="dialog" aria-labelledby="enviarDocumento" aria-hidden="true" style="color:#3c763d">
     <div class="modal-dialog">
@@ -280,37 +375,35 @@
                         <option value="na" selected>-- Elegir --</option>
                         <option value="fecha">Fecha</option>
                         <option value="asunto">Asunto</option>
-                        <option value="codigo">Código</option>
-                        <option value="remitente-persona">Remitente Persona</option>
+                        <option value="registro">Registro</option>
+                        <option value="remitente">Remitente</option>
                     </select>
                 </div>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding-top: 0px;">
                 <form id="frmEncontrarDocFechas" class="frm-busqueda-rapida" method="post" action="doc/dates" style="display: none;">
                     {!! csrf_field() !!}
-                    <div class="form-group">
-                        <!--<label class="control-label" style="display: block;">Fecha de Registro:</label>-->
-                        <input type="hidden" name="nidConsulta" value="fechas">
-                        <input type="hidden" name="nidFuncion" class="devolver_a">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <label class="control-label">Desde:</label>
-                                <div class="input-group date">
-                                    <input type="text" class="form-control" id="desdeFecha" name="startDate">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                </div>
+                    <!--<label class="control-label" style="display: block;">Fecha de Registro:</label>-->
+                    <input type="hidden" name="nidConsulta" value="fechas">
+                    <input type="hidden" name="nidFuncion" class="devolver_a">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="lbl-frm">Desde:</label>
+                            <div class="input-group input-sm date">
+                                <input type="text" class="form-control" id="desdeFecha" name="startDate">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
-                            <div class="col-md-5">
-                                <label class="control-label">Hasta:</label>
-                                <div class="input-group date">
-                                    <input type="text" class="form-control" id="hastaFecha" name="endDate">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="lbl-frm">Hasta:</label>
+                            <div class="input-group input-sm date">
+                                <input type="text" class="form-control" id="hastaFecha" name="endDate">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
-                            <div class="col-md-2">
-                                <label class="control-label">&nbsp;</label>
-                                <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocFechas'))">Encontrar</button>
-                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="lbl-frm">&nbsp;</label>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocFechas'))">Encontrar</button>
                         </div>
                     </div>
                 </form>
@@ -319,10 +412,10 @@
                     <div class="form-group">
                         <input type="hidden" name="nidConsulta" value="asunto">
                         <input type="hidden" name="nidFuncion" class="devolver_a">
-                        <label class="control-label" style="display: block;">Asunto:</label>
+                        <label class="lbl-frm" style="display: block;">Asunto:</label>
                         <div class="row">
                             <div class="col-md-5">
-                                <input type="text" class="form-control" id="descAsunto" name="ndescAsunto">
+                                <input type="text" class="form-control input-sm" id="descAsunto" name="ndescAsunto" autocomplete="off">
                             </div>
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocAsunto'))">Encontrar</button>
@@ -330,18 +423,18 @@
                         </div>
                     </div>
                 </form>
-                <form id="frmEncontrarDocCodigo" class="frm-busqueda-rapida" method="post" action=".lib/modulo1/linkModulo1.php" style="display: none;">
+                <form id="frmEncontrarDocRegistro" class="frm-busqueda-rapida" method="post" action="doc/reg" style="display: none;">
                     {!! csrf_field() !!}
                     <div class="form-group">
                         <input type="hidden" name="nidConsulta" value="codigo">
                         <input type="hidden" name="nidFuncion" class="devolver_a">
-                        <label class="control-label" style="display: block;">Código del Documento:</label>
+                        <label class="lbl-frm" style="display: block;">Registro del Documento:</label>
                         <div class="row">
                             <div class="col-md-5">
-                                <input type="text" class="form-control" id="descCodigo" name="ndescCodigo">
+                                <input type="text" class="form-control input-sm" id="descRegistro" name="ndescRegistro" autocomplete="off">
                             </div>
                             <div class="col-md-2">
-                                <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocCodigo'))">Encontrar</button>
+                                <button type="button" class="btn btn-warning btn-sm" onclick="event.preventDefault(); encontrar_documento('interno',$('#frmEncontrarDocRegistro'))">Encontrar</button>
                             </div>
                         </div>
                     </div>
@@ -351,10 +444,10 @@
                     <div class="form-group">
                         <input type="hidden" name="nidConsulta" value="remitp">
                         <input type="hidden" name="nidFuncion" class="devolver_a">
-                        <label class="control-label" style="display: block;">Remitente:</label>
+                        <label class="lbl-frm" style="display: block;">Remitente:</label>
                         <div class="row">
                             <div class="col-md-5">
-                                <input type="text" class="form-control" id="descRemitP" name="ndescRemitP">
+                                <input type="text" class="form-control input-sm" id="descRemitP" name="ndescRemitP" autocomplete="off">
                             </div>
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocRemitP'))">Encontrar</button>
@@ -362,7 +455,7 @@
                         </div>
                     </div>
                 </form>
-                <div id="tbl-resultado-encontrar">
+                <div id="tbl-resultado-encontrar" style="font-size: smaller;">
 
                 </div>
             </div>
@@ -377,6 +470,21 @@
 
 <script>
 $(document).ready(function(){
+
+    $('#docSender').typeahead({
+        onSelect: function(item){
+            $('#docSenderId').val(item.value);
+        },
+        ajax:{
+            url: 'settings/list_person',
+            dataType: 'json',
+            preDispatch: function (query) {
+                return {
+                    search: query
+                }
+            }
+        }
+    });
 
     $('#modalEncontrarDocumento').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget);
@@ -422,57 +530,6 @@ $(document).ready(function(){
     $('#docProy').select2({
         width: '100%'
     });
-/*
-    $('#frm_reg_doc').submit(function(e){
-
-        e.preventDefault();
-
-        var form = $('#frm_reg_doc')[0];
-        var formdata = new FormData(form);
-
-        $.ajax({
-            type: 'post',
-            url: 'doc/register',
-            data: formdata,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response){
-                bootbox.alert(response);
-                change_menu_to('doc/outbox');
-            },
-            xhr: function(){
-                var myXhr = $.ajaxSettings.xhr();
-                if(myXhr.upload){
-                    myXhr.upload.addEventListener('progress', function(ev){
-                        if(ev.lengthComputable){
-                            $('progress').attr({
-                                value: ev.loaded,
-                                max: ev.total,
-                            });
-                        }
-                    }, false);
-                }
-                return myXhr;
-            },
-        });
-
-        /*
-
-        e.preventDefault();
-
-
-        $.post('doc/register',$('#frm_reg_doc').serialize(), function(response){
-            bootbox.alert(response);
-            change_menu_to('doc/outbox');
-        }).fail(function(result, textStatus, xhr){
-            var errors = result.responseJSON;
-            console.log(errors);
-            bootbox.alert({
-                message: 'Error:<br>Revise los campos ingresados.<br>Código: ' + xhr
-            });
-        });*/
-    /*});*/
 
     $('input#dni_sender_input').keypress(function(evt){
 
@@ -497,6 +554,30 @@ $(document).ready(function(){
 
         }
 
+    });
+
+    $('input#descRegistro').keypress(function(evt) {
+        if(evt.which == 13)
+        {
+            evt.preventDefault();
+            encontrar_documento('interno',$('#frmEncontrarDocRegistro'));
+        }
+    });
+
+    $('input#descAsunto').keypress(function(evt) {
+        if(evt.which == 13)
+        {
+            evt.preventDefault();
+            encontrar_documento('interno',$('#frmEncontrarDocAsunto'));
+        }
+    });
+
+    $('input#descRemitP').keypress(function(evt) {
+        if(evt.which == 13)
+        {
+            evt.preventDefault();
+            encontrar_documento('interno',$('#frmEncontrarDocRemitP'));
+        }
     });
 
     $('#docProceso').change(function(event) {

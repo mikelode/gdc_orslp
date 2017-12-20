@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlsrv'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +59,7 @@ return [
             'username'  => env('DB_USERNAME', 'forge'),
             'password'  => env('DB_PASSWORD', ''),
             'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
+            'collation' => 'utf8_spanish_ci',
             'prefix'    => '',
             'strict'    => false,
         ],

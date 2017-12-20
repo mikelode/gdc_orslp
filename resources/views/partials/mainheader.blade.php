@@ -27,14 +27,12 @@
                     <!-- Menu toggle button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="alert-box">
                         <i class="fa fa-envelope-o"></i>
-                        @if($notifications != 0)
-                            <span class="label label-success">
-                                <div class="alertMessages">{{ $notifications }}</div>
-                            </span>
-                        @endif
+                        <span class="label label-success">
+                            <div class="alertMessages">{{ $vigentes + $xvencer + $vencidos }}</div>
+                        </span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header"><b> Tiene @if($notifications != 0) <div class="alertMessages" style="display: inline;">{{ $notifications }}</div>@else 0 @endif documentos pendientes</b>
+                        <li class="header"><b> Tiene <div class="alertMessages" style="display: inline;">{{ $vigentes + $xvencer + $vencidos }}</div> documentos pendientes</b>
                         </li>
                         <li>
                             <!-- inner menu: contains the messages -->
@@ -45,12 +43,10 @@
                                             <!-- User Image -->
                                             <img src="{{ asset('img/gore3.jpg') }}" class="img-circle" alt="MDV"/>
                                         </div>
-                                        <!-- Message title and timestamp -->
-                                        <h4>
-                                            Atención
-                                        </h4>
                                         <!-- The message -->
-                                        <p>No olvide atender o derivar los <br>documentos</p>
+                                        <p><button class="btn btn-danger btn-sm"></button>&nbsp Vencidos {{ $vencidos }}</p>
+                                        <p><button class="btn btn-warning btn-sm"></button>&nbsp Por Vencer {{ $xvencer }}</p>
+                                        <p><button class="btn btn-success btn-sm"></button>&nbsp Vigentes {{ $vigentes }}</p>
                                     </a>
                                 </li><!-- end message -->
                             </ul><!-- /.menu -->

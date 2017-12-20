@@ -8,7 +8,7 @@
 
 namespace aidocs\Http\Controllers\Document;
 
-
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -230,29 +230,113 @@ class HistorialController extends Controller {
 
     public function envioHistorial(Request $request)
     {
-        DB::transaction(function($request) use ($request){
+        try {
+            $exception = DB::transaction(function($request) use ($request){
 
-            $doc = Document::select('*')
-                    ->join('tramHistorial','tdocId','=','thisDoc')
-                    ->where('tdocId',$request->ndocEnvioExp)
-                    ->where('thisFlagR',true)
-                    ->get(); //ndocEnvioExp recibe el codigo del documento id
+                $doc = Document::select('*')
+                        ->join('tramHistorial','tdocId','=','thisDoc')
+                        ->where('tdocId',$request->ndocEnvioExp)
+                        ->where('thisFlagR',true)
+                        ->get(); //ndocEnvioExp recibe el codigo del documento id que se va registrar su envio
 
 
-            $hist = Historial::find($doc[0]->thisId);
-            $hist->thisDepT = $request->ndocEnvioDestino;
-            $hist->thisFlagD = true;
-            $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
-            $hist->thisDscD = trim($request->ndocEnvioMensaje);
-            $hist->rec_date_at = Carbon::now()->toDateString();
-            $hist->rec_time_at = Carbon::now()->toTimeString();
-            $hist->save();
+                if($doc[0]->tdocAccion == 'atendido-salida'){ 
 
-            $update_filer = Archivador::find($doc[0]->tdocExp);
-            $update_filer->tarcStatus = 'En Proceso';
-            $update_filer->updated_at = Carbon::now()->toDateString();
-            $update_filer->save();
-        });
+                    $hist = Historial::find($doc[0]->thisId);
+                    $hist->thisDepT = $request->ndocEnvioDestino;
+                    $hist->thisFlagD = true;
+                    $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+                    $hist->thisDscD = trim($request->ndocEnvioMensaje);
+                    $hist->rec_date_at = Carbon::now()->toDateString();
+                    $hist->rec_time_at = Carbon::now()->toTimeString();
+                    $hist->save();
+
+                    $documento = Document::find($doc[0]->tdocId);
+                    $documento->tdocStatus = 'derivado';
+                    $documento->save();
+                    
+                    /* registrara el registro del historial activando el flag de atendido del documento original 
+                     se actualizara el estado de Atendido en el registro historial del documento origen
+                    */
+                    $docOrigen = Document::select('tdocId','thisId','tdocExp')
+                                    ->join('tramHistorial','tdocId','=','thisDoc')
+                                    ->where('tdocExp',$doc[0]->tdocExp)
+                                    ->where('tdocRef',null)
+                                    ->get();
+
+                    $histOrigen = Historial::find($docOrigen[0]->thisId);
+                    $histOrigen->thisFlagA = true;
+                    $histOrigen->thisDateTimeA = Carbon::now()->format('d/m/Y h:i:s A');
+                    $histOrigen->thisDscA = trim($request->ndocEnvioMensaje);
+                    $histOrigen->rec_date_at = Carbon::now()->toDateString();
+                    $histOrigen->rec_time_at = Carbon::now()->toTimeString();
+                    $histOrigen->save();
+
+                    /* siendo asi, actualizamos el status del archivador o expediente al que pertenece el documento pues ya 
+                    será atendido */
+                    $exp = Archivador::find($docOrigen[0]->tdocExp);
+                    $exp->tarcStatus = 'atendido';
+                    $exp->updated_at = Carbon::now();
+                    $exp->save();
+                }
+                else if($doc[0]->tdocAccion == 'reapertura'){
+                    $hist = Historial::find($doc[0]->thisId);
+                    $hist->thisDepT = $request->ndocEnvioDestino;
+                    $hist->thisFlagD = true;
+                    $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+                    $hist->thisDscD = trim($request->ndocEnvioMensaje);
+                    $hist->rec_date_at = Carbon::now()->toDateString();
+                    $hist->rec_time_at = Carbon::now()->toTimeString();
+                    $hist->save();
+
+                    $update_filer = Archivador::find($doc[0]->tdocExp);
+                    $update_filer->tarcStatus = 'reaperturado';
+                    $update_filer->updated_at = Carbon::now()->toDateString();
+                    /* Se debe cambiar, actualizar la fecha de presentacion pues se genera un nuevo plazo */
+                    $update_filer->tarcDatePres = Carbon::now();
+                    $update_filer->save();
+
+                    $documento = Document::find($doc[0]->tdocId);
+                    $documento->tdocStatus = 'derivado';
+                    $documento->save();
+                }
+                else{
+
+                    $hist = Historial::find($doc[0]->thisId);
+                    $hist->thisDepT = $request->ndocEnvioDestino;
+                    $hist->thisFlagD = true;
+                    $hist->thisDateTimeD = Carbon::now()->format('d/m/Y h:i:s A');
+                    $hist->thisDscD = trim($request->ndocEnvioMensaje);
+                    $hist->rec_date_at = Carbon::now()->toDateString();
+                    $hist->rec_time_at = Carbon::now()->toTimeString();
+                    $hist->save();
+
+                    $update_filer = Archivador::find($doc[0]->tdocExp);
+                    $update_filer->tarcStatus = 'procesando';
+                    $update_filer->updated_at = Carbon::now()->toDateString();
+                    $update_filer->save();
+
+                    $documento = Document::find($doc[0]->tdocId);
+                    $documento->tdocStatus = 'derivado';
+                    $documento->save();
+                }
+            });
+
+            if(is_null($exception)){
+                $msg = 'Envío del documento registrado con éxito';
+                $idMsg = 200;
+            }
+            else{
+                $msg = $exception;
+                $idMsg = 500;
+            }
+        } catch (Exception $e) {
+            $msg = 'Error encontrado:' . $e . "\n";
+            $idMsg = 500;
+        }
+
+        return response()->json(compact('msg','idMsg'));
+        
     }
 
     public function getDetailDerivation($histId, Request $request)
@@ -267,7 +351,12 @@ class HistorialController extends Controller {
             $tipodoc = TipoDocumento::find($withdoc->tdocType);
 
         $arcdoc = Archivador::where('tarcExp',$historial->thisDocD)->get();
-        $destinos = Historial::select(DB::raw('thisId,thisDepT,dbo.fnTramGetDscFromId(\'TLogGrlDep\',thisDepT) as thisDestino,thisIdSourceD'))->where('thisIdSourceD',$histId)->get();
+        /* SQL Version
+        $destinos = Historial::select(DB::raw('thisId,thisDepT,dbo.fnTramGetDscFromId(\'TLogGrlDep\',thisDepT) as thisDestino,thisIdSourceD'))->where('thisIdSourceD',$histId)->get();*/
+
+        /* MySQL Version */
+        $destinos = Historial::select(DB::raw('thisId,thisDepT,fnTramGetDscFromId(\'tramDependencia\',thisDepT) as thisDestino,thisIdSourceD'))->where('thisIdSourceD',$histId)->get();
+
 
         return compact('historial','withdoc','tipodoc','arcdoc','destinos');
     }
@@ -291,7 +380,21 @@ class HistorialController extends Controller {
             ->where('tarcYear',$request->period)
             ->orderby('tdocId','DESC')
             ->get();*/
-        $inbox = Document::select(DB::raw('*,DATEDIFF(day,tdocDate,GETDATE()) as plazo'))
+
+            // se elige tarcdatepres pues guarda la fecha de registro del documento origen y de reapertura para actualizar su vigencia
+
+        /* SQL Version
+        $inbox = Document::select(DB::raw('*,DATEDIFF(day,tarcDatePres,GETDATE()) as plazo'))
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->join('tramProyecto','tpyId','=','tdocProject')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->where('tarcYear',$request->period)
+                    ->where('tdocRef',null)
+                    ->orderby('tdocId','DESC')
+                    ->get();*/
+
+        /* MySQL Version */
+        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
@@ -397,12 +500,22 @@ class HistorialController extends Controller {
 
     public function getNotifications(Request $request)
     {
+        /* SQL Version
         $notifications = Historial::select('*')
             ->where('thisDepT',$request->dep)
             ->where('thisFlagA',false)
             ->where('thisFlagD',false)
             ->whereRaw('year(tdocDate) = year(getdate())')
+            ->count();*/
+
+        /* MySQL Version*/
+        $notifications = Historial::select('*')
+            ->where('thisDepT',$request->dep)
+            ->where('thisFlagA',false)
+            ->where('thisFlagD',false)
+            ->whereRaw('year(tdocDate) = year(now())')
             ->count();
+
 
         echo $notifications;
     }

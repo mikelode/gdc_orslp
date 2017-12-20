@@ -5,6 +5,8 @@ namespace aidocs\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use aidocs\Models\Historial;
+use aidocs\Models\Document;
+use aidocs\Models\Archivador;
 
 class HomeController extends Controller {
 
@@ -15,15 +17,41 @@ class HomeController extends Controller {
 
     public function index()
     {
-        $notifications = Historial::select('*')
-                    ->join('tramDocumento','tdocId','=','thisDoc')
-                    ->where('thisDepT',Auth::user()->tusWorkDep)
-                    ->where('thisFlagA',false)
-                    ->where('thisFlagD',false)
-                    ->whereRaw('year(tdocDate) = year(getdate())')
-                    ->count();
+        /* SQL Version 
+        $vigentes = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(getdate())')
+                        ->whereRaw('DATEDIFF(day, tarcDatePres,GETDATE()) <= 4')
+                        ->count();
 
-        return view('tramite/home', compact('notifications'));
+        $xvencer = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(getdate())')
+                        ->whereRaw('DATEDIFF(day, tarcDatePres,GETDATE()) BETWEEN 5 AND 7')
+                        ->count();
+
+        $vencidos = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(getdate())')
+                        ->whereRaw('DATEDIFF(day, tarcDatePres,GETDATE()) > 7')
+                        ->count();
+        */
+
+        /* MYSQL Version */
+
+        $vigentes = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('DATEDIFF(tarcDatePres,now()) <= 4')
+                        ->count();
+
+        $xvencer = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('DATEDIFF(tarcDatePres,now()) BETWEEN 5 AND 7')
+                        ->count();
+
+        $vencidos = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('DATEDIFF(tarcDatePres,now()) > 7')
+                        ->count();
+
+        return view('tramite/home', compact('vigentes','xvencer','vencidos'));
     }
 
     public function index_section(Request $request)

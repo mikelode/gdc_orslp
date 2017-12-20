@@ -32,8 +32,8 @@
     <link href="{{ asset('/plugins/DataTables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
     <!-- Bootstrap datetimepicker -->
     <link href="{{ asset('/plugins/Bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}" type="text/css">
-
-    
+    <!-- Bootstrap X-Editable -->
+    <link href="{{ asset('/plugins/bootstrap3-editable/bootstrap3-editable/css/bootstrap-editable.css') }}" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

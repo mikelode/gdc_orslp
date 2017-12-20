@@ -11,6 +11,7 @@
                     <h3 class="panel-title">Buscar Documento</h3>
                 </div>
                 <div class="panel-body">
+                    @if(Auth::user()->can(6))
                     <div class="row">
                         <div class="col-md-4">
                             <div class="col-md-2"><label class="lbl-frm">Proyecto:</label></div>
@@ -29,8 +30,15 @@
                                 <input type="tex" id="ldocReg" class="form-control input-sm">
                             </div>
                         </div>
-                        <div class="col-md-6"></div>
+                        <div class="col-md-2">
+                            <div class="col-md-4"><label class="lbl-frm">Asunto:</label></div>
+                            <div class="col-md-8">
+                                <input type="tex" id="ldocAsu" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-4"></div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>            
@@ -60,9 +68,10 @@
                                     <th>Reg.</th>
                                     <th>Doc.</th>
                                     <th>Remitente</th>
+                                    <th>Asunto</th>
                                     <th>Fecha</th>
                                     <th>Estado</th>
-                                    <th>Plazo</th>
+                                    <th>D.Trans.</th>
                                     
                                 </tr>
                             </thead>
@@ -76,6 +85,7 @@
                                     </td>
                                     <td>{{ $doc->ttypDesc.' - '.$doc->tdocNumber }}</td>
                                     <td>{{ $doc->tdocSender }}</td>
+                                    <td>{{ $doc->tdocSubject }}</td>
                                     <td>{{ $doc->tdocDate }}</td>
                                     <td>
                                         @if($doc->tarcStatus != 'atendido')
@@ -85,7 +95,7 @@
                                             @if($doc->plazo > 4 && $doc->plazo <= 7)
                                                 <button type="button" class="btn btn-warning btn-xs">{{ $doc->tarcStatus }}</button>
                                             @endif
-                                            @if($doc->plazo >= 7)
+                                            @if($doc->plazo > 7)
                                                 <button type="button" class="btn btn-danger btn-xs">{{ $doc->tarcStatus }}</button>
                                             @endif
                                         @else
@@ -503,6 +513,25 @@ $(document).ready(function(){
             }
 
             $.get('doc/filtrar',{'key': reg, 'period': periodo, 'campo': 'registro'}, function(data) {
+                $('#tblBandeja').empty();
+                $('#tblBandeja').html(data);
+            });
+
+        }
+    });
+
+    $('#ldocAsu').keypress(function(event) {
+        if(event.which == 13){
+            event.preventDefault();
+            var asu = $(this).val();
+            var periodo = $('#period_sys').val();
+
+            if($.trim(asu) == ''){
+                change_menu_to('doc/menu');
+                return;
+            }
+
+            $.get('doc/filtrar',{'key': asu, 'period': periodo, 'campo': 'asunto'}, function(data) {
                 $('#tblBandeja').empty();
                 $('#tblBandeja').html(data);
             });

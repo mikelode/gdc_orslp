@@ -57,7 +57,7 @@ Route::get('test', function(){
  * */
 
 Route::get('doc/register', [
-    'middleware' => ['acl:1'],
+    'middleware' => ['acl:5'],
     'uses' => 'Document\DocumentController@index'
 ]);
 Route::post('doc/register', 'Document\DocumentController@storeDocument');
@@ -71,7 +71,7 @@ Route::get('doc/expediente','Document\DocumentController@getExpediente');
  * */
 
 Route::get('doc/menu',[
-    'middleware' => ['acl:2'],
+    'middleware' => ['acl:7'],
     'uses' => 'Document\HistorialController@getHistorialDoc'
 ]);
 
@@ -100,7 +100,7 @@ Route::get('derivation/detail/{id}','Document\HistorialController@getDetailDeriv
  * */
 
 Route::get('doc/outbox',[
-    'middleware' => ['acl:3'],
+    //'middleware' => ['acl:3'],
     'uses' => 'Document\ArcparticularController@getDocumentsFromPrivateFiler'
 ]);
 
@@ -113,11 +113,21 @@ Route::post('hist/doc/{id}',[
 ]);
 
 /*
+ * REPORTES
+ * */
+
+Route::get('doc/reports',[
+    'middleware' => ['acl:9'],
+    'uses' => 'Document\DocumentController@consultDocument'
+]);
+
+
+/*
  * RUTAS PARA LA CONSULTA Y SEGUIMIENTO DE DOCUMENTOS
  * */
 
 Route::get('doc/consult',[
-    'middleware' => ['acl:4'],
+    //'middleware' => ['acl:4'],
     'uses' => 'Document\DocumentController@consultDocument'
 ]);
 
@@ -145,6 +155,10 @@ Route::post('doc/dates',[
     'as' => 'findDates', 'uses' => 'Document\ArchivadorController@findByDates'
 ]);
 
+Route::post('doc/reg',[
+    'as' => 'findRegistro', 'uses' => 'Document\ArchivadorController@findByRegistro'
+]);
+
 Route::post('doc/sender',[
     'as' => 'findSender', 'uses' => 'Document\ArchivadorController@findBySender'
 ]);
@@ -168,7 +182,7 @@ Route::post('notifications/{dep}',[
  * */
 
 Route::get('settings',[
-    'middleware' => ['acl:6'],
+    'middleware' => ['acl:12'],
     'uses' => 'Document\SettingsController@index'
 ]);
 Route::get('settings/new_user', 'Document\SettingsController@getRegisterUser');
@@ -179,10 +193,14 @@ Route::get('settings/updt_state', 'Document\SettingsController@postUpdateStateUs
 Route::get('settings/updt_pass', 'Document\SettingsController@getUpdatePasswordUser');
 Route::post('settings/updt_pass', 'Document\SettingsController@postUpdatePasswordUser');
 Route::get('settings/reset_pass', 'Document\SettingsController@getResetPasswordUser');
-Route::get('settings/list_asoc','Document\SettingsController@getListAsoc');
-Route::post('settings/new_asoc','Document\SettingsController@postRegisterAsociacion');
+Route::get('settings/list_proy','Document\SettingsController@getListProy');
+Route::post('settings/new_proy','Document\SettingsController@postRegisterProyecto');
+Route::post('settings/updt_proy','Document\SettingsController@postUpdateProyecto');
 Route::get('settings/new_afil','Document\SettingsController@getFormularioAfiliado');
 Route::post('settings/new_afil','Document\SettingsController@postRegisterAfiliado');
+Route::post('settings/new_prs','Document\SettingsController@postRegisterPersona');
+Route::get('settings/list_person', 'Document\SettingsController@getListPersonas');
+Route::post('settings/updt_profile','Document\SettingsController@postUpdateAccess');
 
 /*
  *  TIPO DE DOCUMENTO

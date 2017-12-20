@@ -12,15 +12,21 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email')->unique();
+        Schema::create('tramUsuario', function (Blueprint $table) {
+
+            $table->engine = 'InnoDB';
+
+            $table->string('tusId', 8)->primary();
+            $table->string('tusNickName', 20);
             $table->string('password', 60);
-            $table->enum('type',['admin','user']);
-            $table->rememberToken();
-            $table->timestamps();
+            $table->string('tusNames',100);
+            $table->string('tusPaterno',100);
+            $table->string('tusMaterno',100);
+            $table->string('tusWorkDep',12);
+            $table->string('tusTypeUser',50);
+            $table->string('tusRegisterBy',50)->nullable();
+            $table->dateTime('tusRegisterAt')->nullable();
+            $table->boolean('tusState')->nullable();
         });
     }
 
@@ -31,6 +37,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('users');
+        Schema::drop('tramUsuario');
     }
 }

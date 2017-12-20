@@ -12,6 +12,8 @@
 <script src="{{ asset('/js/bootstrap-tree.js') }}" type="text/javascript"></script>
 <!-- Bootbox Alert -->
 <script src="{{ asset('/js/bootbox.min.js') }}" type="text/javascript"></script>
+<!-- JQuery UI -->
+<script src="{{ asset('/plugins/jquery-ui/jquery-ui.min.js') }}" type="text/javascript"></script>
 <!-- DataTables -->
 <!--<script src="{{ asset('/plugins/DataTables/datatables.min.js') }}" type="text/javascript"></script>-->
 <script src="{{ asset('/plugins/DataTables/jquery.dataTables.min.js') }}" type="text/javascript"></script>
@@ -20,6 +22,10 @@
 <script src="{{ asset('/plugins/Moment/locale/es.js') }}" type="text/javascript"></script>
 <!-- Bootstrap DateTimePicker -->
 <script src="{{ asset('/plugins/Bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}" type="text/javascript"></script>
+<!-- Typehead Bootstrap -->
+<script src="{{  asset('/plugins/bootstrap-ajax-typeahead/js/bootstrap-typeahead.min.js') }}" type="text/javascript"></script>
+<!-- Bootstrap X-Editable -->
+<script src="{{  asset('/plugins/bootstrap3-editable/bootstrap3-editable/js/bootstrap-editable.min.js') }}" type="text/javascript"></script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
       Both of these plugins are recommended to enhance the

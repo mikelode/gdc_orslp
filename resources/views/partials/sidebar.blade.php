@@ -33,29 +33,18 @@
             <!-- Optionally, you can add icons to the links -->
             <li class="active treeview"><a href="javascript:void(0)" onclick="change_menu_to('homei')"><i class='fa fa-home'></i> <span>Inicio</span></a></li>
 
-            @if(Auth::user()->can(1))
-            <li><a href="javascript:void(0)" onclick="change_menu_register('doc/register')"><i class='glyphicon glyphicon-edit'></i> <span>Gestión de Documentos</span></a></li>
+            @if(Auth::user()->can(5))
+            <li><a href="javascript:void(0)" onclick="change_menu_register('doc/register')"><i class='glyphicon glyphicon-book'></i> <span>Gestión de Documentos</span></a></li>
             @endif
-            @if(Auth::user()->can(8))
-            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/edit')"><i class='glyphicon glyphicon-list-alt'></i> <span>Modificar Documento</span></a></li>
-            @endif
-            @if(Auth::user()->can(2))
+            @if(Auth::user()->can(7))
             <li><a href="javascript:void(0)" onclick="change_menu_to('doc/menu')"><i class='glyphicon glyphicon-inbox'></i> <span>Bandeja de Documentos</span></a></li>
             @endif
-            @if(Auth::user()->can(3))
-            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/outbox')"><i class='glyphicon glyphicon-send'></i> <span>Bandeja de Salida</span></a></li>
+            @if(Auth::user()->can(9))
+            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/consult')"><i class='glyphicon glyphicon-stats'></i> <span>Reportes</span></a></li>
             @endif
-            @if(Auth::user()->can(4))
-            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/consult')"><i class='glyphicon glyphicon-search'></i> <span>Consulta y Seguimiento</span></a></li>
+            @if(Auth::user()->can(12))
+            <li><a href="javascript:void(0)" onclick="change_menu_to('settings')"><i class='glyphicon glyphicon-cog'></i> <span>Configuración</span></a></li>
             @endif
-            <!--
-            <li class="treeview">
-                <a href="#"><i class='fa fa-link'></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
-                <ul class="treeview-menu">
-                    <li><a href="#">Link in level 2</a></li>
-                    <li><a href="#">Link in level 2</a></li>
-                </ul>
-            </li> -->
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

@@ -60,3 +60,18 @@
     color: #d6d6d6;
     text-shadow: 0 1px 0 white;
 }
+
+/* Autocomplete LOAD */
+.ui-autocomplete-loading {
+  background: url('../img/indicator.gif') no-repeat center center;
+}
+
+.ui-autocomplete
+{
+    position:absolute;
+    cursor:default;
+    z-index:10001 !important
+}
+.ui-front {
+    z-index: 1500 !important;
+}

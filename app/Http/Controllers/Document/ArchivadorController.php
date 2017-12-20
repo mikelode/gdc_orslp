@@ -87,21 +87,35 @@ class ArchivadorController extends Controller {
 
     public function findBySubject(Request $request)
     {
-        $subject = '%'.trim($request->subjectDoc).'%';
-        $docs = DB::select("SELECT  a.tarcExp,d.tdocId,td.ttypDesc,d.tdocDni,a.tarcDatePres,
-                            a.tarcStatus,d.tdocSubject
-                            FROM tramDocumento d
-                            INNER JOIN tramTipoDocumento td ON td.ttypDoc = d.tdocType
-                            INNER JOIN tramArchivador a ON a.tarcDoc = d.tdocId
-                            WHERE d.tdocSubject LIKE ?
-                            ORDER BY a.tarcDatePres DESC;",[$subject]);
+        $subject = '%'.trim($request->ndescAsunto).'%';
+        $funcion = $request->nidFuncion;
 
-        if($request->ajax())
-        {
-            return $docs;
+        $docs = Document::select('*')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->where('tdocSubject','like',$subject)
+                    ->whereRaw('year(tarcDatePres) = '.trim($request->period))
+                    ->orderBy('tarcDatePres','DESC')
+                    ->get();
+
+        if($docs){
+            if($docs->count() == 0){
+                $resultado = 'No se ha encontrado ningún registro';
+            }
+            else{
+                $view = view('tramite.tabla_resultado_documentos',compact('docs','funcion'));
+                $resultado = $view->render();
+            }
+            $msg = "Recuperado correctamente";
+            $Respuesta = 200;
+        }
+        else{
+            $resultado = '';
+            $msg = 'Error: no se pudo recuperar la información solicitada';
+            $Respuesta = 500;
         }
 
-        return false;
+        return response()->json(compact('Respuesta','msg','resultado'));
 
     }
 
@@ -110,11 +124,11 @@ class ArchivadorController extends Controller {
         $startDate = $request->startDate;
         $endDate = $request->endDate;
 
-        $funcion = $request->nidFuncion;
+        $funcion = $request->nidFuncion; // referencia o busqueda
 
         $docs = Document::select('*')
             ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-            //->join('tramArchivador','tarcDoc','=','tdocId')
+            ->join('tramArchivador','tarcId','=','tdocExp')
             ->wherebetween('tdocDate',[$startDate,$endDate])
             ->get();
 
@@ -138,41 +152,70 @@ class ArchivadorController extends Controller {
         return response()->json(array('Respuesta' => $Respuesta, 'msg' => $msg, 'resultado' => $resultado));
     }
 
+    public function findByRegistro(Request $request)
+    {
+        $registro = trim($request->ndescRegistro);
+        $funcion = $request->nidFuncion;
+
+        $docs = Document::select('*')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->where('tdocRegistro',$registro)
+                    ->whereRaw('year(tarcDatePres) = '.trim($request->period))
+                    ->orderBy('tarcDatePres','DESC')
+                    ->get();
+
+        if($docs){
+            if($docs->count() == 0){
+                $resultado = 'No se ha encontrado ningún registro';
+            }
+            else{
+                $view = view('tramite.tabla_resultado_documentos',compact('docs','funcion'));
+                $resultado = $view->render();
+            }
+            $msg = "Recuperado correctamente";
+            $Respuesta = 200;
+        }
+        else{
+            $resultado = '';
+            $msg = 'Error: no se pudo recuperar la información solicitada';
+            $Respuesta = 500;
+        }
+
+        return response()->json(compact('Respuesta','msg','resultado'));
+    }
+
     public function findBySender(Request $request)
     {
-        $dniSender = trim($request->dniSender);
-        $nameSender = trim($request->nameSender);
+        $nameSender = trim($request->ndescRemitP);
+        $funcion = $request->nidFuncion;
 
-        if($dniSender != '')
-        {
-            $docs = Document::select('*')
-                ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                ->join('tramArchivador','tarcDoc','=','tdocId')
-                ->where('tdocDni',$dniSender)
-                ->get();
-        }
-        else if($nameSender != '')
-        {
-            $docs = Document::select('*')
-                ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                ->join('tramArchivador','tarcDoc','=','tdocId')
-                ->where(DB::raw("CONCAT(tdocSenderName,' ',tdocSenderPaterno,' ',tdocSenderMaterno)"),'like','%'.$nameSender.'%')
-                ->get();
-        }
-        else
-        {
-            $docs = [];
-        }
+        $docs = Document::select('*')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->where('tdocSender','like','%'.$nameSender.'%')
+                    ->whereRaw('year(tarcDatePres) = '.trim($request->period))
+                    ->orderBy('tarcDatePres','DESC')
+                    ->get();
 
-        if($request->ajax())
-        {
-            if(count($docs) != 0)
-            {
-                return $docs;
+        if($docs){
+            if($docs->count() == 0){
+                $resultado = 'No se ha encontrado ningún registro';
             }
+            else{
+                $view = view('tramite.tabla_resultado_documentos',compact('docs','funcion'));
+                $resultado = $view->render();
+            }
+            $msg = "Recuperado correctamente";
+            $Respuesta = 200;
+        }
+        else{
+            $resultado = '';
+            $msg = 'Error: no se pudo recuperar la información solicitada';
+            $Respuesta = 500;
         }
 
-        return false;
+        return response()->json(compact('Respuesta','msg','resultado'));
     }
 
     public function findByAttaches(Request $request)
@@ -183,7 +226,9 @@ class ArchivadorController extends Controller {
             ->join('tramTipoDocumento','ttypDoc','=','tdocType')
             ->join('tramDocAnexos','tdocId','=','tdaDocId')
             ->join('tramArchivador','tarcDoc','=','tdocId')
-            ->where(DB::raw("CONCAT(tdaNumAnex,' ',tdaDsc)"),'LIKE','%'.$attach.'%')
+            // version SQL ->where(DB::raw("CONCAT(tdaNumAnex,' ',tdaDsc)"),'LIKE','%'.$attach.'%')
+            // version Mysql
+            ->where(DB::raw("CONCAT_WS(' ',tdaNumAnex,tdaDsc)"),'LIKE','%'.$attach.'%')
             ->get();
 
         if($request->ajax())

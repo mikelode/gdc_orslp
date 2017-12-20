@@ -1,14 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: HP i5
- * Date: 11/07/15
- * Time: 16:41
- */
 
 namespace aidocs\Http\Controllers\Document;
 
-
+use Exception;
 use aidocs\Models\Proyecto;
 use Carbon\Carbon;
 use ErrorException;
@@ -57,7 +51,7 @@ class DocumentController extends Controller {
 			//return $sections['main-content'];
 			return response()->json(array('view' => $sections['main-content'],'lastdoc' => $document));
 		}
-		return $view;
+		//return $view;
 	}
 
 	public function getManagerDocument(Request $request)
@@ -102,226 +96,247 @@ class DocumentController extends Controller {
 
 	public function storeDocument(StoreDocumentRequest $request)
 	{
-		DB::transaction(function($request) use ($request){
+		try{
+			$exception = DB::transaction(function($request) use ($request){
 
-			if($request->ndocProceso == "no"){
-				$exp = new Archivador();
-				$correlative_exp = Archivador::all()->count() + 1;
-				//$code_exp = $this->makeUniqueCode('EXP',Carbon::now()->year,$correlative_exp);
-				$pref = 'EXP';
-				$code_exp = '';
+				if($request->ndocProceso == "no"){
+					$exp = new Archivador();
+					$correlative_exp = Archivador::all()->count() + 1;
+					//$code_exp = $this->makeUniqueCode('EXP',Carbon::now()->year,$correlative_exp);
+					$pref = 'EXP';
+					$code_exp = '';
+					/* SQL Version
+					$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
+					$stmt->bindParam(1,$pref);
+					$stmt->bindParam(2,$code_exp,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
+					$stmt->execute();
+					unset($stmt);*/
+
+					/* MySQL Version */
+					$stmt = DB::select('call generar_codigo(?,?)', array($pref, $code_exp));
+					$code_exp = $stmt[0]->codigo;
+					
+					$exp->tarcExp = $code_exp;
+					$exp->tarcDatepres = Carbon::now(); // Fecha de creacion del archivador
+					$exp->tarcStatus = 'aperturado';
+					$exp->created_at = Carbon::now();
+					$exp->created_time_at = Carbon::now()->toTimeString();
+					$exp->updated_at = Carbon::now();
+					$exp->tarcSource = 'int';
+					$exp->tarcYear = Carbon::now()->year;
+					$exp->tarcAsoc = $request->ndocProy;
+					$exp->tarcTitulo = $request->ndocTitulo;
+
+					$exp->save();
+
+					$expId = $exp->tarcId;
+				}
+				else if($request->ndocProceso == "si"){
+					$docId = $request->ndocReferencia;
+					$docRef = Document::find($docId); // expediente al que pertenece el documento registrado con referencia
+					$expId = $docRef->tdocExp;
+					$code_exp = $docRef->tdocExp1;
+				}
+
+				$file = $request->file('ndocFile');
+
+				$doc = new Document();
+				//$code_doc = $this->makeUniqueCode('DOC',Carbon::now()->year,$this->numberDocument());
+				$pref = 'DOC';
+				$code_doc = '';
+
+				/* SQL Version
 				$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
 				$stmt->bindParam(1,$pref);
-				$stmt->bindParam(2,$code_exp,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
+				$stmt->bindParam(2,$code_doc,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
 				$stmt->execute();
-				unset($stmt);
+				unset($stmt);*/
+
+				/* MySQL Version */
+				$stmt = DB::select('call generar_codigo(?,?)', array($pref, $code_doc));
+				$code_doc = $stmt[0]->codigo;
 				
-				$exp->tarcExp = $code_exp;
-				$exp->tarcDatepres = Carbon::now(); // Fecha de creacion del archivador
-				$exp->tarcStatus = 'Aperturado';
-				$exp->created_at = Carbon::now();
-				$exp->created_time_at = Carbon::now()->toTimeString();
-				$exp->updated_at = Carbon::now();
-				$exp->tarcSource = 'int';
-				$exp->tarcYear = Carbon::now()->year;
-				$exp->tarcAsoc = $request->ndocProy;
-				$exp->tarcTitulo = $request->ndocTitulo;
+				$doc->tdocCod = $code_doc;
+				$doc->tdocExp = $expId; //$code_exp;
+				$doc->tdocExp1 = $code_exp;
+				$doc->tdocDependencia = $request->ndocDepend;
+				$doc->tdocProject = $request->ndocProy;
+				$doc->tdocSender = $request->ndocSender;
+				$doc->tdocDni = $request->ndocSenderId;
+				$doc->tdocJobSender = $request->ndocJob;
+				$doc->tdocType = $request->ndocTipo;
+				$doc->tdocNumber = $request->ndocNro;
+				$doc->tdocRegistro = $request->ndocReg;
+				$doc->tdocDate = $request->ndocFecha;
+				$doc->tdocFolio = $request->ndocFolio;
+				$doc->tdocSubject = $request->ndocAsunto;
+				$doc->tdocStatus = 'registrado';
+				$doc->tdocDetail = $request->ndocDetalle;
+				$doc->tdocRegisterBy = Auth::user()->tusId;
 
-				$exp->save();
+				if($request->ndocProceso == "si"){
+					$doc->tdocAccion = $request->ndocAccion;
+					$doc->tdocRef = $request->ndocReferencia;
+				}else if($request->ndocProceso == "no"){
+					$doc->tdocAccion = "ingreso";
+				}
 
-				$expId = $exp->tarcId;
-			}
-			else if($request->ndocProceso == "si"){
-				$docId = $request->ndocReferencia;
-				$docRef = Document::find($docId); // expediente al que pertenece el documento registrado con referencia
-				$expId = $docRef->tdocExp;
-				$code_exp = $docRef->tdocExp1;
-			}
+				if($file){
+					$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
+					$doc->tdocFileExt = $file->getClientOriginalExtension();
+					$doc->tdocPathFile = 'docscase/'.$code_exp;
+					$doc->tdocFileMime = $file->getMimeType();
 
-			$file = $request->file('ndocFile');
+					$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
+					\Storage::disk('local')->put($filename, \File::get($file));
+				}
 
-			$doc = new Document();
-			//$code_doc = $this->makeUniqueCode('DOC',Carbon::now()->year,$this->numberDocument());
-			$pref = 'DOC';
-			$code_doc = '';
-			$stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
-			$stmt->bindParam(1,$pref);
-			$stmt->bindParam(2,$code_doc,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
-			$stmt->execute();
-			unset($stmt);
-			
-			$doc->tdocCod = $code_doc;
-			$doc->tdocExp = $expId; //$code_exp;
-			$doc->tdocExp1 = $code_exp;
-			$doc->tdocDependencia = $request->ndocDepend;
-			$doc->tdocProject = $request->ndocProy;
-			$doc->tdocSender = $request->ndocSender;
-			$doc->tdocJobSender = $request->ndocJob;
-			$doc->tdocType = $request->ndocTipo;
-			$doc->tdocNumber = $request->ndocNro;
-			$doc->tdocRegistro = $request->ndocReg;
-			$doc->tdocDate = $request->ndocFecha;
-			$doc->tdocFolio = $request->ndocFolio;
-			$doc->tdocSubject = $request->ndocAsunto;
-			$doc->tdocStatus = 'Registrado';
-			$doc->tdocDetail = $request->ndocDetalle;
-			$doc->tdocRegisterBy = Auth::user()->tusId;
+				$doc->save();
 
-			if($request->ndocProceso == "si"){
-				$doc->tdocAccion = $request->ndocAccion;
-				$doc->tdocRef = $request->ndocReferencia;
-			}else if($request->ndocProceso == "no"){
-				$doc->tdocAccion = "ingreso";
-			}
+				/*$pexp = new Arcparticular();
 
-			if($file){
-				$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
-				$doc->tdocFileExt = $file->getClientOriginalExtension();
-				$doc->tdocPathFile = 'docscase/'.$code_exp;
-				$doc->tdocFileMime = $file->getMimeType();
+				$correlative_pexp = Arcparticular::where('tarpDep',Auth::user()->tusWorkDep)->count() + 1;
+				$code_pexp = $this->makeUniqueCode('PXP',Carbon::now()->year,$correlative_pexp);
 
-				$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
-				\Storage::disk('local')->put($filename, \File::get($file));
-			}
+				$pexp->tarpPexp = $code_pexp;
+				$pexp->tarpGexp = $code_exp;
+				$pexp->tarpDep = Auth::user()->tusWorkDep;
+				$pexp->tarpDoc = $code_doc;
+				$pexp->created_at = Carbon::now()->toDateString();
+				$pexp->tarpYear = Carbon::now()->year;
 
-			$doc->save();
+				$pexp->save();*/
 
-			/*$pexp = new Arcparticular();
+				if($request->ndocProceso == "no"){
 
-			$correlative_pexp = Arcparticular::where('tarpDep',Auth::user()->tusWorkDep)->count() + 1;
-			$code_pexp = $this->makeUniqueCode('PXP',Carbon::now()->year,$correlative_pexp);
+					$hist = new Historial();
 
-			$pexp->tarpPexp = $code_pexp;
-			$pexp->tarpGexp = $code_exp;
-			$pexp->tarpDep = Auth::user()->tusWorkDep;
-			$pexp->tarpDoc = $code_doc;
-			$pexp->created_at = Carbon::now()->toDateString();
-			$pexp->tarpYear = Carbon::now()->year;
+					$hist->thisExp = $code_exp;
+					$hist->thisDoc = $doc->tdocId; //$code_doc;
+					$hist->thisDoc1 = $code_doc;
+					$hist->thisDepS = Auth::user()->tusId;
+					$hist->thisDepT = Auth::user()->tusId;
+					$hist->thisFlagR = true;
+					$hist->thisFlagA = false;
+					$hist->thisFlagD = false;
+					$hist->rec_date_at = Carbon::now()->toDateString();
+					$hist->rec_time_at = Carbon::now()->toTimeString();
+					$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
 
-			$pexp->save();*/
+					$hist->save();
 
-			if($request->ndocProceso == "no"){
+				}
+				else if($request->ndocProceso == "si"){
 
-				$hist = new Historial();
+					$hist = new Historial();
 
-				$hist->thisExp = $code_exp;
-				$hist->thisDoc = $doc->tdocId; //$code_doc;
-				$hist->thisDoc1 = $code_doc;
-				$hist->thisDepS = Auth::user()->tusId;
-				$hist->thisDepT = Auth::user()->tusId;
-				$hist->thisFlagR = true;
-				$hist->thisFlagA = false;
-				$hist->thisFlagD = false;
-				$hist->rec_date_at = Carbon::now()->toDateString();
-				$hist->rec_time_at = Carbon::now()->toTimeString();
-				$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+					$hist->thisExp = $code_exp;
+					$hist->thisDoc = $doc->tdocId; //$code_doc;
+					$hist->thisDoc1 = $code_doc;
+					$hist->thisDepS = Auth::user()->tusId;
+					$hist->thisDepT = Auth::user()->tusId;
+					$hist->thisFlagR = true;
+					$hist->thisFlagA = false;
+					$hist->thisFlagD = false;
+					$hist->rec_date_at = Carbon::now()->toDateString();
+					$hist->rec_time_at = Carbon::now()->toTimeString();
+					$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
 
-				$hist->save();
+					$hist->save();
 
-			}
-			else if($request->ndocProceso == "si"){
+					$hist_prev = Historial::select('*')
+									->where('thisDoc',$request->ndocReferencia)
+									->where('thisFlagR',true)
+									->where('thisFlagD',true)
+									->get();
 
-				$hist = new Historial();
+					$hist_ref = Historial::find($hist_prev[0]->thisId);
+					$hist_ref->thisIdRef = $hist->thisId;
+					$hist_ref->save();
+				}
+			});
 
-				$hist->thisExp = $code_exp;
-				$hist->thisDoc = $doc->tdocId; //$code_doc;
-				$hist->thisDoc1 = $code_doc;
-				$hist->thisDepS = Auth::user()->tusId;
-				$hist->thisDepT = Auth::user()->tusId;
-				$hist->thisFlagR = true;
-				$hist->thisFlagA = false;
-				$hist->thisFlagD = false;
-				$hist->rec_date_at = Carbon::now()->toDateString();
-				$hist->rec_time_at = Carbon::now()->toTimeString();
-				$hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A');
+			return is_null($exception) ? "El Documento fue registrado con éxito" : $exception;
 
-				$hist->save();
-
-				$hist_prev = Historial::select('*')
-								->where('thisDoc',$request->ndocReferencia)
-								->where('thisFlagR',true)
-								->where('thisFlagD',true)
-								->get();
-
-				$hist_ref = Historial::find($hist_prev[0]->thisId);
-				$hist_ref->thisIdRef = $hist->thisId;
-				$hist_ref->save();
-			}
-		});
-
-
-		if($request->ajax())
-		{
-				return "El Documento fue Creado Exitosamente";
+		}catch(Exception $e){
+			return 'Error encontrado:'.$e->getMessage()."\n";
 		}
-
-		return false;
 	}
 
 	public function storeEditDocument(Request $request)
 	{
-		DB::transaction(function($request) use ($request){
+		try{
+			$exception = DB::transaction(function($request) use ($request){
 
-			$doc = Document::find($request->ndocId);
+				$doc = Document::find($request->ndocId);
 
-			$exp = Archivador::find($doc->tdocExp);
-			$exp->updated_at = Carbon::now();
-			$exp->tarcAsoc = $request->ndocProy;
+				$exp = Archivador::find($doc->tdocExp);
+				$exp->updated_at = Carbon::now();
+				$exp->tarcAsoc = $request->ndocProy;
 
-			if($request->ndocProceso == "no"){	// falta especificar bien los datos a modificarse pues al variar se convierte en proceso o expediente
-				$exp->tarcTitulo = $request->ndocTitulo;
-			}
-
-			$exp->save();
-
-			$file = $request->file('ndocFile');
-			$code_exp = $exp->tarcExp;
-			$code_doc = $doc->tdocCod;
-			
-			$doc->tdocDependencia = $request->ndocDepend;
-			$doc->tdocProject = $request->ndocProy;
-			$doc->tdocSender = $request->ndocSender;
-			$doc->tdocJobSender = $request->ndocJob;
-			$doc->tdocType = $request->ndocTipo;
-			$doc->tdocNumber = $request->ndocNro;
-			$doc->tdocRegistro = $request->ndocReg;
-			$doc->tdocDate = $request->ndocFecha;
-			$doc->tdocFolio = $request->ndocFolio;
-			$doc->tdocSubject = $request->ndocAsunto;
-			$doc->tdocDetail = $request->ndocDetalle;
-
-			if($request->ndocProceso == "si"){
-				$doc->tdocAccion = $request->ndocAccion;
-				$doc->tdocRef = $request->ndocReferencia;
-			}
-
-			if($file){ // entra aqui si esta cambiando de archivo
-
-				if($doc->tdocFileName != null){
-					$file_actual = public_path($doc->tdocPathFile).'/'.$doc->tdocFileName;
-					if(\File::exists($file_actual))
-						\File::delete($file_actual);
+				if($request->ndocProceso == "no"){	// falta especificar bien los datos a modificarse pues al variar se convierte en proceso o expediente
+					$exp->tarcTitulo = $request->ndocTitulo;
 				}
 
-				$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
-				\Storage::disk('local')->put($filename, \File::get($file));
+				$exp->save();
 
-				$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
-				$doc->tdocFileExt = $file->getClientOriginalExtension();
-				$doc->tdocPathFile = 'docscase/'.$code_exp;
-				$doc->tdocFileMime = $file->getMimeType();
-			}
+				$file = $request->file('ndocFile');
+				$code_exp = $exp->tarcExp;
+				$code_doc = $doc->tdocCod;
+				
+				$doc->tdocDependencia = $request->ndocDepend;
+				$doc->tdocProject = $request->ndocProy;
+				$doc->tdocSender = $request->ndocSender;
+				$doc->tdocDni = $request->ndocSenderId;
+				$doc->tdocJobSender = $request->ndocJob;
+				$doc->tdocType = $request->ndocTipo;
+				$doc->tdocNumber = $request->ndocNro;
+				$doc->tdocRegistro = $request->ndocReg;
+				$doc->tdocDate = $request->ndocFecha;
+				$doc->tdocFolio = $request->ndocFolio;
+				$doc->tdocSubject = $request->ndocAsunto;
+				$doc->tdocDetail = $request->ndocDetalle;
 
-			$doc->save();
-		});
+				if($request->ndocProceso == "si"){
+					$doc->tdocAccion = $request->ndocAccion;
+					$doc->tdocRef = $request->ndocReferencia;
+				}
 
+				if($file){ // entra aqui si esta cambiando de archivo
 
-		if($request->ajax())
-		{
-				return "El Documento fue Creado Exitosamente";
+					if($doc->tdocFileName != null){
+						$file_actual = public_path($doc->tdocPathFile).'/'.$doc->tdocFileName;
+						if(\File::exists($file_actual))
+							\File::delete($file_actual);
+					}
+
+					$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
+					\Storage::disk('local')->put($filename, \File::get($file));
+
+					$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
+					$doc->tdocFileExt = $file->getClientOriginalExtension();
+					$doc->tdocPathFile = 'docscase/'.$code_exp;
+					$doc->tdocFileMime = $file->getMimeType();
+				}
+
+				$doc->save();
+			});
+
+			if(is_null($exception)){
+                $msg = 'El cambio realizado en el documento se ha guardado con éxito';
+                $idMsg = 200;
+            }
+            else{
+                $msg = $exception;
+                $idMsg = 500;
+            }
+
+		}catch(Exception $e){
+			$msg = 'Error encontrado:' . $e . "\n";
+            $idMsg = 500;
 		}
 
-		return false;
+		return response()->json(compact('msg','idMsg'));
 	}
 
 	public function detailDocument($idDoc, Request $request)
@@ -385,9 +400,14 @@ class DocumentController extends Controller {
 
 	public function retrieveDocumentData($year, Request $request)
 	{
+		/* SQL VERSION
 		$list_docs = Document::select(DB::raw('tdocExp, tdocId, dbo.fnTramGetDscFromId(\'tramTipoDocumento\',tdocType) as docTipo, tdocDni, tdocDate, tdocStatus, tdocSubject, tdocRegistro'))
 							->join('tramArchivador','tarcExp','=','tdocExp')
-							->where('tarcYear',$year);
+							->where('tarcYear',$year);*/
+		/* MySQL Version */
+		$list_docs = Document::select(DB::raw('tdocExp, tdocId, fnTramGetDscFromId(\'tramTipoDocumento\',tdocType) as docTipo, tdocDni, tdocDate, tdocStatus, tdocSubject, tdocRegistro'))
+						->join('tramArchivador','tarcExp','=','tdocExp')
+						->where('tarcYear',$year);
 
         if($request->ndocAsoc != 'all')
         {
@@ -512,7 +532,16 @@ class DocumentController extends Controller {
 		$docId = $claves[0];
 		$expId = $claves[1];
 
-		$documentos = Document::select(DB::raw('*,dbo.fnTramGetDestinatario(thisDepT) AS destino, dbo.fnTramGetRegistroRef(thisIdRef) AS ref'))
+		/* SQL Version
+		$documentos = Document::select(DB::raw('*,dbo.fnTramGetDestinatario(thisDepT) AS destino, dbo.fnTramGetRegistroRef(thisIdRef) AS ref, dbo.fnTramGetTimeAtention(tdocId,thisId,tdocRef) AS tiempo'))
+					->join('tramHistorial','thisDoc','=','tdocId')
+					->join('tramTipoDocumento','ttypDoc','=','tdocType')
+					->join('tramProyecto','tpyId','=','tdocProject')
+					->where('tdocExp',$expId)
+					->get();*/
+
+		/* MySQL Version */
+		$documentos = Document::select(DB::raw('*,fnTramGetDestinatario(thisDepT) AS destino, fnTramGetRegistroRef(thisIdRef) AS ref, fnTramGetTimeAtention(tdocId,thisId,tdocRef) AS tiempo'))
 					->join('tramHistorial','thisDoc','=','tdocId')
 					->join('tramTipoDocumento','ttypDoc','=','tdocType')
 					->join('tramProyecto','tpyId','=','tdocProject')
@@ -527,8 +556,15 @@ class DocumentController extends Controller {
 	public function filtrarDocumento(Request $request)
     {
         $campo = $request->campo;
-
+        /* SQL Version 
         $inbox = Document::select(DB::raw('*,DATEDIFF(day,tdocDate,GETDATE()) as plazo'))
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->join('tramProyecto','tpyId','=','tdocProject')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->where('tarcYear',$request->period);*/
+
+        /* MySQL Version */
+        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
@@ -549,6 +585,20 @@ class DocumentController extends Controller {
 
         	$inbox = $inbox->where('tdocRef',null)
 						->where('tdocExp',$doc[0]->tdocExp);
+        }
+
+        if($campo == 'asunto'){
+        	$doc = Document::select('tdocId','tdocExp')
+        				->join('tramArchivador','tarcId','=','tdocExp')
+        				->where('tarcYear',$request->period)
+        				->where('tdocSubject','like','%'.trim($request->key).'%')
+        				->get();
+
+        	$idExps = $doc->pluck('tdocExp');
+        	$idExps = $idExps->toArray();
+
+        	$inbox = $inbox->where('tdocRef',null)
+						->whereIn('tdocExp',$idExps);
         }
 
     	$inbox = $inbox->orderby('tdocId','DESC')->get();

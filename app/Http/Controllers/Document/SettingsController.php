@@ -15,10 +15,11 @@ use aidocs\Http\Requests\CreateUserRequest;
 use aidocs\Models\Dependencia;
 use aidocs\Models\Rol;
 use aidocs\Models\TipoDocumento;
-use aidocs\Models\Asociacion;
+use aidocs\Models\Proyecto;
 use aidocs\Models\Cargo;
 use aidocs\Models\Persona;
 use aidocs\Models\Afiliado;
+use aidocs\Models\Sistema;
 use aidocs\User;
 
 class SettingsController extends Controller
@@ -69,10 +70,10 @@ class SettingsController extends Controller
             $user->tusState = true;
 
             $user->save();
-
+            /*
             switch($request->profile_user)
             {
-                case 'user1': /* assistant */
+                case 'user1': /* assistant 
                     for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
@@ -88,7 +89,7 @@ class SettingsController extends Controller
                         unset($rol);
                     }
                     break;
-                case 'user2': /* boss */
+                case 'user2': /* boss 
                     for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
@@ -104,7 +105,7 @@ class SettingsController extends Controller
                         unset($rol);
                     }
                     break;
-                case 'admin': /* administrator system */
+                case 'admin': /* administrator system 
                     for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
@@ -120,7 +121,7 @@ class SettingsController extends Controller
                         unset($rol);
                     }
                     break;
-                case 'super': /* VIP user */
+                case 'super': /* VIP user 
                     for($i=1; $i<=8; $i++)
                     {
                         $rol = new Rol();
@@ -131,7 +132,7 @@ class SettingsController extends Controller
                         unset($rol);
                     }
                     break;
-            }
+            }*/
         });
 
         if($request->ajax())
@@ -145,9 +146,13 @@ class SettingsController extends Controller
 
     public function getListUsers(Request $request)
     {
+        /* SQL Version
         $list_users = DB::select("SELECT  u.tusId,u.tusNames,u.tusPaterno,u.tusMaterno,u.tusWorkDep,
-                                  dbo.fnTramGetDscFromId('TLogGrlDep',u.tusWorkDep) AS Dependencia,
-                                  u.tusTypeUser, u.tusState FROM tramUsuario u;");
+                                  dbo.fnTramGetDscFromId('tramDependencia',u.tusWorkDep) AS Dependencia,
+                                  u.tusTypeUser, u.tusState FROM tramUsuario u;");*/
+        /* MySQL Version */
+        $list_users = DB::select("SELECT u.tusId, u.tusNames, u.tusPaterno, u.tusMaterno, u.tusWorkDep, fnTramGetDscFromId('tramDependencia',u.tusWorkDep) AS Dependencia, u.tusTypeUser, u.tusState FROM tramUsuario u;");
+
 
         $dependencies = Dependencia::select('*')->get();
 
@@ -162,10 +167,10 @@ class SettingsController extends Controller
         return $view;
     }
 
-    public function getListAsoc(Request $request)
+    public function getListProy(Request $request)
     {
-        $list_asoc = Asociacion::all();
-        $view = view('setting.list_asociaciones', compact('list_asoc'));
+        $list_proy = Proyecto::all();
+        $view = view('setting.list_proyectos', compact('list_proy'));
 
         if($request->ajax())
         {
@@ -176,53 +181,71 @@ class SettingsController extends Controller
         return $view;
     }
 
-    public function postRegisterAsociacion(Request $request)
+    public function postRegisterProyecto(Request $request)
     {
-        DB::transaction(function($request) use ($request){
+        try{
 
-            $asoc = new Asociacion();
+            $exception = DB::transaction(function($request) use ($request, &$py){
 
-            $asoc->tasAnio = $request->asocAnio;
-            $asoc->tasCutElig = $request->asocCutelig;
-            $asoc->tasCutTec = $request->asocCuttec;
-            $asoc->tasConvenio = $request->asocConv;
-            $asoc->tasOrganizacion = $request->asocOrg;
-            $asoc->tasNegocio = $request->asocNeg;
-            $asoc->tasRuc = $request->asocRuc;
-            $asoc->tasCadena = $request->asocCad;
-            $asoc->tasDireccion = $request->asocDir;
-            $asoc->tasProv = $request->asocProv;
-            $asoc->tasDist = $request->asocDist;
-            $asoc->tasPresidente = $request->asocPresi;
-            $asoc->tasCoordinador = $request->asocCoord;
-            $asoc->tasVigenciaIni = $request->asocVigini;
-            $asoc->tasVigenciaFin = $request->asocVigfin;
+                $asoc = new Proyecto();
 
-            $asoc->save();
+                $asoc->tpyAnio = $request->npyAnio;
+                $asoc->tpyName = $request->npyName;
+                $asoc->tpyShortName = $request->npyShortName;
+                $asoc->tpyCU = $request->npyCu;
 
-        });
+                $asoc->save();
 
-        if($request->ajax())
-        {
-            return "Asociacion registrada con éxito. Porfavor refresca la página con F5";
+                $py = Proyecto::find($asoc->tpyId);
+
+            });
+
+            if(is_null($exception)){
+                $proy = $py;
+                $msg = "Proyecto registrado con éxito";
+                $msgId = 200;
+            }
+            else{
+                $proy = collect([]);
+                $msg = "Hubo un error al registrar el proyecto, actualice la página y vuelva a intentarlo";
+                $msgId = 500;
+            }
+
+        }catch(Exception $e){
+            $proy = collect([]);
+            $msg = "Error encontrado:".$e->getMessage();
+            $msgId = 500;
         }
 
-        return false;
+        return response()->json(compact('proy','msg','msgId'));
+        
     }
 
     public function showProfileUser($idUser, Request $request)
     {
-        $profile = DB::select("SELECT  r.trolId,r.trolIdUser,r.trolIdSyst, s.tsysDescF, r.trolEnable
+        /*$profile = DB::select("SELECT  r.trolId,r.trolIdUser,r.trolIdSyst, s.tsysDescF, r.trolEnable
                       FROM tramRoles r
                       INNER JOIN tramSistema s ON r.trolIdSyst = s.tsysId
-                      WHERE r.trolIdUser = '".$idUser."';");
+                      WHERE r.trolIdUser = '".$idUser."';");*/
 
-        if($request->ajax())
-        {
-            return $profile;
-        }
+        $profile = Rol::select('*')
+                    ->where('trolIdUser',$idUser)
+                    ->where('trolEnable',true)
+                    ->get();
 
-        return false;
+        $funciones = Sistema::select('*')
+                    ->orderby('tsysModulo','ASC')
+                    ->get();
+
+        $idFunciones = $funciones->pluck('tsysId');
+        $idProfile = $profile->pluck('trolIdSyst');
+
+        $view = view('setting.tabla_perfil_usuario', compact('idUser','idProfile','funciones','profile'));
+
+        //$prof_func = array_intersect($idFunciones->toArray(), $idProfile->toArray());
+        //dd($prof_func);
+
+        return $view;
     }
 
     public function postUpdateProfile(Request $request)
@@ -344,36 +367,121 @@ class SettingsController extends Controller
         return $sections['sub-content'];
     }
 
-    public function postRegisterAfiliado(Request $request)
+    public function postRegisterPersona(Request $request) //postRegisterAfiliado
     {
         try{
 
             $exception = DB::transaction(function($request) use($request){
 
                 $persona = new Persona();
-                $persona->tprDni = $request->dni_afil;
-                $persona->tprPaterno = $request->patern_afil;
-                $persona->tprMaterno = $request->matern_afil;
-                $persona->tprNombres = $request->name_afil;
-                $persona->tprCelular = $request->celular_afil;
-                $persona->tprCorreo = $request->email_afil;
+                $persona->tprDni = $request->nprsDni;
+                $persona->tprFulName = $request->nprsName.' '.$request->nprsPaterno.' '.$request->nprsMaterno;
+                $persona->tprPaterno = $request->nprsPaterno;
+                $persona->tprMaterno = $request->nprsMaterno;
+                $persona->tprNombres = $request->nprsName;
+                $persona->tprCelular = $request->nprsCel;
+                $persona->tprCargo = $request->nprsJob;
                 $persona->tprRegisterBy = Auth::user()->tudId;
                 $persona->tprRegisterAt = Carbon::now()->format('d/m/Y h:i:s A');
                 $persona->save();
-
-                $afiliado = new Afiliado();
-                $afiliado->tafAsociacion = $request->asociacion_afil;
-                $afiliado->tafPersona = $request->dni_afil;
-                $afiliado->tafRelacion = $request->cargo_afil;
-                $afiliado->tafHabilitado = true;
-                $afiliado->save();
-
             });
 
-            return is_null($exception)?'Afiliado registrado correctamente':$exception;
+            if(is_null($exception)){
+                $msg = 'Afiliado registrado correctamente';
+                $msgId = 200;
+            }
+            else{
+                $msg = 'Error encontrado: '.$exception;
+                $msgId = 500;
+            }
 
         }catch(Exception $e){
-            return 'Error detectado: ' . $e->getMessage() . "\n";
+            $msg = 'Error detectado: ' . $e->getMessage() . "\n";
+            $msgId = 500;
         }
+
+        return response()->json(compact('msg','msgId'));
+    }
+
+    public function getListPersonas(Request $request)
+    {
+        $persona = Persona::select('tprId','tprFulName')
+                    ->where('tprFulName','like','%'.$request->search.'%')
+                    ->get();
+
+        $result = [];
+
+        foreach ($persona as $key => $p) {
+            $result[] = array('id'=>$p->tprId,'name'=>$p->tprFulName);
+        }
+
+        //$result['id'] = $persona->pluck('tprId');
+        //$result['name'] = $persona->pluck('tprFulName');
+
+        return response()->json($result);
+    }
+
+    public function postUpdateAccess(Request $request)
+    {
+        $user = $request->name;
+        $funcion = $request->pk;
+        $valor = $request->value; // A: asignado B: no asignado (quitar)
+
+        //check if exist the user with this function
+
+        $profile = Rol::select('*')
+                    ->where('trolIdUser',$user)
+                    ->where('trolIdSyst',$funcion)
+                    ->get();
+
+        if($profile->isEmpty()){
+            $addProfile = new Rol();
+            $addProfile->trolIdUser = $user;
+            $addProfile->trolIdSyst = $funcion;
+            $addProfile->trolEnable = true;
+            $addProfile->save();
+        }
+        else{
+            $editProfile = Rol::find($profile[0]->trolId);
+            $editProfile->trolEnable = $valor=='A' ? true : false;
+            $editProfile->save();
+        }
+
+        $success = true;
+        $msg = 'Estado cambiado correctamente';
+
+        return response()->json(compact('success','msg'));
+    }
+
+    public function postUpdateProyecto(Request $request)
+    {
+        $campo = $request->name;
+        $pyId = $request->pk;
+        $newVal = $request->value;
+
+        $proy = Proyecto::find($pyId);
+
+        if($campo == 'name'){
+            $proy->tpyName = $newVal; 
+        }
+
+        if($campo == 'shortname'){
+            $proy->tpyShortName = $newVal; 
+        }
+
+        if($campo == 'anio'){
+            $proy->tpyShortName = $newVal; 
+        }
+
+        if($campo == 'coduni'){
+            $proy->tpyShortName = $newVal; 
+        }
+
+        if($proy->save()){
+            $success = true;
+            $msg = 'Estado cambiado correctamente';
+        }
+
+        return response()->json(compact('success','msg'));
     }
 }

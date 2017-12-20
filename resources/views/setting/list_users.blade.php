@@ -26,9 +26,9 @@
                                 <td>{{ $u->Dependencia }}</td>
                                 <td>
                                     @if($u->tusTypeUser == 'user1')
-                                        Asistente
+                                        Operador
                                     @elseif($u->tusTypeUser == 'user2')
-                                        Jefe
+                                        Operador
                                     @elseif($u->tusTypeUser == 'admin')
                                         Administrador
                                     @elseif($u->tusTypeUser == 'super')
@@ -36,7 +36,7 @@
                                     @endif
                                 </td>
                                 <td id="{{ $u->tusId }}">
-                                    <a href="#" class="btnEdit" data-toggle="modal" data-target="#ueditModal" data-id="{{ $u->tusId }}" data-iddp="{{ $u->tusWorkDep }}">Editar</a>
+                                    <a href="#" class="btnEdit" data-toggle="modal" data-target="#ueditModal" data-id="{{ $u->tusId }}" data-iddp="{{ $u->tusWorkDep }}" data-nmb="{{ $u->tusPaterno.' '.$u->tusMaterno.' '.$u->tusNames }}">Editar</a>
                                 </td>
                                 <td>
                                     @if($u->tusState)
@@ -58,33 +58,31 @@
 </div>
 
 <div class="modal fade" id="ueditModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Editar Datos del Usuario: <b></b> </h4>
             </div>
-            <form class="form-horizontal" id="frm_update_profile" name="updateFrm">
+            <form id="frm_update_profile" name="updateFrm">
                 {!! csrf_field() !!}
                 <div class="modal-body">
-                    <div><input type="hidden" id="kyUser" name="kyUser"></div>
-                    <div class="form-group">
-                        <label class="col-xs-4 control-label">Dependencia</label>
-                        <div class="col-xs-6">
-                            <select class="form-control" name="work_dep">
-                                @foreach($dependencies as $dep)
-                                    <option value="{{ $dep->depID }}"> {{ $dep->depDsc }} </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <input type="hidden" id="kyUser" name="kyUser">
+                    <label class="col-xs-4 control-label">Dependencia</label>
+                    <div class="col-xs-6">
+                        <select class="form-control" name="work_dep">
+                            @foreach($dependencies as $dep)
+                                <option value="{{ $dep->depId }}"> {{ $dep->depDsc }} </option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="table-responsive mailbox-messages">
-                        <table class="table table-hover table-striped">
-                        </table>
+                    <div id="profileTable">
+                        
                     </div>
                 </div>
                 <div class="box-footer">
-                    <button type="submit" id="btnUpdateProfile" class="btn btn-primary pull-right">Guardar</button>
+                    <!--<button type="submit" id="btnUpdateProfile" class="btn btn-primary pull-right">Guardar</button>-->
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cerrar</button>
                 </div>
             </form>
         </div>
@@ -96,32 +94,16 @@ $(function(){
     $('#ueditModal').on('show.bs.modal',function(e){
         var btn = $(e.relatedTarget);
         var id = btn.data('id');
+        var nmb = btn.data('nmb');
         var idDp = btn.data('iddp');
         var modal = $(this);
 
-        $.getJSON('getProfile/' + id).done(function(resp){
-
-            var output = "<tr><th>#</th><th>Funcionalidad</th><th>Estado</th></tr>";
-            var i;
-
-            for(i=0;i<resp.length;i++)
-            {
-                output += "<tr>";
-                output += "<td>" + (i+1) + "</td>";
-                output += "<td>" + resp[i].tsysDescF + "</td>";
-
-                if(resp[i].trolEnable == 1)
-                    output += "<td><input name='stateF[]' type='checkbox' value='" + resp[i].trolIdSyst + "' checked></td>";
-                else if(resp[i].trolEnable == 0)
-                    output += "<td><input name='stateF[]' type='checkbox' value='" + resp[i].trolIdSyst + "'></td>";
-
-                output += "</tr>";
-            }
-
-            modal.find('.modal-header b').text(id);
+        $.get('getProfile/' + id, function(resp){
+            
+            modal.find('.modal-header b').text(id + ' ' + nmb);
             modal.find('.modal-body #kyUser').val(id);
             modal.find('.modal-body select').val(idDp);
-            modal.find('.modal-body table').html(output);
+            modal.find('.modal-body #profileTable').html(resp);
         });
     });
 

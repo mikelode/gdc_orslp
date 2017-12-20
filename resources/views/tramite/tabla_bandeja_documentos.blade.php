@@ -5,9 +5,10 @@
             <th>Reg.</th>
             <th>Doc.</th>
             <th>Remitente</th>
+            <th>Asunto</th>
             <th>Fecha</th>
             <th>Estado</th>
-            <th>Plazo</th>
+            <th>D.Trans.</th>
             
         </tr>
     </thead>
@@ -21,6 +22,7 @@
             </td>
             <td>{{ $doc->ttypDesc.' - '.$doc->tdocNumber }}</td>
             <td>{{ $doc->tdocSender }}</td>
+            <td>{{ $doc->tdocSubject }}</td>
             <td>{{ $doc->tdocDate }}</td>
             <td>{{ $doc->tarcStatus }}</td>
             <td>
@@ -31,7 +33,7 @@
                     @if($doc->plazo > 4 && $doc->plazo <= 7)
                         <button type="button" class="btn btn-warning btn-xs">Por vencerse</button>
                     @endif
-                    @if($doc->plazo >= 7)
+                    @if($doc->plazo > 7)
                         <button type="button" class="btn btn-danger btn-xs">Vencido</button>
                     @endif
                 @endif

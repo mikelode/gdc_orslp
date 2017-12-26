@@ -51,7 +51,7 @@ class HomeController extends Controller {
                         ->whereRaw('DATEDIFF(tarcDatePres,now()) > 7')
                         ->count();
 
-        return view('tramite/home', compact('vigentes','xvencer','vencidos'));
+        return view('tramite.home', compact('vigentes','xvencer','vencidos'));
     }
 
     public function index_section(Request $request)

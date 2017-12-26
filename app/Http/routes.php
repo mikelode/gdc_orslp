@@ -202,6 +202,9 @@ Route::post('settings/new_afil','Document\SettingsController@postRegisterAfiliad
 Route::post('settings/new_prs','Document\SettingsController@postRegisterPersona');
 Route::get('settings/list_person', 'Document\SettingsController@getListPersonas');
 Route::post('settings/updt_profile','Document\SettingsController@postUpdateAccess');
+Route::get('settings/list_depen','Document\SettingsController@getListDependencias');
+Route::post('settings/new_depen','Document\SettingsController@postRegisterDependencia');
+Route::post('settings/updt_depen','Document\SettingsController@postUpdateDependencia');
 
 /*
  *  TIPO DE DOCUMENTO

@@ -484,4 +484,80 @@ class SettingsController extends Controller
 
         return response()->json(compact('success','msg'));
     }
+
+    public function getListDependencias(Request $request)
+    {
+        $list_depen = Dependencia::all();
+        $view = view('setting.list_dependencias', compact('list_depen'));
+
+        if($request->ajax())
+        {
+            $sections = $view->renderSections();
+            return $sections['sub-content'];
+        }
+
+        return $view;
+    }
+
+    public function postRegisterDependencia(Request $request)
+    {
+        try{
+
+            $exception = DB::transaction(function($request) use ($request, &$dep){
+                
+                $dep = new Dependencia();
+                $dep->depDsc = $request->ndpName;
+                $dep->depDscC = $request->ndpShortName;
+                $dep->save();
+
+                if(!$dep) throw new Exception("Algun dato mal ingresado no permitio el registro");
+
+                $dep = Dependencia::find($dep->depId);
+
+            });
+
+            if(is_null($exception)){
+                $newDep = $dep;
+                $msg = "Dependencia registrada con éxito";
+                $msgId = 200;
+            }
+            else{
+                $newDep = collect([]);
+                $msg = "Error al intentar registrar la dependencia revise sus datos";
+                $msgId = 500;
+            }
+
+        }catch(Exception $e){
+            $newDep = collect([]);
+            $msg = "Error al intentar registrar la dependencia ".$e->getMessage();
+            $msgId = 500;
+        }
+
+        return response()->json(compact('newDep','msg','msgId'));
+        
+    }
+
+    public function postUpdateDependencia(Request $request)
+    {
+        $campo = $request->name;
+        $depId = $request->pk;
+        $newVal = $request->value;
+
+        $depen = Dependencia::find($depId);
+
+        if($campo == 'name'){
+            $depen->depDsc = $newVal; 
+        }
+
+        if($campo == 'shortname'){
+            $depen->depDscC = $newVal; 
+        }
+
+        if($depen->save()){
+            $success = true;
+            $msg = 'Estado cambiado correctamente';
+        }
+
+        return response()->json(compact('success','msg'));
+    }
 }

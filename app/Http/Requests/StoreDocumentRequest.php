@@ -27,10 +27,11 @@ class StoreDocumentRequest extends Request
             //'dni_sender'  => 'digits:8',
             //'name_sender'  => 'required | regex:/(^[A-Za-z ñáéíóú ÑÁÉÍÓÚ ]+$)+/',
             //'patern_sender'  => 'required | regex:/(^[A-Za-z ñáéíóú ÑÁÉÍÓÚ ]+$)+/',
-            //'matern_sender'  => 'required | regex:/(^[A-Za-z ñáéíóú ÑÁÉÍÓÚ ]+$)+/',
+            'ndocSender'  => 'required | regex:/(^[A-Za-z ñáéíóú ÑÁÉÍÓÚ ]+$)+/',
             'ndocAsunto'  => 'required',
             'ndocFecha'  => 'required',
             'ndocReg' => 'required',
+            'ndocFolio' => 'required',
         ];
     }
 
@@ -40,10 +41,11 @@ class StoreDocumentRequest extends Request
             //'dni_sender'  => 'DNI',
             //'name_sender'  => 'Nombres',
             //'patern_sender'  => 'Apellido Paterno',
-            //'matern_sender'  => 'Apellido Materno',
+            'ndocSender'  => 'Nombre completo del remitente',
             'ndocAsunto'  => 'Asunto',
             'ndocFecha'  => 'Fecha de Presentación',
-            'ndocReg' => 'Número de registor en el cuaderno',
+            'ndocReg' => 'Número de registro en el cuaderno',
+            'ndocFolio' => 'Número de folios que contiene el documento',
         ];
     }
 }

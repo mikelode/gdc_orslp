@@ -38,20 +38,38 @@ class HomeController extends Controller {
 
         $vigentes = Archivador::select('*')
                         ->whereRaw('year(tarcDatePres) = year(now())')
-                        ->whereRaw('DATEDIFF(tarcDatePres,now()) <= 4')
+                        ->whereRaw('fnTramDateDiff(tarcDatePres, NOW()) <= 4')
                         ->count();
 
         $xvencer = Archivador::select('*')
                         ->whereRaw('year(tarcDatePres) = year(now())')
-                        ->whereRaw('DATEDIFF(tarcDatePres,now()) BETWEEN 5 AND 7')
+                        ->whereRaw('fnTramDateDiff(tarcDatePres, NOW()) BETWEEN 5 AND 7')
                         ->count();
 
         $vencidos = Archivador::select('*')
                         ->whereRaw('year(tarcDatePres) = year(now())')
-                        ->whereRaw('DATEDIFF(tarcDatePres,now()) > 7')
+                        ->whereRaw('fnTramDateDiff(tarcDatePres, NOW()) > 7')
                         ->count();
 
-        return view('tramite.home', compact('vigentes','xvencer','vencidos'));
+        $totaldocs = Archivador::select('*')
+                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->count();
+
+        $chartInfo = Document::select(\DB::raw('count(*) as docs, tdocDate'))
+                        ->groupBy('tdocDate')
+                        ->orderBy('tdocDate','desc')
+                        ->take(10)
+                        ->get();
+
+        $data = '';
+
+        foreach ($chartInfo as $key => $info) {
+            //array_push($data, array('fecha' => $info->tdocDate, 'cant' => $info->docs));
+            $data .= "{ fecha:'".$info->tdocDate."', cant:'".$info->docs."'}, ";
+        }
+        $data = substr($data, 0, -2);
+
+        return view('tramite.home', compact('vigentes','xvencer','vencidos','totaldocs','data'));
     }
 
     public function index_section(Request $request)

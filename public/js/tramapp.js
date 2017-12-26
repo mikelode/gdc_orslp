@@ -26,7 +26,7 @@ function showDocDetail(code)
 function showDerivDetail(code, hisId)
 {
     $.getJSON('derivation/detail/' + hisId).done( function(response){
-        console.log(response);
+        
         var output = "<table><tr><th>En atención al documento:</th><td>" + code + "</td></tr>" ;
         if(response.tipodoc != 'Sin documento')
         {
@@ -58,7 +58,6 @@ function showDerivDetail(code, hisId)
 
 function showOperationDetail(codeId)
 {
-    console.log(codeId);
 
     $.getJSON('operation/detail/' + codeId, function(response){
         
@@ -411,7 +410,23 @@ function guardar_documento(origen)
             }
             return myXhr;
         },
+    })
+    .fail(function(result, textStatus, xhr) {
+        var errors = result.responseJSON;
+        var rpta = '<ul>';
+
+        $.each(errors, function(i, er){
+            rpta = rpta + '<li>' + er[0] + '</li>';
+        });
+
+        rpta = rpta + '</ul>';
+
+        bootbox.alert({
+            message: 'Error:<br>Revise los campos ingresados.<br>' + rpta
+        });
     });
+    
+    
 }
 
 function terminar_edicion_documento(origen)

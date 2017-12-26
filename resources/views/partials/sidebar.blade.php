@@ -31,7 +31,7 @@
         <ul class="sidebar-menu">
             <li class="header">MENU</li>
             <!-- Optionally, you can add icons to the links -->
-            <li class="active treeview"><a href="javascript:void(0)" onclick="change_menu_to('homei')"><i class='fa fa-home'></i> <span>Inicio</span></a></li>
+            <li class="active treeview"><a href="{{ url('/') }}"><i class='fa fa-home'></i> <span>Inicio</span></a></li>
 
             @if(Auth::user()->can(5))
             <li><a href="javascript:void(0)" onclick="change_menu_register('doc/register')"><i class='glyphicon glyphicon-book'></i> <span>Gestión de Documentos</span></a></li>

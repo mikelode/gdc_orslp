@@ -35,7 +35,7 @@
                     <button type="button" id="btnEditarDoc" class="btn btn-info" style="width: 100px; display: none;" onclick="editar_documento('interno')">Editar</button>
                     @endif
                     @if(Auth::user()->can(3))
-                    <button type="button" id="btnEliminarDoc" class="btn btn-danger" style="width: 100px; display: none;" onclick="eliminar_documento('interno')">Eliminar</button>
+                    <button type="button" id="btnEliminarDoc" class="btn btn-danger" style="width: 100px; display: none;">Eliminar</button>
                     @endif
                 </div>
             </div>
@@ -169,7 +169,7 @@
                                         </div>
                                         <div class="col-md-3" style="padding-left: 3px;">
                                             <label class="lbl-frm">Fecha de Presentación (*)</label>
-                                            <input type="date" name="ndocFecha" id="docFecha" class="form-control input-sm" readonly required>
+                                            <input type="text" name="ndocFecha" id="docFecha" class="form-control input-sm" readonly required>
                                         </div>
                                     </div>
                                     <div class="row">

@@ -4,7 +4,7 @@
     <div class="col-md-12">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Lista de Asociaciones</h3>
+                <h3 class="box-title">Lista de Proyectos</h3>
                 <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#asocModal">Agregar Proyecto</a>
             </div>
             <div class="box-body no-padding">
@@ -16,7 +16,6 @@
                             <th>Nombre</th>
                             <th>Nombre Corto</th>
                             <th>Código Unificado</th>
-                            <th></th>
                         </tr>
                         @foreach($list_proy as $key=>$u)
                             <tr>
@@ -40,9 +39,6 @@
                                     <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="coduni" class="fldEditar">
                                     {{ $u->tpyCU }}
                                     </a>
-                                </td>
-                                <td id="{{ $u->tpyId }}">
-                                    <a data-id="{{ $u->tpyId }}">Editar</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -111,7 +107,7 @@ $(function(){
         $.post(url, data, function(response){
 
             if(response.msgId == '200'){
-                $('#tblProyecto tr:last').after('<tr><td>#</td><td>'+response.proy.tpyAnio+'</td><td>'+response.proy.tpyName+'</td><td>'+response.proy.tpyShortName+'</td><td>'+response.proy.tpyCU+'</td><td></td></tr>');
+                $('#tblProyecto tr:last').after('<tr><td>#</td><td>'+response.proy.tpyAnio+'</td><td>'+response.proy.tpyName+'</td><td>'+response.proy.tpyShortName+'</td><td>'+response.proy.tpyCU+'</td></tr>');
                 alert(response.msg);
             }
             else{

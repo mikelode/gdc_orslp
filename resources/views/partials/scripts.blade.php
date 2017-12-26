@@ -26,6 +26,10 @@
 <script src="{{  asset('/plugins/bootstrap-ajax-typeahead/js/bootstrap-typeahead.min.js') }}" type="text/javascript"></script>
 <!-- Bootstrap X-Editable -->
 <script src="{{  asset('/plugins/bootstrap3-editable/bootstrap3-editable/js/bootstrap-editable.min.js') }}" type="text/javascript"></script>
+<!-- Morris -->
+<script src="{{  asset('/plugins/morris/raphael.min.js') }}" type="text/javascript"></script>
+<script src="{{  asset('/plugins/morris/morris.min.js') }}" type="text/javascript"></script>
+
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
       Both of these plugins are recommended to enhance the
@@ -44,5 +48,13 @@
     });
 
     bootbox.setLocale('spanish');
+
+    var area_chart = Morris.Line({
+	  element: 'registro-chart',
+	  data: [<?php echo $data ?>],
+	  xkey: 'fecha',
+	  ykeys: ['cant'],
+	  labels: ['Cant']
+	});
 
 </script>

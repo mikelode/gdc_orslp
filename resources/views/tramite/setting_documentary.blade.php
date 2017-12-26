@@ -26,6 +26,7 @@
                         <!--<li><a href="javascript:void(0)"><i class="fa fa-suitcase"></i>Agregar Personal</a></li>-->
                         <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/add_doc')"><i class="fa fa-file-pdf-o"></i>Crear Tipos de Documento</a></li>
                         <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/list_proy')"><i class="fa  fa-university"></i>Listar Proyectos</a></li>
+                        <li><a href="javascript:void(0)" onclick="change_to_submenu('settings/list_depen')"><i class="fa  fa-sitemap"></i>Listar Dependencias</a></li>
                     </ul>
                 </div>
             </div>

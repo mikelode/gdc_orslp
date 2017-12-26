@@ -142,7 +142,7 @@
                             <label class="col-xs-5 control-label">Unidad Origen:</label>
                             <div class="col-xs-6">
                                 <select class="form-control" name="dep_source">
-                                    <option value="{{ Auth::user()->workplace->depID }}">{{ Auth::user()->workplace->depDsc }}</option>
+                                    <option value="{{ Auth::user()->workplace->depId }}">{{ Auth::user()->workplace->depDsc }}</option>
                                 </select>
                             </div>
                         </div>
@@ -151,7 +151,7 @@
                             <div class="col-xs-6">
                                 <select id="select2" class="form-control" multiple="multiple" data-placeholder="Elegir destino" name="dep_target[]" style="width: 100%">
                                     @foreach($dependencys as $dep)
-                                        <option value="{{ $dep->depID }}"> {{ $dep->depDsc }} </option>
+                                        <option value="{{ $dep->depId }}"> {{ $dep->depDsc }} </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -192,7 +192,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-xs-12" style="text-align: center;">Se atiende y deriva con el siguiente documento:</label>
-                            <input type="hidden" name="dep_source" value="{{ Auth::user()->workplace->depID }}">
+                            <input type="hidden" name="dep_source" value="{{ Auth::user()->workplace->depId }}">
                         </div>
                         <div class="form-group">
                             <label class="col-xs-5 control-label">Tipo de documento:</label>
@@ -221,7 +221,7 @@
                             <div class="col-xs-6">
                                 <select id="select2Dc" class="form-control" multiple="multiple" data-placeholder="Elegir destino" name="dep_target[]" style="width: 100%">
                                     @foreach($dependencys as $dep)
-                                        <option value="{{ $dep->depID }}"> {{ $dep->depDsc }} </option>
+                                        <option value="{{ $dep->depId }}"> {{ $dep->depDsc }} </option>
                                     @endforeach
                                 </select>
                             </div>

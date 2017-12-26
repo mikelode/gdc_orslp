@@ -40,7 +40,7 @@
             <li><a href="javascript:void(0)" onclick="change_menu_to('doc/menu')"><i class='glyphicon glyphicon-inbox'></i> <span>Bandeja de Documentos</span></a></li>
             @endif
             @if(Auth::user()->can(9))
-            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/consult')"><i class='glyphicon glyphicon-stats'></i> <span>Reportes</span></a></li>
+            <li><a href="javascript:void(0)" onclick="change_menu_to('doc/reports')"><i class='glyphicon glyphicon-stats'></i> <span>Reportes</span></a></li>
             @endif
             @if(Auth::user()->can(12))
             <li><a href="javascript:void(0)" onclick="change_menu_to('settings')"><i class='glyphicon glyphicon-cog'></i> <span>Configuración</span></a></li>

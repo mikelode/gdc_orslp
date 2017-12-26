@@ -662,3 +662,10 @@ function historial(fila){
         });
     }
 }
+
+function procesar_reporte(url, data)
+{
+    $.post(url,data,function(result){
+        $('#resultRows').html(result);
+    });
+}

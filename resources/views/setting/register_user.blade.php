@@ -48,7 +48,7 @@
                         <div class="col-md-10">
                             <select class="form-control input-sm" name="dependency_user">
                                 @foreach($dependencys as $dep)
-                                    <option value="{{ $dep->depID }}">{{ $dep->depDsc }}</option>
+                                    <option value="{{ $dep->depId }}">{{ $dep->depDsc }}</option>
                                 @endforeach
                             </select>
                         </div>

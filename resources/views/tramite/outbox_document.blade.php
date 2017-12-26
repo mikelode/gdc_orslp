@@ -95,7 +95,7 @@
                                     <label class="col-xs-5 control-label">Unidad Origen:</label>
                                     <div class="col-xs-6">
                                         <select class="form-control" name="dep_source">
-                                            <option value="{{ Auth::user()->workplace->depID }}">{{ Auth::user()->workplace->depDsc }}</option>
+                                            <option value="{{ Auth::user()->workplace->depId }}">{{ Auth::user()->workplace->depDsc }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -104,7 +104,7 @@
                                     <div class="col-xs-6">
                                         <select id="select2" class="form-control select2" multiple="multiple" data-placeholder="Agregar destinos" name="dep_target[]" style="width: 100%">
                                             @foreach($dependencys as $dep)
-                                                <option value="{{ $dep->depID }}"> {{ $dep->depDsc }} </option>
+                                                <option value="{{ $dep->depId }}"> {{ $dep->depDsc }} </option>
                                             @endforeach
                                         </select>
                                     </div>

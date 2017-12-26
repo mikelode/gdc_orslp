@@ -31,7 +31,6 @@ Route::get('auth/logout', 'Auth\AuthController@getLogout');
 Route::get('auth/register', 'Auth\AuthController@getRegister');
 Route::post('auth/register', 'Auth\AuthController@postRegister');
 
-
 Route::controllers([
     'users' => 'UsersController'
 ]);
@@ -118,8 +117,10 @@ Route::post('hist/doc/{id}',[
 
 Route::get('doc/reports',[
     'middleware' => ['acl:9'],
-    'uses' => 'Document\DocumentController@consultDocument'
+    'uses' => 'Document\DocumentController@reporteDocumentario'
 ]);
+
+Route::post('make/report','Document\DocumentController@procesarReporteDoc');
 
 
 /*
@@ -217,10 +218,6 @@ Route::post('settings/del_tdoc/{id}', [
  * */
 
 Route::get('getProfile/{id}', 'Document\SettingsController@showProfileUser');
-
-/*
- *  RESPORTES Y ESTADISTICAS
- * */
 
 
 /*PRUEBA DE AUTOCOMPLETADO*/

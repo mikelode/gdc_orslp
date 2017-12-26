@@ -16,6 +16,7 @@ use aidocs\Models\Arcparticular;
 use aidocs\Models\Document;
 use aidocs\Models\Historial;
 use aidocs\Models\ManagerDep;
+use aidocs\Models\Persona;
 use aidocs\Models\TipoDocumento;
 use aidocs\Models\Dependencia;
 use aidocs\Models\Vdestinatario;
@@ -365,6 +366,56 @@ class DocumentController extends Controller {
 		return false;
 	}
 
+	public function reporteDocumentario(Request $request)
+	{
+		$proy = Proyecto::all();
+		$tipos = TipoDocumento::all();
+		$pers = Persona::all();
+		$list_docs = Document::select('*')
+						->join('tramTipoDocumento','ttypDoc','=','tdocType')
+						->join('tramArchivador','tarcId','=','tdocExp')
+						->join('tramProyecto','tpyId','=','tdocProject')
+						->where('tarcYear',$request->period)
+						->orderby('tarcDatePres','DESC')
+						->get();
+
+		$view = view('tramite.report_document',compact('proy','tipos','pers','list_docs'));
+
+		if($request->ajax())
+		{
+			$sections = $view->renderSections();
+			return $sections['main-content'];
+		}
+		return $view;
+	}
+
+	public function procesarReporteDoc(Request $request)
+	{
+		$list_docs = Document::select('*')
+					->join('tramTipoDocumento','ttypDoc','=','tdocType')
+					->join('tramArchivador','tarcId','=','tdocExp')
+					->join('tramProyecto','tpyId','=','tdocProject')
+					->whereRaw('year(tdocDate) = '.$request->perio);
+
+		if($request->ndocPy != 'all'){
+			$list_docs = $list_docs->where('tdocProject',$request->ndocPy);
+		}
+
+		if($request->ndocTipo != 'all'){
+			$list_docs = $list_docs->where('tdocType',$request->ndocTipo);
+		}
+
+		if($request->ndocPers != 'all'){
+			$list_docs = $list_docs->where('tdocDni', $request->ndocPers); // DNI se almacena el ID de la tabla persona que guarda a los trabajadores del área de supervision
+		}
+
+		$list_docs = $list_docs->get();
+
+		$view = view('tramite.report_documentPage',compact('list_docs'));
+
+		return $view;
+	}
+
 	public function consultDocument(Request $request)
 	{
 		$list_docs = Document::select('tarcExp','tdocId','ttypDesc','tdocDni','tdocDate','tdocStatus','tdocSubject','tdocRegistro')
@@ -564,6 +615,8 @@ class DocumentController extends Controller {
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
                     ->where('tarcYear',$request->period);*/
+
+		// plazo se refiere al tiempo transcurrido de atención
 
         /* MySQL Version */
         $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))

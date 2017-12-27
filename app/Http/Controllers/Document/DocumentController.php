@@ -95,15 +95,33 @@ class DocumentController extends Controller {
 		return $count + 1;
 	}
 
+	public function storeExpedient($code_exp,$estado,$proy,$titulo)
+	{
+		$exp = new Archivador();
+		$exp->tarcExp = $code_exp;
+		$exp->tarcDatepres = Carbon::now(); // Fecha de creacion del archivador
+		$exp->tarcStatus = $estado;
+		$exp->created_at = Carbon::now();
+		$exp->created_time_at = Carbon::now()->toTimeString();
+		$exp->updated_at = Carbon::now();
+		$exp->tarcSource = 'int';
+		$exp->tarcYear = Carbon::now()->year;
+		$exp->tarcAsoc = $proy;
+		$exp->tarcTitulo = $titulo;
+
+		if($exp->save())
+			return $exp->tarcId;
+		else
+			return 500;
+	}
+
 	public function storeDocument(StoreDocumentRequest $request)
 	{
 		try{
 			$exception = DB::transaction(function($request) use ($request){
 
 				if($request->ndocProceso == "no"){
-					$exp = new Archivador();
-					$correlative_exp = Archivador::all()->count() + 1;
-					//$code_exp = $this->makeUniqueCode('EXP',Carbon::now()->year,$correlative_exp);
+					
 					$pref = 'EXP';
 					$code_exp = '';
 					/* SQL Version
@@ -116,21 +134,12 @@ class DocumentController extends Controller {
 					/* MySQL Version */
 					$stmt = DB::select('call generar_codigo(?,?)', array($pref, $code_exp));
 					$code_exp = $stmt[0]->codigo;
+
+					$expId = $this->storeExpedient($code_exp, 'aperturado', $request->ndocProy, $request->ndocTitulo);
 					
-					$exp->tarcExp = $code_exp;
-					$exp->tarcDatepres = Carbon::now(); // Fecha de creacion del archivador
-					$exp->tarcStatus = 'aperturado';
-					$exp->created_at = Carbon::now();
-					$exp->created_time_at = Carbon::now()->toTimeString();
-					$exp->updated_at = Carbon::now();
-					$exp->tarcSource = 'int';
-					$exp->tarcYear = Carbon::now()->year;
-					$exp->tarcAsoc = $request->ndocProy;
-					$exp->tarcTitulo = $request->ndocTitulo;
-
-					$exp->save();
-
-					$expId = $exp->tarcId;
+					if($expId == '500')
+						throw new Exception("No se pudo registrar el proceso documentario");
+						
 				}
 				else if($request->ndocProceso == "si"){
 					$docId = $request->ndocReferencia;
@@ -143,8 +152,6 @@ class DocumentController extends Controller {
 
 					if($docRef[0]->tdocStatus == 'registrado' || $docRef[0]->thisFlagD == false)
 						throw new Exception("El documento al que hace referencia debe estar derivado, por favor ubíquelo y registre su derivación");
-						
-
 				}
 
 				$file = $request->file('ndocFile');
@@ -270,7 +277,7 @@ class DocumentController extends Controller {
 			return is_null($exception) ? "El Documento fue registrado con éxito" : $exception;
 
 		}catch(Exception $e){
-			return 'Error encontrado:'.$e->getMessage()."\n";
+			return 'Error encontrado: '.$e->getMessage()."\n";
 		}
 	}
 

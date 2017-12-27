@@ -65,7 +65,7 @@ class HomeController extends Controller {
 
         foreach ($chartInfo as $key => $info) {
             //array_push($data, array('fecha' => $info->tdocDate, 'cant' => $info->docs));
-            $data .= "{ fecha:'".$info->tdocDate."', cant:'".$info->docs."'}, ";
+            $data .= "{ fecha:'".$info->tdocDate."', value:".$info->docs."}, ";
         }
         $data = substr($data, 0, -2);
 

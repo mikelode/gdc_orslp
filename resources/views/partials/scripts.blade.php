@@ -49,12 +49,13 @@
 
     bootbox.setLocale('spanish');
 
-    var area_chart = Morris.Line({
+    var area_chart = Morris.Area({
 	  element: 'registro-chart',
 	  data: [<?php echo $data ?>],
 	  xkey: 'fecha',
-	  ykeys: ['cant'],
-	  labels: ['Cant']
+	  ykeys: ['value'],
+	  labels: ['Cantidad'],
+    fillOpacity: 0.5,
 	});
 
 </script>

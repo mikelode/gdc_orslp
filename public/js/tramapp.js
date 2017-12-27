@@ -684,3 +684,21 @@ function procesar_reporte(url, data)
         $('#resultRows').html(result);
     });
 }
+
+function eliminar_documento(origen)
+{
+    var confirma = confirm('¿Está seguro de eliminar el documento seleccionado?');
+    if(!confirma) return;
+
+    var data = $('#frm_reg_doc').serialize();
+    var url = 'doc/delete';
+
+    $.post(url, data, function(response){
+        
+        alert(response.msg);
+        if(response.msgId == 200)
+        {   
+            change_menu_register('doc/register');
+        }
+    });
+}

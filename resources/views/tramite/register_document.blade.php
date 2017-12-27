@@ -35,7 +35,7 @@
                     <button type="button" id="btnEditarDoc" class="btn btn-info" style="width: 100px; display: none;" onclick="editar_documento('interno')">Editar</button>
                     @endif
                     @if(Auth::user()->can(3))
-                    <button type="button" id="btnEliminarDoc" class="btn btn-danger" style="width: 100px; display: none;">Eliminar</button>
+                    <button type="button" id="btnEliminarDoc" class="btn btn-danger" style="width: 100px; display: none;" onclick="eliminar_documento('interno')">Eliminar</button>
                     @endif
                 </div>
             </div>

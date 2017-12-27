@@ -134,9 +134,17 @@ class DocumentController extends Controller {
 				}
 				else if($request->ndocProceso == "si"){
 					$docId = $request->ndocReferencia;
-					$docRef = Document::find($docId); // expediente al que pertenece el documento registrado con referencia
-					$expId = $docRef->tdocExp;
-					$code_exp = $docRef->tdocExp1;
+					$docRef = Document::select('*')
+								->join('tramHistorial','thisDoc','=','tdocId')
+								->where('tdocId',$docId)
+								->get(); // expediente al que pertenece el documento registrado con referencia
+					$expId = $docRef[0]->tdocExp;
+					$code_exp = $docRef[0]->tdocExp1;
+
+					if($docRef[0]->tdocStatus == 'registrado' || $docRef[0]->thisFlagD == false)
+						throw new Exception("El documento al que hace referencia debe estar derivado, por favor ubíquelo y registre su derivación");
+						
+
 				}
 
 				$file = $request->file('ndocFile');
@@ -661,5 +669,67 @@ class DocumentController extends Controller {
         $view = view('tramite.tabla_bandeja_documentos',compact('inbox'));
 
         return $view;
+    }
+
+    public function deleteDocument(Request $request)
+    {
+    	try{
+
+    		$exception = DB::transaction(function() use ($request){
+
+    			$doc = Document::find($request->ndocId);
+
+    			$docInExp = Document::select('*')
+    						->where('tdocExp', $doc->tdocExp)
+    						->count();
+
+    			if($doc->tdocRef == null && $docInExp == 1){
+
+					$exp = Archivador::find($doc->tdocExp);
+					$doc->delete();
+					$exp->delete();
+
+    			}
+    			else if($docInExp > 1){
+    				$docId = $doc->tdocId;
+    				
+    				$hist = Historial::select('*')->where('thisDoc',$docId)->get();
+
+					$histId = $hist[0]->thisId;
+
+    				if(count($hist)>1) throw new Exception("No se puede eliminar, existen mas de 1 registro al que hace referencia");
+    				$doc->delete();
+    				
+    				$histPrev = Historial::select('*')->where('thisIdRef',$histId)->get();
+    				$histPrev = Historial::find($histPrev[0]->thisId);
+    				$histPrev->thisDepT = Auth::user()->tusId;
+    				$histPrev->thisFlagD = false;
+    				$histPrev->thisDateTimeD = null;
+    				$histPrev->thisDscD = null;
+    				$histPrev->thisIdRef = null;
+    				$histPrev->save();
+
+    				$docPrev = Document::find($histPrev->thisDoc);
+    				$docPrev->tdocStatus = 'registrado';
+    				$docPrev->save();
+    				
+    			}
+    		});
+
+    		if(is_null($exception)){
+    			$msg = "Documento eliminado";
+    			$msgId = 200;
+    		}
+    		else{
+    			$msg = "No se pudo eliminar el documento seleccionado";
+    			$msgId = 500;
+    		}
+
+    	}catch(Exception $e){
+    		$msg = 'Error al eliminar el documento: '.$e->getMessage();
+    		$msgId = 500;
+    	}
+
+    	return response()->json(compact('msg','msgId'));
     }
 } 

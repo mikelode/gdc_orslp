@@ -64,6 +64,7 @@ Route::get('doc/manager', 'Document\DocumentController@getManagerDocument');
 Route::get('doc/sender/{dni}', 'Document\DocumentController@getSenderDocument');
 Route::post('doc/edit','Document\DocumentController@storeEditDocument');
 Route::get('doc/expediente','Document\DocumentController@getExpediente');
+Route::post('doc/delete','Document\DocumentController@deleteDocument');
 
 /*
  *  BANDEJA DE ENTRADA DE DOCUMENTOS

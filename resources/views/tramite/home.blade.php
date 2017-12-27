@@ -9,7 +9,7 @@
 <section class="content-header">
     <h1>
         Número de procesos por atender:
-        <small>Cada proceso representa un conjunto de documentos relacionados para atender el proceso</small>
+        <small>Cada proceso representa un conjunto de documentos relacionados para atender un documento principal</small>
     </h1>
 </section>
 
@@ -20,7 +20,7 @@
                 <div class="small-box bg-aqua">
                     <div class="inner">
                         <h3>{{ $totaldocs }}</h3>
-                        <p>Documentos Registrados</p>
+                        <p>Procesos Registrados</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-briefcase"></i>
@@ -35,7 +35,7 @@
                 <div class="small-box bg-green">
                     <div class="inner">
                         <h3>{{ $vigentes }}</h3>
-                        <p>Documentos Vigentes</p>
+                        <p>Procesos Vigentes</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-document"></i>
@@ -50,7 +50,7 @@
                 <div class="small-box bg-orange">
                     <div class="inner">
                         <h3>{{ $xvencer }}</h3>
-                        <p>Documentos Por Vencer</p>
+                        <p>Procesos Por Vencer</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-clock"></i>
@@ -65,7 +65,7 @@
                 <div class="small-box bg-red">
                     <div class="inner">
                         <h3>{{ $vencidos }}</h3>
-                        <p>Documentos Vencidos</p>
+                        <p>Procesos Vencidos</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-alert-circled"></i>

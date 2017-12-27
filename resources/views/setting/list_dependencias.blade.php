@@ -23,12 +23,12 @@
                                     {{ $u->depId }}
                                 </td>
                                 <td>
-                                    <a href="#" data-pk={{ $u->depId }} data-type="textarea" data-name="name" class="editable editable-click fldEditar">
+                                    <a href="#" data-pk={{ $u->depId }} data-type="textarea" data-name="name" class="fldEditar" style="white-space: normal;">
                                     {{ $u->depDsc }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="#" data-pk={{ $u->depId }} data-type="textarea" data-name="shortname" class="editable editable-click fldEditar">
+                                    <a href="#" data-pk={{ $u->depId }} data-type="textarea" data-name="shortname" class="fldEditar" style="white-space: normal;">
                                     {{ $u->depDscC }}
                                     </a>
                                 </td>

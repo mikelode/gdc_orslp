@@ -353,10 +353,11 @@ function editar_documento(origen)
         $('#docFile').prop('disabled', false);
         $('#withoutDigFile').show();
 
+        /* para evitar que edite si pertenece o no a un proceso*/
         $('#docProceso').prop('disabled', false);
         $('#docTitulo').prop('readonly', false);
         $('#docAccion').prop('disabled', false);
-        $('#docRefRegistro').prop('readonly', false);
+        $('#docRefRegistro').prop('readonly', true);
         $('#docReferencia').prop('readonly', false);
 
         $('#btnGuardarEdicionDoc').show();
@@ -456,7 +457,7 @@ function terminar_edicion_documento(origen)
             }
             else
             {
-                alert(respone.msg);
+                alert(response.msg);
             }
         },
         xhr: function(){
@@ -527,7 +528,7 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
     var data = {'posicion': pos, 'docActual': actual, 'origen': origen};
 
     //if(actual == '') return;
-    if($('#btnEditarDoc').html() == 'Cancelar') return;
+    if($('#btnEditarDoc').html() == 'Cancelar' && origen == 'busqueda') return;
 
     $.get(url, data, function(response){
         

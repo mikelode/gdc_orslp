@@ -387,7 +387,7 @@ class SettingsController extends Controller
             });
 
             if(is_null($exception)){
-                $msg = 'Afiliado registrado correctamente';
+                $msg = 'Trabajador registrado correctamente';
                 $msgId = 200;
             }
             else{

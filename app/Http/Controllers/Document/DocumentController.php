@@ -281,20 +281,34 @@ class DocumentController extends Controller {
 
 				$doc = Document::find($request->ndocId);
 
-				$exp = Archivador::find($doc->tdocExp);
-				$exp->updated_at = Carbon::now();
-				$exp->tarcAsoc = $request->ndocProy;
+				/* Verificamos si se esta cambiando de proceso documentario */
+				$actualRef = $doc->tdocRef;
+				$nuevaRef = $request->ndocReferencia;
 
-				if($request->ndocProceso == "no"){	// falta especificar bien los datos a modificarse pues al variar se convierte en proceso o expediente
-					$exp->tarcTitulo = $request->ndocTitulo;
+				if($actualRef == $nuevaRef){
+
+					$exp = Archivador::find($doc->tdocExp);
+					$exp->updated_at = Carbon::now();
+					$exp->tarcAsoc = $request->ndocProy;
+
+					if($request->ndocProceso == "no"){	// falta especificar bien los datos a modificarse pues al variar se convierte en proceso o expediente
+						$exp->tarcTitulo = $request->ndocTitulo;
+					}
+
+					$exp->save();
+
 				}
-
-				$exp->save();
+				else{
+					$newDocRef = Document::find($nuevaRef);
+					$exp = Archivador::find($newDocRef->tdocExp);
+				}
 
 				$file = $request->file('ndocFile');
 				$code_exp = $exp->tarcExp;
 				$code_doc = $doc->tdocCod;
 				
+				$doc->tdocExp = $exp->tarcId;
+				$doc->tdocExp1 = $code_exp; 
 				$doc->tdocDependencia = $request->ndocDepend;
 				$doc->tdocProject = $request->ndocProy;
 				$doc->tdocSender = $request->ndocSender;
@@ -308,9 +322,27 @@ class DocumentController extends Controller {
 				$doc->tdocSubject = $request->ndocAsunto;
 				$doc->tdocDetail = $request->ndocDetalle;
 
-				if($request->ndocProceso == "si"){
+				if($request->ndocProceso == "si"){ /* actualizamos las refencias en la tabla documento e historial */
 					$doc->tdocAccion = $request->ndocAccion;
-					$doc->tdocRef = $request->ndocReferencia;
+					$doc->tdocRef = $request->ndocReferencia; // datos del nuevo doc al que hace referencia
+
+					if($actualRef != $nuevaRef){
+						$docPrevHist = Document::find($actualRef)->historial; // actualizamos datos del doc anterior ref
+						$docPrevHist->thisIdRef = null;
+						$docPrevHist->save();
+
+						$docNewHist = Document::find($nuevaRef)->historial;
+
+						if($docNewHist->thisFlagD == false)
+							throw new Exception("El documento al que hace referencia debe estar derivado, por favor ubíquelo y registre su derivación");
+
+						$histId = Historial::select('*')
+									->where('thisDoc',$doc->tdocId)
+									->get();
+						
+						$docNewHist->thisIdRef = $histId[0]->thisId;
+						$docNewHist->save();
+					}
 				}
 
 				if($file){ // entra aqui si esta cambiando de archivo
@@ -343,7 +375,7 @@ class DocumentController extends Controller {
             }
 
 		}catch(Exception $e){
-			$msg = 'Error encontrado:' . $e . "\n";
+			$msg = 'Error encontrado:' . $e->getMessage() . "\n";
             $idMsg = 500;
 		}
 
@@ -698,20 +730,21 @@ class DocumentController extends Controller {
 					$histId = $hist[0]->thisId;
 
     				if(count($hist)>1) throw new Exception("No se puede eliminar, existen mas de 1 registro al que hace referencia");
-    				$doc->delete();
+    				$doc->delete(); // en cascada se elimina su registro en historial que le corresponde
     				
     				$histPrev = Historial::select('*')->where('thisIdRef',$histId)->get();
     				$histPrev = Historial::find($histPrev[0]->thisId);
+    				/* se comenta por el doc mantiene su estado derivado, solo se anula al que hacia ref 
     				$histPrev->thisDepT = Auth::user()->tusId;
-    				$histPrev->thisFlagD = false;
+    				$histPrev->thisFlagD = false; 
     				$histPrev->thisDateTimeD = null;
-    				$histPrev->thisDscD = null;
+    				$histPrev->thisDscD = null;*/
     				$histPrev->thisIdRef = null;
     				$histPrev->save();
 
-    				$docPrev = Document::find($histPrev->thisDoc);
+    				/*$docPrev = Document::find($histPrev->thisDoc);
     				$docPrev->tdocStatus = 'registrado';
-    				$docPrev->save();
+    				$docPrev->save();*/
     				
     			}
     		});

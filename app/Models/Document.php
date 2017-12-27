@@ -10,8 +10,8 @@ class Document extends Model
     protected  $primaryKey = 'tdocId';
     public $timestamps = false;
 
-    public function todo()
+    public function historial()
     {
-        return $this->hasManyThrough('aidocs\Models\Historial','aidocs\Models\Archivador','tarcDoc','thisExp');
+        return $this->hasOne('aidocs\Models\Historial','thisDoc','tdocId');
     }
 }

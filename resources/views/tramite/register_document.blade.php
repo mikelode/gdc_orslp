@@ -169,7 +169,7 @@
                                         </div>
                                         <div class="col-md-3" style="padding-left: 3px;">
                                             <label class="lbl-frm">Fecha de Presentación (*)</label>
-                                            <input type="text" name="ndocFecha" id="docFecha" class="form-control input-sm" readonly required>
+                                            <input type="text" name="ndocFecha" id="docFecha" class="form-control" readonly required>
                                         </div>
                                     </div>
                                     <div class="row">

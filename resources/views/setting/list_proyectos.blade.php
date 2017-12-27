@@ -21,22 +21,22 @@
                             <tr>
                                 <td>{{ $key + 1 }}</td>
                                 <td>
-                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="anio" class="fldEditar">
+                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="anio" class="fldEditar" style="white-space: normal;">
                                     {{ $u->tpyAnio }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="name" class="fldEditar">
+                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="name" class="fldEditar" style="white-space: normal;">
                                     {{ $u->tpyName }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="shortname" class="fldEditar">
+                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="shortname" class="fldEditar" style="white-space: normal;">
                                     {{ $u->tpyShortName }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="coduni" class="fldEditar">
+                                    <a href="#" data-pk={{ $u->tpyId }} data-type="textarea" data-name="coduni" class="fldEditar" style="white-space: normal;">
                                     {{ $u->tpyCU }}
                                     </a>
                                 </td>
@@ -118,6 +118,9 @@ $(function(){
     })
 
     $('.fldEditar').editable({
+        title: 'Ingrese el dato',
+        rows: 5,
+        emptytext: 'Vacío',
         url: 'settings/updt_proy',
         params: {_token: token},
         success: function(response, newValue){

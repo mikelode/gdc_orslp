@@ -528,7 +528,14 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
     var data = {'posicion': pos, 'docActual': actual, 'origen': origen};
 
     //if(actual == '') return;
-    if($('#btnEditarDoc').html() == 'Cancelar' && origen == 'busqueda') return;
+    if($('#btnEditarDoc').html() == 'Cancelar' && origen == 'busqueda'){
+        alert('No puede mostrar el documento seleccionado, mientras esta editando otro documento');
+        return;
+    }
+    if($('#btnNuevoDoc').html() == 'Cancelar' && origen == 'busqueda'){
+        alert('No puede mostrar el documento seleccionado, mientras esta registro un nuevo documento')
+        return;
+    }
 
     $.get(url, data, function(response){
         

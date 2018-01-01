@@ -15,7 +15,7 @@
         <div class="panel panel-primary" style="border: none; margin-bottom: 0;">
             <div class="panel-heading" style="overflow: hidden">
                 <span style="float: left; height: 34px; padding: 5px; font-size: 20px; font-weight: bold">REGISTRO DE INGRESO:</span>
-                <input type="text" class="form-control" style="width: 60px; float: left" id="periodoTramite" value="{{ Carbon\Carbon::now()->year }}" readonly>
+                <input type="text" class="form-control" style="width: 60px; float: left" id="periodoTramite" value="{{ \Session::get('periodo') }}" readonly>
                 <div class="input-group" style="float: left;">
                     <input type="text" class="form-control" style="width: 160px; float: left; margin-left: 3px" id="docId" name="ndocId" onkeydown="ejecutar_teclado(event,'interno')" readonly>
                     <span class="input-group-btn" style="float: left;">

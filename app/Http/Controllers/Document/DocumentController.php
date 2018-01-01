@@ -21,6 +21,7 @@ use aidocs\Models\TipoDocumento;
 use aidocs\Models\Dependencia;
 use aidocs\Models\Vdestinatario;
 use Illuminate\Support\Facades\DB;
+use Session;
 
 
 class DocumentController extends Controller {
@@ -40,6 +41,7 @@ class DocumentController extends Controller {
 		$document = Document::select('*')
 						->join('tramArchivador','tarcId','=','tdocExp')
 						->join('tramTipoDocumento','ttypDoc','=','tdocType')
+						->whereRaw('year(tdocDate) = '.Session::get('periodo'))
 						->orderby('tdocId','DESC')
 						->take(1)
 						->get();
@@ -79,20 +81,6 @@ class DocumentController extends Controller {
 			return $sender;
 		}
 		return false;
-	}
-
-	public function makeUniqueCode($acronimo, $year, $correlative)
-	{
-		$partial_year = $year - 2000;
-		$new_correlative = substr('00000'.$correlative, -5);
-		$new_code = $acronimo.$partial_year.$new_correlative;
-		return $new_code;
-	}
-
-	public function numberDocument()
-	{
-		$count = Document::all()->count();
-		return $count + 1;
 	}
 
 	public function storeExpedient($code_exp,$estado,$proy,$titulo)
@@ -422,7 +410,7 @@ class DocumentController extends Controller {
 						->join('tramTipoDocumento','ttypDoc','=','tdocType')
 						->join('tramArchivador','tarcId','=','tdocExp')
 						->join('tramProyecto','tpyId','=','tdocProject')
-						->where('tarcYear',$request->period)
+						->where('tarcYear',Session::get('periodo'))
 						->orderby('tarcDatePres','DESC')
 						->get();
 
@@ -442,7 +430,7 @@ class DocumentController extends Controller {
 					->join('tramTipoDocumento','ttypDoc','=','tdocType')
 					->join('tramArchivador','tarcId','=','tdocExp')
 					->join('tramProyecto','tpyId','=','tdocProject')
-					->whereRaw('year(tdocDate) = '.$request->perio);
+					->whereRaw('year(tdocDate) = '.Session::get('periodo'));
 
 		if($request->ndocPy != 'all'){
 			$list_docs = $list_docs->where('tdocProject',$request->ndocPy);
@@ -468,7 +456,7 @@ class DocumentController extends Controller {
 		$list_docs = Document::select('tarcExp','tdocId','ttypDesc','tdocDni','tdocDate','tdocStatus','tdocSubject','tdocRegistro')
 							->join('tramTipoDocumento','ttypDoc','=','tdocType')
 							->join('tramArchivador','tarcExp','=','tdocExp1')
-							->where('tarcYear',$request->period)
+							->where('tarcYear',Session::get('periodo'))
 							->orderby('tarcDatePres','DESC')
 							->get();
 		$asoc = Proyecto::select('tpyId','tpyName')->get();
@@ -661,7 +649,7 @@ class DocumentController extends Controller {
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                    ->where('tarcYear',$request->period);*/
+                    ->where('tarcYear',Session::get('periodo'));*/
 
 		// plazo se refiere al tiempo transcurrido de atención
 
@@ -670,7 +658,7 @@ class DocumentController extends Controller {
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                    ->where('tarcYear',$request->period);
+                    ->where('tarcYear',Session::get('periodo'));
 
         if($campo == 'proyecto'){
         	$inbox = $inbox->where('tdocRef',null)
@@ -681,7 +669,7 @@ class DocumentController extends Controller {
 
         	$doc = Document::select('tdocId','tdocExp')
         				->join('tramArchivador','tarcId','=','tdocExp')
-        				->where('tarcYear',$request->period)
+        				->where('tarcYear',Session::get('periodo'))
         				->where('tdocRegistro',$request->key)
         				->get();
 
@@ -692,7 +680,7 @@ class DocumentController extends Controller {
         if($campo == 'asunto'){
         	$doc = Document::select('tdocId','tdocExp')
         				->join('tramArchivador','tarcId','=','tdocExp')
-        				->where('tarcYear',$request->period)
+        				->where('tarcYear',Session::get('periodo'))
         				->where('tdocSubject','like','%'.trim($request->key).'%')
         				->get();
 

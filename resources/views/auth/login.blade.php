@@ -1,7 +1,7 @@
 @extends('auth.auth')
 
 @section('htmlheader_title')
-    DOCS-AGROIDEAS
+    DOCS-SUPERVISION
 @endsection
 
 @section('content')

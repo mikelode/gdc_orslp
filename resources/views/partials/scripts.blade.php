@@ -17,6 +17,13 @@
 <!-- DataTables -->
 <!--<script src="{{ asset('/plugins/DataTables/datatables.min.js') }}" type="text/javascript"></script>-->
 <script src="{{ asset('/plugins/DataTables/jquery.dataTables.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/dataTables.buttons.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/buttons.flash.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/jszip.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/pdfmake.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/vfs_fonts.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/buttons.html5.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/plugins/DataTables/buttons.print.min.js') }}" type="text/javascript"></script>
 <!-- Momment para el Datetimepicker -->
 <script src="{{ asset('/plugins/Moment/min/moment.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('/plugins/Moment/locale/es.js') }}" type="text/javascript"></script>
@@ -49,13 +56,27 @@
 
     bootbox.setLocale('spanish');
 
+    $('#dtpPeriodo').datetimepicker({
+        format: "YYYY",
+        viewMode: 'years'
+    }).on('dp.change', function(e) {
+
+      var periodo = e.date._d.getFullYear();
+      var oldPeriodo = e.date._d.getFullYear();
+      
+      $.get('period/change', {'year':periodo, 'oldyear': oldPeriodo}, function(response){
+        location.reload();
+      });
+
+    });
+
     var area_chart = Morris.Area({
-	  element: 'registro-chart',
-	  data: [<?php echo $data ?>],
-	  xkey: 'fecha',
-	  ykeys: ['value'],
-	  labels: ['Cantidad'],
-    fillOpacity: 0.5,
-	});
+  	  element: 'registro-chart',
+  	  data: [<?php echo $data ?>],
+  	  xkey: 'fecha',
+  	  ykeys: ['value'],
+  	  labels: ['Cantidad'],
+      fillOpacity: 0.5,
+  	});
 
 </script>

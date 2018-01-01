@@ -13,7 +13,11 @@
 
 Route::get('controlador','WelcomeController@index');
 
-Route::get('/','HomeController@index');
+Route::get('/',[
+    'as' =>'raiz',
+    'uses' => 'HomeController@index'
+]);
+
 Route::get('homei','HomeController@index_section');
 
 /*Route::get('/', function () {
@@ -42,6 +46,8 @@ Route::get('example',function(){
     return view('examples/template',compact('user'));
 
 });
+
+Route::get('period/change', 'Document\SettingsController@getChangePeriodo');
 
 Route::get('fire', function(){
     //event(new \aidocs\Events\TramiteEvent());

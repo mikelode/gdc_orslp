@@ -19,7 +19,7 @@
         <!-- search form (Optional) -->
         <div class="sidebar-form">
             <div class="input-group">
-                <input type="text" id="period_sys" class="form-control" value="{{ Carbon\Carbon::now()->year }}" style="text-align: center;" />
+                <input type="text" id="period_sys" class="form-control" value="{{ \Session::get('periodo') }}" style="text-align: center;" readonly="readonly" />
               <span class="input-group-btn">
                 <div name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-calendar"></i></div>
               </span>

@@ -1,11 +1,11 @@
 @section('htmlheader_title')
-    Consulta y Seguimiento Documentario
+    Consulta y Reporte Documentario
 @endsection
 
 @section('main-content')
 <section class="content-header">
     <h1>
-        Consulta y Seguimiento Documentario
+        Consulta y Reporte Documentario
         <small>@yield('contentheader_description')</small>
     </h1>
 </section>
@@ -87,6 +87,10 @@
 $(document).ready(function(){
 
     $('#resultTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'excel', 'pdf', 'print'
+        ],
         "language":{
             "url": "plugins/DataTables/Spanish.json"
         },

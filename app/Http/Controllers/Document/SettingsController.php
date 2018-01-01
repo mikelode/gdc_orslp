@@ -3,6 +3,7 @@
 namespace aidocs\Http\Controllers\Document;
 
 use Exception;
+use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -559,5 +560,15 @@ class SettingsController extends Controller
         }
 
         return response()->json(compact('success','msg'));
+    }
+
+    public function getChangePeriodo(Request $request)
+    {
+        $periodo = $request->year;
+        $oldPeriodo = $request->oldyear;
+
+        Session::put('periodo',$periodo);
+
+        return redirect('/');
     }
 }

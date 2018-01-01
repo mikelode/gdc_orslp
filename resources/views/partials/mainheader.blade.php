@@ -21,6 +21,17 @@
         </a>
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
+            <form class="navbar-form navbar-left">
+                <div class="btn btn-default">Año</div>
+                <div class="form-group">
+                    <div class="input-group date" id="dtpPeriodo">
+                        <input type="text" class="form-control" value="{{ \Session::get('periodo') }}">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </form>
             <ul class="nav navbar-nav">
                 <!-- Messages: style can be found in dropdown.less-->
                 <li class="dropdown messages-menu">

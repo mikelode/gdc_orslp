@@ -30,6 +30,7 @@
     <!-- datatables -->
     <!--<link href="{{ asset('/plugins/DataTables/datatables.min.css') }}" rel="stylesheet" type="text/css">-->
     <link href="{{ asset('/plugins/DataTables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('/plugins/DataTables/buttons.dataTables.min.css') }}" rel="stylesheet" type="text/css">
     <!-- Bootstrap datetimepicker -->
     <link href="{{ asset('/plugins/Bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css">
     <!-- Bootstrap X-Editable -->

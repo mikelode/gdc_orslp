@@ -9,6 +9,7 @@
 namespace aidocs\Http\Controllers\Document;
 
 use Exception;
+use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,201 +32,56 @@ class HistorialController extends Controller {
         $this->middleware('auth');
     }
 
-    public function storeHistorialDerived(DeriveDocumentRequest $request)
+    public function getHistorialDoc(Request $request) // para mostrar la bandeja de entrada
     {
-        /* derivación simple */
-        DB::transaction(function($request) use ($request){
+        /*$inbox = Historial::select('*')
+            ->join('tramDocumento','tdocCod','=','thisDoc1')
+            ->join('tramArchivador','tarcExp','=','tdocExp1')
+            //->join('tramDependencia','thisDepS','=','depId')
+            //->where('thisDepT',Auth::user()->tusWorkDep)
+            //->where('thisDepS','<>',Auth::user()->tusWorkDep)
+            ->where('tarcYear',$request->period)
+            ->orderby('tdocId','DESC')
+            ->get();*/
 
-            if(count($request->dep_target)>0)
-            {
-                foreach($request->dep_target as $d)
-                {
-                    $hist_copy = new Historial();
+            // se elige tarcdatepres pues guarda la fecha de registro del documento origen y de reapertura para actualizar su vigencia
 
-                    $hist_copy->thisExp = $request->expedient;
-                    $hist_copy->thisDoc = $request->document;
-                    $hist_copy->thisDepS = $request->dep_source;
-                    $hist_copy->thisDepT = $d;
-                    $hist_copy->thisFlagR = false;
-                    $hist_copy->thisFlagA = false;
-                    $hist_copy->thisFlagD = false;
-                    $hist_copy->rec_date_at = Carbon::now()->toDateString();
-                    $hist_copy->rec_time_at = Carbon::now()->toTimeString();
-                    $hist_copy->thisIdSourceD = $request->kyId;
-                    $hist_copy->save();
+        /* SQL Version
+        $inbox = Document::select(DB::raw('*,DATEDIFF(day,tarcDatePres,GETDATE()) as plazo'))
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->join('tramProyecto','tpyId','=','tdocProject')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->where('tarcYear',$request->period)
+                    ->where('tdocRef',null)
+                    ->orderby('tdocId','DESC')
+                    ->get();*/
 
-                    unset($hist_copy);
-                }
-            }
+        /* MySQL Version */
+        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))
+                    ->join('tramArchivador','tarcId','=','tdocExp')
+                    ->join('tramProyecto','tpyId','=','tdocProject')
+                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->where('tarcYear',Session::get('periodo'))
+                    ->where('tdocRef',null)
+                    ->orderby('tdocId','DESC')
+                    ->get();
 
-            $update_hist = Historial::find($request->kyId);
-            $update_hist->thisFlagD = true;
-            $update_hist->thisDscD = strtoupper($request->dsc_derived);
-            $update_hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
-            $update_hist->save();
+        $dependencys = Dependencia::select('*')
+            ->where('depActive',1)
+            ->get();
 
-            $update_filer = Archivador::find($request->expedient);
-            $update_filer->tarcStatus = 'En Proceso';
-            $update_filer->updated_at = Carbon::now()->toDateString();
-            $update_filer->save();
+        $tipos = TipoDocumento::where('ttypShow',true)->get();
+        $proyectos = Proyecto::all();
 
-        });
-    }
+        $view = view('tramite.inbox_document',compact('inbox','proyectos'),['dependencys' => $dependencys, 'tipos' => $tipos]);
 
-    public function storeHistorialDerivedDc(DeriveDocumentRequest $request)
-    {
-        /* derivación con documento */
-        DB::transaction(function($request) use ($request){
+        if($request->ajax())
+        {
+            $sections = $view->renderSections();
+            return $sections['main-content'];
+        }
 
-            /*DOCUMENTO CREADO PARA DERIVAR EL DOCUMENTO ORIGINAL, este documento no se registra en el historial porque corresponde a la cadena de historial del primer documento*/
-
-            $file = $request->file('file_derived');
-
-            $doc = new Document();
-            
-            $pref = 'DOC';
-            $code_doc = '';
-            $stmt = DB::connection('sqlsrv')->getPdo()->prepare('SET NOCOUNT ON; EXEC generar_codigo ?,?');
-            $stmt->bindParam(1,$pref);
-            $stmt->bindParam(2,$code_doc,\PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 10);
-            $stmt->execute();
-            unset($stmt);
-                
-            $doc->tdocId = $code_doc;
-            $doc->tdocExp = $request->expedient;
-            $doc->tdocSenderName = Auth::user()->tusNames;
-            $doc->tdocSenderPaterno = Auth::user()->tusPaterno;
-            $doc->tdocSenderMaterno = Auth::user()->tusMaterno;
-            $doc->tdocDni = Auth::user()->tusId;
-            $doc->tdocSubject = strtoupper($request->sbj_derived);
-            $doc->tdocAsoc = $request->asociacion;
-            $doc->tdocRef = $request->document;
-            $doc->tdocFolio = $request->folio_doc;
-            $doc->tdocType = $request->type_doc;
-            $doc->tdocRegistro = $request->nrodc;
-            $doc->tdocDate = Carbon::now();
-            $doc->tdocStatus = 'Pendiente';
-            $doc->tdocRegisterBy = Auth::user()->tusId;
-
-            if($file){
-                $doc->tdocFileExt = $file->getClientOriginalExtension();
-                $doc->tdocPathFile = 'docscase/'.$request->expedient;
-                $doc->tdocFileMime = $file->getMimeType();
-                $doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
-
-                $filename = '/'.$request->expedient.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
-                \Storage::disk('local')->put($filename, \File::get($file));
-            }
-
-            $doc->save();
-
-            $pexp = new Arcparticular();
-
-            $correlative_pexp = Arcparticular::where('tarpDep',Auth::user()->tusWorkDep)->count() + 1;
-            $code_pexp = $this->makeUniqueCode('PXP',Carbon::now()->year,$correlative_pexp);
-
-            $pexp->tarpPexp = $code_pexp;
-            $pexp->tarpGexp = $request->expedient;
-            $pexp->tarpDep = Auth::user()->tusWorkDep;
-            $pexp->tarpDoc = $code_doc;
-            $pexp->created_at = Carbon::now()->toDateString();
-            $pexp->tarpYear = Carbon::now()->year;
-
-            $pexp->save();
-
-            /* Registro de la derivación del documento de respuesta del doc original o referencia  */
-
-            if(count($request->dep_target)>0)
-            {
-                foreach($request->dep_target as $d)
-                {
-                    $hist_copy = new Historial();
-
-                    $hist_copy->thisExp = $request->expedient;
-                    $hist_copy->thisDoc = $code_doc;
-                    $hist_copy->thisDepS = $request->dep_source;
-                    $hist_copy->thisDepT = $d;
-                    $hist_copy->thisFlagR = false;
-                    $hist_copy->thisFlagA = false;
-                    $hist_copy->thisFlagD = false;
-                    $hist_copy->rec_date_at = Carbon::now()->toDateString();
-                    $hist_copy->rec_time_at = Carbon::now()->toTimeString();
-                    $hist_copy->thisIdSourceD = $request->kyId;
-                    $hist_copy->save();
-
-                    unset($hist_copy);
-                }
-            }
-
-            $update_hist = Historial::find($request->kyId);
-            $update_hist->thisFlagD = true;
-            $update_hist->thisDscD = strtoupper($request->nta_derived);
-            $update_hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
-            $update_hist->thisDocD = $code_doc;
-            $update_hist->save();
-
-            $update_doc = Document::find($request->document);
-            $update_doc->tdocStatus = 'En proceso';
-            $update_doc->save();
-
-            $update_filer = Archivador::find($request->expedient);
-            $update_filer->tarcStatus = 'En Proceso';
-            $update_filer->updated_at = Carbon::now()->toDateString();
-            $update_filer->save();
-
-        });
-    }
-
-    public function firstHistorialDerived(DeriveDocumentRequest $request)
-    {
-        DB::transaction(function($request) use ($request){
-
-            if(count($request->dep_target)>0)
-            {
-                foreach($request->dep_target as $d)
-                {
-                    $hist_copy = new Historial();
-
-                    $hist_copy->thisDoc = $request->document;
-                    $hist_copy->thisExp = $request->expedient;
-                    $hist_copy->thisDepS = $request->dep_source;
-                    $hist_copy->thisDepT = $d;
-                    $hist_copy->thisFlagR = false;
-                    $hist_copy->thisFlagA = false;
-                    $hist_copy->thisFlagD = false;
-                    $hist_copy->rec_date_at = Carbon::now()->toDateString();
-                    $hist_copy->rec_time_at = Carbon::now()->toTimeString();
-                    $hist_copy->thisIdSourceD = $request->kyId;
-                    $hist_copy->save();
-
-                    unset($hist_copy);
-                }
-            }
-
-            $update_hist = Historial::find($request->kyId);
-            $update_hist->thisFlagD = true;
-            $update_hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
-            $update_hist->thisDscD = trim($request->nota_derivado);
-            $update_hist->save();
-
-            $idPFile = Arcparticular::select('tarpId')
-                ->where('tarpDep','=',$request->dep_source)
-                ->where('tarpGexp','=',$request->expedient)
-                ->first();
-
-            $updtPfile = Arcparticular::find($idPFile->tarpId);
-            $updtPfile->tarpFlagD = true;
-            $updtPfile->save();
-
-            $update_doc = Document::find($request->document);
-            $update_doc->tdocStatus = 'En proceso';
-            $update_doc->save();
-
-            $update_filer = Archivador::find($request->expedient);
-            $update_filer->tarcStatus = 'En Proceso';
-            $update_filer->updated_at = Carbon::now()->toDateString();
-            $update_filer->save();
-        });
+        return $view;
     }
 
     public function envioHistorial(Request $request)
@@ -367,58 +223,6 @@ class HistorialController extends Controller {
         $new_correlative = substr('00000'.$correlative, -5);
         $new_code = $acronimo.$partial_year.$new_correlative;
         return $new_code;
-    }
-
-    public function getHistorialDoc(Request $request) // para mostrar la bandeja de entrada
-    {
-        /*$inbox = Historial::select('*')
-            ->join('tramDocumento','tdocCod','=','thisDoc1')
-            ->join('tramArchivador','tarcExp','=','tdocExp1')
-            //->join('tramDependencia','thisDepS','=','depId')
-            //->where('thisDepT',Auth::user()->tusWorkDep)
-            //->where('thisDepS','<>',Auth::user()->tusWorkDep)
-            ->where('tarcYear',$request->period)
-            ->orderby('tdocId','DESC')
-            ->get();*/
-
-            // se elige tarcdatepres pues guarda la fecha de registro del documento origen y de reapertura para actualizar su vigencia
-
-        /* SQL Version
-        $inbox = Document::select(DB::raw('*,DATEDIFF(day,tarcDatePres,GETDATE()) as plazo'))
-                    ->join('tramArchivador','tarcId','=','tdocExp')
-                    ->join('tramProyecto','tpyId','=','tdocProject')
-                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                    ->where('tarcYear',$request->period)
-                    ->where('tdocRef',null)
-                    ->orderby('tdocId','DESC')
-                    ->get();*/
-
-        /* MySQL Version */
-        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))
-                    ->join('tramArchivador','tarcId','=','tdocExp')
-                    ->join('tramProyecto','tpyId','=','tdocProject')
-                    ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                    ->where('tarcYear',$request->period)
-                    ->where('tdocRef',null)
-                    ->orderby('tdocId','DESC')
-                    ->get();
-
-        $dependencys = Dependencia::select('*')
-            ->where('depActive',1)
-            ->get();
-
-        $tipos = TipoDocumento::where('ttypShow',true)->get();
-        $proyectos = Proyecto::all();
-
-        $view = view('tramite.inbox_document',compact('inbox','proyectos'),['dependencys' => $dependencys, 'tipos' => $tipos]);
-
-        if($request->ajax())
-        {
-            $sections = $view->renderSections();
-            return $sections['main-content'];
-        }
-
-        return $view;
     }
 
     public function acceptDocumentDerived($idExp, Request $request)

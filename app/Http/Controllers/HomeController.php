@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use aidocs\Models\Historial;
 use aidocs\Models\Document;
 use aidocs\Models\Archivador;
+use Session;
 
 class HomeController extends Controller {
 
@@ -37,25 +38,26 @@ class HomeController extends Controller {
         /* MYSQL Version */
 
         $vigentes = Archivador::select('*')
-                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('year(tarcDatePres) = '.Session::get('periodo'))
                         ->whereRaw('fnTramDateDiff(tarcDatePres, NOW()) <= 4')
                         ->count();
 
         $xvencer = Archivador::select('*')
-                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('year(tarcDatePres) = '.Session::get('periodo'))
                         ->whereRaw('fnTramDateDiff(tarcDatePres, NOW()) BETWEEN 5 AND 7')
                         ->count();
 
         $vencidos = Archivador::select('*')
-                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('year(tarcDatePres) = '.Session::get('periodo'))
                         ->whereRaw('fnTramDateDiff(tarcDatePres, NOW()) > 7')
                         ->count();
 
         $totaldocs = Archivador::select('*')
-                        ->whereRaw('year(tarcDatePres) = year(now())')
+                        ->whereRaw('year(tarcDatePres) = '.Session::get('periodo'))
                         ->count();
 
         $chartInfo = Document::select(\DB::raw('count(*) as docs, tdocDate'))
+                        ->whereRaw('year(tdocDate) = '.Session::get('periodo'))
                         ->groupBy('tdocDate')
                         ->orderBy('tdocDate','desc')
                         ->take(10)

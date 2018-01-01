@@ -331,7 +331,7 @@ class SettingsController extends Controller
 
         if($request->ajax())
         {
-            return 'Su contrseña ha sido actualizada';
+            return 'Su contraseña ha sido actualizada';
         }
 
         return false;

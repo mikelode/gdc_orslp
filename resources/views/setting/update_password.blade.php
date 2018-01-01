@@ -44,7 +44,7 @@
                                             <button class="btn btn-primary" id="btn-updt-pass">GUARDAR</button>
                                         </div>
                                         <div class="col-md-3" style="text-align: center;">
-                                            <button class="btn btn-warning" id="btn-cancel">CANCELAR</button>
+                                            <a href="{{ url('/') }}" class="btn btn-warning" id="btn-salir">SALIR</a>
                                         </div>
                                         <div class="col-md-3"></div>
                                     </div>
@@ -83,15 +83,11 @@
                 bootbox.alert('-' + response);
                 $('#npassUser').val('');
                 $('#rpassUser').val('');
+
             }).fail(function(e){
                 bootbox.alert('<h4>Error al cambiar su contraseña.</h4>')
             });
         })
-
-        $('#btn-cancel').click(function(e){
-            e.preventDefault();
-            change_menu_to('homei');
-        });
 
     });
 </script>

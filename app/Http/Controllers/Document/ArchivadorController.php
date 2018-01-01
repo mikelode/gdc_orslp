@@ -8,6 +8,7 @@
 
 namespace aidocs\Http\Controllers\Document;
 
+use Session;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -129,6 +130,7 @@ class ArchivadorController extends Controller {
         $docs = Document::select('*')
             ->join('tramTipoDocumento','ttypDoc','=','tdocType')
             ->join('tramArchivador','tarcId','=','tdocExp')
+            ->whereRaw('year(tdocDate) = '.Session::get('periodo'))
             ->wherebetween('tdocDate',[$startDate,$endDate])
             ->get();
 

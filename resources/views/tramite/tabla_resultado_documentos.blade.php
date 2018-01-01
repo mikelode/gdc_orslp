@@ -30,10 +30,6 @@
 
 <script>
     $('#docEncontrado').DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            'excel', 'pdf', 'print'
-        ],
         "language":{
             "url": "plugins/DataTables/Spanish.json"
         }

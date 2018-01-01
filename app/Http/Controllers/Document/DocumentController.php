@@ -550,7 +550,9 @@ class DocumentController extends Controller {
 				$beforeDocId = $min;
 
 			do{
-				$resultado = Document::find($beforeDocId);
+				$resultado = Document::where('tdocId',$beforeDocId)
+								->whereRaw('year(tdocDate) = '.Session::get('periodo'))
+								->first();
 				$beforeDocId--;
 			}while(!$resultado);
 		}
@@ -562,7 +564,9 @@ class DocumentController extends Controller {
 				$nextDocId = $max;
 
 			do{
-				$resultado = Document::find($nextDocId);
+				$resultado = Document::where('tdocId',$nextDocId)
+								->whereRaw('year(tdocDate) = '.Session::get('periodo'))
+								->first();
 				$nextDocId++;
 			}while(!$resultado);
 		}

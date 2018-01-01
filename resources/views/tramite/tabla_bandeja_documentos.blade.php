@@ -3,6 +3,7 @@
         <tr>
             <th></th>
             <th>Reg.</th>
+            <th>Titulo Proc.</th>
             <th>Doc.</th>
             <th>Remitente</th>
             <th>Asunto</th>
@@ -18,8 +19,10 @@
             <td class="details-control" onclick="historial(this)">
             </td>
             <td>
-                <a href="javascript:void(0)" onclick="showDocDetail('{{ $doc->tdocId }}')">{{ $doc->tdocRegistro }}</a>
+                <!--<a href="javascript:void(0)" onclick="showDocDetail('{{ $doc->tdocId }}')"></a>-->
+                {{ $doc->tdocRegistro }}
             </td>
+            <td>{{ $doc->tarcTitulo }}</td>
             <td>{{ $doc->ttypDesc.' - '.$doc->tdocNumber }}</td>
             <td>{{ $doc->tdocSender }}</td>
             <td>{{ $doc->tdocSubject }}</td>

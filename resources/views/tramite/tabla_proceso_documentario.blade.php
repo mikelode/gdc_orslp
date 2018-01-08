@@ -30,7 +30,7 @@
                         </a>
                     @endif
                 </td>
-                <td>{{ $doc->tdocSender }}</td>
+                <td>{{ $doc->tdocJobSender.' '.$doc->tdocSender. ' ('.$doc->dep.')' }}</td>
                 <td>{{ $doc->thisDateTimeR ? Carbon\Carbon::parse($doc->thisDateTimeR)->format('d-m-Y H:i a') : null }}</td>
                 <td>{{ $doc->tdocSubject }}</td>
                 <td>{{ $doc->thisDateTimeD ? Carbon\Carbon::parse($doc->thisDateTimeD)->format('d-m-Y H:i a') : null }} </td>

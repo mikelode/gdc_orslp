@@ -227,7 +227,7 @@ class DocumentController extends Controller {
 					$hist->rec_time_at = Carbon::now()->toTimeString();
 					/* SQL Version: $hist->thisDateTimeR = Carbon::now()->format('d/m/Y h:i:s A'); */
 					/* MySQL Version */
-					$hist->thisDateTimeR = Carbon::now();
+					$hist->thisDateTimeR = $request->ndocFecha; //Carbon::now();
 
 					$hist->save();
 
@@ -246,7 +246,7 @@ class DocumentController extends Controller {
 					$hist->thisFlagD = false;
 					$hist->rec_date_at = Carbon::now()->toDateString();
 					$hist->rec_time_at = Carbon::now()->toTimeString();
-					$hist->thisDateTimeR = Carbon::now();//->format('d/m/Y h:i:s A');
+					$hist->thisDateTimeR = $request->ndocFecha; //Carbon::now();//->format('d/m/Y h:i:s A');
 
 					$hist->save();
 
@@ -633,7 +633,7 @@ class DocumentController extends Controller {
 					->get();*/
 
 		/* MySQL Version */
-		$documentos = Document::select(DB::raw('*,fnTramGetDestinatario(thisDepT) AS destino, fnTramGetRegistroRef(thisIdRef) AS ref, fnTramGetTimeAtention(tdocId,thisId,tdocRef) AS tiempo'))
+		$documentos = Document::select(DB::raw('*,fnTramGetDestinatario(thisDepT) AS destino, fnTramGetRegistroRef(thisIdRef) AS ref, fnTramGetTimeAtention(tdocId,thisId,tdocRef) AS tiempo, fnDescDependencia(tdocDependencia,2) as dep'))
 					->join('tramHistorial','thisDoc','=','tdocId')
 					->join('tramTipoDocumento','ttypDoc','=','tdocType')
 					->join('tramProyecto','tpyId','=','tdocProject')

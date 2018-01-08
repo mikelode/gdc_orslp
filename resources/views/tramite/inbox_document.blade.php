@@ -68,7 +68,7 @@
                                     <th>Reg.</th>
                                     <th>Titulo Proc.</th>
                                     <th>Doc.</th>
-                                    <th>Remitente</th>
+                                    <th>Remitente (Dependencia)</th>
                                     <th>Asunto</th>
                                     <th>Fecha</th>
                                     <th>Estado</th>
@@ -87,7 +87,7 @@
                                     </td>
                                     <td>{{ $doc->tarcTitulo }}</td>
                                     <td>{{ $doc->ttypDesc.' - '.$doc->tdocNumber }}</td>
-                                    <td>{{ $doc->tdocSender }}</td>
+                                    <td>{{ $doc->tdocJobSender.' '.$doc->tdocSender. ' ('.$doc->dep.')' }}</td>
                                     <td>{{ $doc->tdocSubject }}</td>
                                     <td>{{ $doc->tdocDate }}</td>
                                     <td>

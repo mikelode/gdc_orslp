@@ -57,7 +57,7 @@ class HistorialController extends Controller {
                     ->get();*/
 
         /* MySQL Version */
-        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))
+        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo, fnDescDependencia(tdocDependencia,2) as dep'))
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')

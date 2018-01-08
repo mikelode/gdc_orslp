@@ -149,7 +149,7 @@ class HistorialController extends Controller {
                     $update_filer->tarcStatus = 'reaperturado';
                     $update_filer->updated_at = Carbon::now()->toDateString();
                     /* Se debe cambiar, actualizar la fecha de presentacion pues se genera un nuevo plazo */
-                    $update_filer->tarcDatePres = Carbon::now();
+                    //$update_filer->tarcDatePres = Carbon::now();
                     $update_filer->save();
 
                     $documento = Document::find($doc[0]->tdocId);
@@ -193,6 +193,124 @@ class HistorialController extends Controller {
 
         return response()->json(compact('msg','idMsg'));
         
+    }
+
+    public function anularEnvioHistorial(Request $request)
+    {
+        try{
+            $exception = DB::transaction(function() use ($request){
+
+                $doc = Document::select('*')
+                        ->join('tramHistorial','tdocId','=','thisDoc')
+                        ->where('tdocId',$request->doc)
+                        ->where('thisFlagR',true)
+                        ->where('thisFlagD',true)
+                        ->get();
+
+                if($doc[0]->tdocAccion == 'atendido-salida'){ 
+
+                    $hist = Historial::find($doc[0]->thisId);
+                    $hist->thisDepT = Auth::user()->tusId;
+                    $hist->thisFlagD = false;
+                    $hist->thisDateTimeD = null;
+                    $hist->thisDscD = null;
+                    $hist->rec_date_at = Carbon::now()->toDateString();
+                    $hist->rec_time_at = Carbon::now()->toTimeString();
+                    $hist->save();
+
+                    $documento = Document::find($doc[0]->tdocId);
+                    $documento->tdocStatus = 'registrado';
+                    $documento->save();
+                    
+                    /* registrara el registro del historial activando el flag de atendido del documento original 
+                     se actualizara el estado de Atendido en el registro historial del documento origen
+                    */
+                    $docOrigen = Document::select('tdocId','thisId','tdocExp')
+                                    ->join('tramHistorial','tdocId','=','thisDoc')
+                                    ->where('tdocExp',$doc[0]->tdocExp)
+                                    ->where('tdocRef',null)
+                                    ->get();
+
+                    $histOrigen = Historial::find($docOrigen[0]->thisId);
+                    $histOrigen->thisFlagA = false;
+                    $histOrigen->thisDateTimeA = null;
+                    $histOrigen->thisDscA = null;
+                    $histOrigen->rec_date_at = Carbon::now()->toDateString();
+                    $histOrigen->rec_time_at = Carbon::now()->toTimeString();
+                    $histOrigen->save();
+
+                    /* siendo asi, actualizamos el status del archivador o expediente al que pertenece el documento pues ya 
+                    será atendido */
+                    $exp = Archivador::find($docOrigen[0]->tdocExp);
+                    $exp->tarcStatus = 'procesando';
+                    $exp->updated_at = Carbon::now();
+                    $exp->save();
+                }
+                else if($doc[0]->tdocAccion == 'reapertura'){
+                    $hist = Historial::find($doc[0]->thisId);
+                    $hist->thisDepT = Auth::user()->tusId;
+                    $hist->thisFlagD = false;
+                    $hist->thisDateTimeD = null;
+                    $hist->thisDscD = null;
+                    $hist->rec_date_at = Carbon::now()->toDateString();
+                    $hist->rec_time_at = Carbon::now()->toTimeString();
+                    $hist->save();
+
+                    $update_filer = Archivador::find($doc[0]->tdocExp);
+                    $update_filer->tarcStatus = 'atendido';
+                    $update_filer->updated_at = Carbon::now()->toDateString();
+                    /* Se debe cambiar, actualizar la fecha de presentacion pues se genera un nuevo plazo */
+                    //$update_filer->tarcDatePres = Carbon::now();
+                    $update_filer->save();
+
+                    $documento = Document::find($doc[0]->tdocId);
+                    $documento->tdocStatus = 'registrado';
+                    $documento->save();
+                }
+                else{
+
+                    $hist = Historial::find($doc[0]->thisId);
+                    $hist->thisDepT = Auth::user()->tusId;
+                    $hist->thisFlagD = false;
+                    $hist->thisDateTimeD = null;
+                    $hist->thisDscD = null;
+                    $hist->rec_date_at = Carbon::now()->toDateString();
+                    $hist->rec_time_at = Carbon::now()->toTimeString();
+                    $hist->save();
+
+                    $docByExp = Document::where('tdocExp',$doc[0]->tdocExp)->count();
+
+                    $update_filer = Archivador::find($doc[0]->tdocExp);
+
+                    if($docByExp == 1)
+                        $update_filer->tarcStatus = 'aperturado';
+                    else
+                        $update_filer->tarcStatus = 'procesando';
+
+                    $update_filer->updated_at = Carbon::now()->toDateString();
+                    $update_filer->save();
+
+                    $documento = Document::find($doc[0]->tdocId);
+                    $documento->tdocStatus = 'registrado';
+                    $documento->save();
+                }
+
+            });
+
+            if(is_null($exception)){
+                $msg = 'Envío del documento registrado con éxito';
+                $idMsg = 200;
+            }
+            else{
+                throw new Exception($exception);
+            }
+
+        }catch(Exception $e){
+            $msg = 'Error encontrado:' . $e . "\n";
+            $idMsg = 500;
+        }
+
+        return response()->json(compact('msg','idMsg'));
     }
 
     public function getDetailDerivation($histId, Request $request)

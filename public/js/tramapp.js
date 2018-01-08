@@ -299,6 +299,7 @@ function nuevo_documento(origen)
         $('#docDepend').prop('disabled', false).val(1);
         $('#docProy').prop('disabled', false).val(1).trigger('change');
         $('#docSender').prop('readonly', false).val('');
+        $('#docSenderId').prop('readonly', false).val('');
         $('#docJob').prop('readonly', false).val('');
         $('#docReg').prop('readonly', false).val('');        
         $('#docTipo').prop('disabled', false);
@@ -342,6 +343,7 @@ function editar_documento(origen)
         $('#docProy').prop('disabled', false);
         $('#docSender').prop('readonly', false);
         $('#docJob').prop('readonly', false);
+        $('#docSenderId').prop('readonly', false);
         $('#docReg').prop('readonly', false);
         $('#docTipo').prop('disabled', false);
         $('#docNro').prop('readonly', false);
@@ -625,15 +627,30 @@ function pantallazo_documento(cadena)
 
     if(cadena.docElegido[0].tdocStatus == 'registrado'){
         $('#operacionEnviar').show();
+        $('#operacionEnviar #txtEstadoEnvio').attr('class', 'bg-warning');
+        $('#operacionEnviar #txtEstadoEnvio').html('ESTADO DE ENVIO: Documento registrado pero NO enviado');
+        $('#operacionEnviar #btnEstadoEnvio').attr('class', 'btn btn-primary');
+        $('#operacionEnviar #btnEstadoEnvio').attr('value', 'sending');
+        $('#operacionEnviar #btnEstadoEnvio').html('Enviar Documento');
         $('#operacionEnviado').hide();
+
         $('#btnEditarDoc').show();
         $('#btnEliminarDoc').show();
     }
     else{
-        $('#operacionEnviar').hide();
-        $('#operacionEnviado').show();
-        $('#operacionEnviado').empty();
-        $('#operacionEnviado').html('<div class="col-md-10"><div class="alert alert-info">El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención. Fecha: '+cadena.docHistorial[0].thisDateTimeD+'</div></div>');
+        if(cadena.docHistorial[0].thisIdRef == null){
+            $('#operacionEnviar #txtEstadoEnvio').attr('class', 'bg-info');
+            $('#operacionEnviar #txtEstadoEnvio').html('El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención. Fecha: '+cadena.docHistorial[0].thisDateTimeD);
+            $('#operacionEnviar #btnEstadoEnvio').attr('class', 'btn btn-warning');
+            $('#operacionEnviar #btnEstadoEnvio').attr('value', 'unsending');
+            $('#operacionEnviar #btnEstadoEnvio').html('Anular Envio');
+        }
+        else{
+            $('#operacionEnviar').hide();
+            $('#operacionEnviado').show();
+            $('#operacionEnviado').empty();
+            $('#operacionEnviado').html('<div class="col-md-10"><div class="alert alert-info">El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención, y también referenciado. <br> Fecha: '+cadena.docHistorial[0].thisDateTimeD+'</div></div>');
+        }
         $('#btnEditarDoc').hide();
         $('#btnEliminarDoc').hide();
     }

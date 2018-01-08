@@ -83,11 +83,11 @@ class DocumentController extends Controller {
 		return false;
 	}
 
-	public function storeExpedient($code_exp,$estado,$proy,$titulo)
+	public function storeExpedient($code_exp,$estado,$proy,$titulo,$fechaIngreso)
 	{
 		$exp = new Archivador();
 		$exp->tarcExp = $code_exp;
-		$exp->tarcDatepres = Carbon::now(); // Fecha de creacion del archivador
+		$exp->tarcDatepres = $fechaIngreso; //Carbon::now(); // Fecha de creacion del archivador
 		$exp->tarcStatus = $estado;
 		$exp->created_at = Carbon::now();
 		$exp->created_time_at = Carbon::now()->toTimeString();
@@ -123,7 +123,7 @@ class DocumentController extends Controller {
 					$stmt = DB::select('call generar_codigo(?,?)', array($pref, $code_exp));
 					$code_exp = $stmt[0]->codigo;
 
-					$expId = $this->storeExpedient($code_exp, 'aperturado', $request->ndocProy, $request->ndocTitulo);
+					$expId = $this->storeExpedient($code_exp, 'aperturado', $request->ndocProy, $request->ndocTitulo, $request->ndocFecha);
 					
 					if($expId == '500')
 						throw new Exception("No se pudo registrar el proceso documentario");
@@ -769,5 +769,23 @@ class DocumentController extends Controller {
     	}
 
     	return response()->json(compact('msg','msgId'));
+    }
+
+    public function retriveFullDataDocument(Request $request)
+    {
+    	if($request->campo == 'id')
+    		$documento = Document::find($request->doc);
+    	else if($request->campo == 'reg')
+    		$documento = Document::where('tdocRegistro',$request->reg)->first();
+
+    	$expediente = Archivador::find($documento->tdocExp);
+    	$carpetaExp = Document::select('*')
+    					->join('tramHistorial','thisDoc','=','tdocId')
+    					->where('tdocExp',$documento->tdocExp)
+    					->get();
+    	$historialDoc = Historial::select('*')->where('thisDoc',$documento->tdocId)->get();
+
+    	return view('setting.tabla_data_document',compact('documento','expediente','historialDoc','carpetaExp'));
+
     }
 } 

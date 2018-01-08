@@ -571,4 +571,10 @@ class SettingsController extends Controller
 
         return redirect('/');
     }
+
+    public function getSuperEdicionDocumento(Request $request)
+    {
+        $view = view('setting.supedit_document');
+        return $view;
+    }
 }

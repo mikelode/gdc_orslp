@@ -207,14 +207,14 @@
                                     <div class="row" id="operacionEnviado" style="display: none;"></div>
                                     <div class="row" id="operacionEnviar" style="display: none;">
                                         <div class="col-md-8">
-                                            <div class="form-group">
-                                                <label class="control-label">ESTADO DE ENVIO: Documento registrado pero NO enviado</label>
-                                                @if(Auth::user()->can(4))
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalOperacionEnviar">
-                                                    Enviar Documento
-                                                </button>
-                                                @endif
-                                            </div>
+                                            <div class="bg-warning" id="txtEstadoEnvio">ESTADO DE ENVIO: Documento registrado pero NO enviado</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            @if(Auth::user()->can(4))
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" id="btnEstadoEnvio" value="sending">
+                                                Enviar Documento
+                                            </button>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -504,6 +504,25 @@ $(document).ready(function(){
         var modal = $(this);
 
         modal.find('.modal-body .devolver_a').val(origen);
+    });
+
+    $('#btnEstadoEnvio').click(function(ev) {
+        ev.preventDefault();
+        
+        if($(this).val() == 'sending'){
+            $('#modalOperacionEnviar').modal('show');
+        }
+        else{
+            var ok = confirm('¿Está seguro de anular la operación de envío realizada?');
+            var data = {'doc':$('#docId').val()}
+
+            if(ok){
+                $.get('hist/unsend', data, function(response) {
+                    console.log(response);
+                });
+            }
+        }
+
     });
 
     $('#docEnvioDestino').select2();

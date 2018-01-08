@@ -113,7 +113,7 @@
                         </table>
                         <script>
                             $('#docBandeja').DataTable({
-                                dom: 'Bfrtip',
+                                dom: 'flrtBip',
                                 buttons: [
                                     'excel', 'pdf', 'print'
                                 ],

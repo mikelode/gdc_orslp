@@ -71,6 +71,7 @@ Route::get('doc/sender/{dni}', 'Document\DocumentController@getSenderDocument');
 Route::post('doc/edit','Document\DocumentController@storeEditDocument');
 Route::get('doc/expediente','Document\DocumentController@getExpediente');
 Route::post('doc/delete','Document\DocumentController@deleteDocument');
+Route::post('doc/fulldata','Document\DocumentController@retriveFullDataDocument');
 
 /*
  *  BANDEJA DE ENTRADA DE DOCUMENTOS
@@ -86,6 +87,7 @@ Route::post('hist/registerdc', 'Document\HistorialController@storeHistorialDeriv
 
 Route::post('fhist/register', 'Document\HistorialController@firstHistorialDerived');
 Route::post('hist/envio','Document\HistorialController@envioHistorial');
+Route::get('hist/unsend','Document\HistorialController@anularEnvioHistorial');
 
 Route::put('hist/update/{id}', [
     'as' => 'receive', 'uses' => 'Document\HistorialController@acceptDocumentDerived'
@@ -212,6 +214,7 @@ Route::post('settings/updt_profile','Document\SettingsController@postUpdateAcces
 Route::get('settings/list_depen','Document\SettingsController@getListDependencias');
 Route::post('settings/new_depen','Document\SettingsController@postRegisterDependencia');
 Route::post('settings/updt_depen','Document\SettingsController@postUpdateDependencia');
+Route::get('settings/super_edicion','Document\SettingsController@getSuperEdicionDocumento');
 
 /*
  *  TIPO DE DOCUMENTO

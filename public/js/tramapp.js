@@ -293,6 +293,7 @@ function nuevo_documento(origen)
         $('#btnEliminarDoc').hide();
 
         $('#operacionEnviar').hide();
+        $('#operacionEnviado').hide();
 
         $('#docId').val('');
         $('#docDepend').prop('disabled', false).val(1);
@@ -624,13 +625,15 @@ function pantallazo_documento(cadena)
 
     if(cadena.docElegido[0].tdocStatus == 'registrado'){
         $('#operacionEnviar').show();
+        $('#operacionEnviado').hide();
         $('#btnEditarDoc').show();
         $('#btnEliminarDoc').show();
     }
     else{
         $('#operacionEnviar').hide();
-        //$('#operacionEnviar').empty();
-        //$('#operacionEnviar').html('<div class="alert alert-info">El documento ha sido derivado para su correspondiente atención.</div>');
+        $('#operacionEnviado').show();
+        $('#operacionEnviado').empty();
+        $('#operacionEnviado').html('<div class="col-md-10"><div class="alert alert-info">El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención. Fecha: '+cadena.docHistorial[0].thisDateTimeD+'</div></div>');
         $('#btnEditarDoc').hide();
         $('#btnEliminarDoc').hide();
     }

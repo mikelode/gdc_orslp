@@ -101,7 +101,7 @@ class HistorialController extends Controller {
                     $hist = Historial::find($doc[0]->thisId);
                     $hist->thisDepT = $request->ndocEnvioDestino;
                     $hist->thisFlagD = true;
-                    $hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
+                    $hist->thisDateTimeD = $request->ndocFecEnvio; //Carbon::now();//->format('d/m/Y h:i:s A');
                     $hist->thisDscD = trim($request->ndocEnvioMensaje);
                     $hist->rec_date_at = Carbon::now()->toDateString();
                     $hist->rec_time_at = Carbon::now()->toTimeString();
@@ -122,7 +122,7 @@ class HistorialController extends Controller {
 
                     $histOrigen = Historial::find($docOrigen[0]->thisId);
                     $histOrigen->thisFlagA = true;
-                    $histOrigen->thisDateTimeA = Carbon::now();//->format('d/m/Y h:i:s A');
+                    $histOrigen->thisDateTimeA = $request->ndocFecEnvio; //Carbon::now();//->format('d/m/Y h:i:s A');
                     $histOrigen->thisDscA = trim($request->ndocEnvioMensaje);
                     $histOrigen->rec_date_at = Carbon::now()->toDateString();
                     $histOrigen->rec_time_at = Carbon::now()->toTimeString();
@@ -139,7 +139,7 @@ class HistorialController extends Controller {
                     $hist = Historial::find($doc[0]->thisId);
                     $hist->thisDepT = $request->ndocEnvioDestino;
                     $hist->thisFlagD = true;
-                    $hist->thisDateTimeD = Carbon::now(); //->format('d/m/Y h:i:s A');
+                    $hist->thisDateTimeD = $request->ndocFecEnvio; //Carbon::now(); //->format('d/m/Y h:i:s A');
                     $hist->thisDscD = trim($request->ndocEnvioMensaje);
                     $hist->rec_date_at = Carbon::now()->toDateString();
                     $hist->rec_time_at = Carbon::now()->toTimeString();
@@ -161,7 +161,7 @@ class HistorialController extends Controller {
                     $hist = Historial::find($doc[0]->thisId);
                     $hist->thisDepT = $request->ndocEnvioDestino;
                     $hist->thisFlagD = true;
-                    $hist->thisDateTimeD = Carbon::now();//->format('d/m/Y h:i:s A');
+                    $hist->thisDateTimeD = $request->ndocFecEnvio; //Carbon::now();//->format('d/m/Y h:i:s A');
                     $hist->thisDscD = trim($request->ndocEnvioMensaje);
                     $hist->rec_date_at = Carbon::now()->toDateString();
                     $hist->rec_time_at = Carbon::now()->toTimeString();

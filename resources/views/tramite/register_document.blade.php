@@ -204,6 +204,7 @@
                         <div class="col-md-12">
                             <div class="box box-primary">
                                 <div class="box-body">
+                                    <div class="row" id="operacionEnviado" style="display: none;"></div>
                                     <div class="row" id="operacionEnviar" style="display: none;">
                                         <div class="col-md-8">
                                             <div class="form-group">
@@ -327,6 +328,15 @@
                         <input type="hidden" name="ndocEnvioOrigen" id="hdocEnvioOrigen">
                     </div>-->
                     <div class="row">
+                        <div class="col-md-4"><label class="lbl-frm">Fecha de Envío</label></div>
+                        <div class="col-md-8">
+                            <div class="input-group" style="padding: 5px 0px;">
+                                <input type="text" class="form-control" id="docFecEnvio" name="ndocFecEnvio">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-4"><label class="lbl-frm">Será enviado a:</label></div>
                         <div class="col-md-8">
                             <select name="ndocEnvioDestino" id="docEnvioDestino" style="width: 100%;">
@@ -349,7 +359,9 @@
                     </div>
                     <div class="row">
                         <div class="col-md-4"><label class="lbl-frm">Detalle u Observación:</label></div>
-                        <div class="col-md-8"><textarea id="docEnvioMensaje" name="ndocEnvioMensaje" class="form-control"></textarea></div>
+                        <div class="col-md-8">
+                            <textarea id="docEnvioMensaje" name="ndocEnvioMensaje" class="form-control" style="margin-top: 5px"></textarea>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -511,21 +523,17 @@ $(document).ready(function(){
         showClear: true,
         showClose: true
     });
+    $('#docFecEnvio').datetimepicker({
+        format: "YYYY-MM-DD",
+        showClear: true,
+        showClose: true
+    });
     $('#desdeFecha').on("dp.change",function(e){
         $('#hastaFecha').data("DateTimePicker").minDate(e.date);
     });
     $('#hastaFecha').on("dp.change", function(e){
         $('#desdeFecha').data("DateTimePicker").maxDate(e.date);
     });
-            /*.datepicker({
-        clearBtn: true,
-        format: "yyyy-mm-dd",
-        language: "es",
-        autoclose: true,
-        todayBtn: "linked",
-        todayHighlight: true,
-        enableOnReadonly: false
-    });*/
     
     $('#docProy').select2({
         width: '100%'

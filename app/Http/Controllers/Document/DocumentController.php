@@ -592,8 +592,14 @@ class DocumentController extends Controller {
 			$docReferencia = collect(['sin_referencia']);
 		}
 
+		/* Agregamos datos del historial */
+
+		$docHistorial = Historial::select(DB::raw('*,fnTramGetDestinatario(thisDepT) AS destino, fnTramGetRegistroRef(thisIdRef) AS ref'))
+							->where('thisDoc',$docElegido[0]->tdocId)
+							->get();
+
 		//return $docElegido;
-		return response()->json(array('docElegido' => $docElegido,'docReferencia' => $docReferencia));
+		return response()->json(array('docElegido' => $docElegido,'docReferencia' => $docReferencia,'docHistorial' => $docHistorial));
 
 		/*while ($Fila = $docElegido -> fetch_row())
 		{

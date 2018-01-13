@@ -630,6 +630,8 @@ class DocumentController extends Controller {
 		$docId = $claves[0];
 		$expId = $claves[1];
 
+		dd($request->claves);
+
 		/* SQL Version
 		$documentos = Document::select(DB::raw('*,dbo.fnTramGetDestinatario(thisDepT) AS destino, dbo.fnTramGetRegistroRef(thisIdRef) AS ref, dbo.fnTramGetTimeAtention(tdocId,thisId,tdocRef) AS tiempo'))
 					->join('tramHistorial','thisDoc','=','tdocId')
@@ -773,17 +775,28 @@ class DocumentController extends Controller {
 
     public function retriveFullDataDocument(Request $request)
     {
-    	if($request->campo == 'id')
-    		$documento = Document::find($request->doc);
-    	else if($request->campo == 'reg')
-    		$documento = Document::where('tdocRegistro',$request->reg)->first();
+    	if($request->campo == 'id'){
+    		$documento = Document::select(DB::raw('*,fnDescDependencia(tdocDependencia,2) as dependencia, fnTramGetDscFromId(\'tramProyecto\',tdocProject) as proyecto, fnTramGetDscFromId(\'tramTipoDocumento\',tdocType) as tipodoc'))
+    						->where('tdocId',$request->doc)
+    						->get();
+    	}
 
-    	$expediente = Archivador::find($documento->tdocExp);
+    	else if($request->campo == 'reg'){
+    		$documento = Document::where('tdocRegistro',$request->reg)->first();
+    	}
+
+    	$expediente = Archivador::select(DB::raw('*,fnTramGetDscFromId(\'tramProyecto\',tarcAsoc) as proyecto'))
+    					->where('tarcId',$documento[0]->tdocExp)
+    					->get();
+
     	$carpetaExp = Document::select('*')
     					->join('tramHistorial','thisDoc','=','tdocId')
-    					->where('tdocExp',$documento->tdocExp)
+    					->where('tdocExp',$documento[0]->tdocExp)
     					->get();
-    	$historialDoc = Historial::select('*')->where('thisDoc',$documento->tdocId)->get();
+
+    	$historialDoc = Historial::select(DB::raw('*, fnTramGetDestinatario(thisDepT) as destinatario'))
+    					->where('thisDoc',$documento[0]->tdocId)
+    					->get();
 
     	return view('setting.tabla_data_document',compact('documento','expediente','historialDoc','carpetaExp'));
 

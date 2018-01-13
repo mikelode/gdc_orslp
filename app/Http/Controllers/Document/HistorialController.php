@@ -65,7 +65,7 @@ class HistorialController extends Controller {
                     ->where('tdocRef',null)
                     ->orderby('tdocId','DESC')
                     ->get();
-
+                    
         $dependencys = Dependencia::select('*')
             ->where('depActive',1)
             ->get();

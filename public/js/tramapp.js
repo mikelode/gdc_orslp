@@ -581,7 +581,7 @@ function registrar_persona()
 }
 
 function pantallazo_documento(cadena)
-{   
+{
     console.log('pantallazo');
     /* SENDER DATA */
     $('#docId').prop('readonly',true).val(cadena.docElegido[0].tdocId);
@@ -624,7 +624,7 @@ function pantallazo_documento(cadena)
 
     $("#docEnvioExp").html(cadena.docElegido[0].tdocRegistro);
     $("#hdocEnvioExp").val(cadena.docElegido[0].tdocId);
-
+    
     if(cadena.docElegido[0].tdocStatus == 'registrado'){
         $('#operacionEnviar').show();
         $('#operacionEnviar #txtEstadoEnvio').attr('class', 'bg-warning');
@@ -638,12 +638,15 @@ function pantallazo_documento(cadena)
         $('#btnEliminarDoc').show();
     }
     else{
+        
         if(cadena.docHistorial[0].thisIdRef == null){
+            $('#operacionEnviar').show();
             $('#operacionEnviar #txtEstadoEnvio').attr('class', 'bg-info');
             $('#operacionEnviar #txtEstadoEnvio').html('El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención. Fecha: '+cadena.docHistorial[0].thisDateTimeD);
             $('#operacionEnviar #btnEstadoEnvio').attr('class', 'btn btn-warning');
             $('#operacionEnviar #btnEstadoEnvio').attr('value', 'unsending');
             $('#operacionEnviar #btnEstadoEnvio').html('Anular Envio');
+            $('#operacionEnviado').hide();
         }
         else{
             $('#operacionEnviar').hide();

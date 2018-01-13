@@ -21,60 +21,117 @@
                 <tr>
                     <td>01</td>
                     <td>Codigos del Documento</td>
-                    <td>{{ $documento->tdocId.' - '.$documento->tdocCod.' - '.$documento->tdocExp }}</td>
+                    <td>
+                        <b>CUD:</b>{{ $documento[0]->tdocId }} - 
+                        <b>CODIGO:</b>{{ $documento[0]->tdocCod }} - 
+                        <b>CPD:</b>{{ $documento[0]->tdocExp }} 
+                        <p>*CUD: Código Único del Documento, CPD: Código del Proceso Documentario</p>
+                    </td>
                 </tr>
                 <tr>
                     <td>02</td>
                     <td>Remitente</td>
                     <td>
-                        {{ $documento->tdocDependencia }} -
-                        {{ $documento->tdocProject }} -
-                        {{ $documento->tdocJobSender }} -
-                        {{ $documento->tdocSender }} -
-                        {{ $documento->tdocDni }}
+                        <table>
+                            <tr>
+                                <th>Dependencia</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocDependencia }} - {{ $documento[0]->dependencia }}</td>
+                            </tr>
+                            <tr>
+                                <th>Proyecto</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocProject }} - {{ $documento[0]->proyecto }}</td>
+                            </tr>
+                            <tr>
+                                <th>Cargo Remitente</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocJobSender }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nombre Remitente</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocSender }}</td>
+                            </tr>
+                            <tr>
+                                <th>Cod. Remitente</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocDni }}</td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
                 <tr>
                     <td>03</td>
                     <td>Documento</td>
                     <td>
-                        {{ $documento->tdocType }} -
-                        {{ $documento->tdocNumber }} -
-                        {{ $documento->tdocRegistro }} -
-                        {{ $documento->tdocDate }} -
-                        {{ $documento->tdocFolio }} -
-                        {{ $documento->tdocSubject }} - 
-                        {{ $documento->tdocDetail }}
+                        <table>
+                            <tr>
+                                <th>Tipo</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocType }} - {{ $documento[0]->tipodoc }}</td>
+                            </tr>
+                            <tr>
+                                <th>Número</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocNumber }}</td>
+                            </tr>
+                            <tr>
+                                <th>Registro</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocRegistro }}</td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Ingreso</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocDate }}</td>
+                            </tr>
+                            <tr>
+                                <th>Folio</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocFolio }}</td>
+                            </tr>
+                            <tr>
+                                <th>Asunto</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocSubject }}</td>
+                            </tr>
+                            <tr>
+                                <th>Detalle u Obs</th>
+                                <td>:</td>
+                                <td>{{ $documento[0]->tdocDetail }}</td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
                 <tr>
                     <td>04</td>
                     <td>Estado tramite del documento</td>
                     <td>
-                        {{ $documento->tdocAccion }} -
-                        {{ $documento->tdocStatus }}
+                        <b>Acción: </b>{{ $documento[0]->tdocAccion }} - 
+                        <b>Estado Doc: </b>{{ $documento[0]->tdocStatus }}
                     </td>
                 </tr>
                 <tr>
                     <td>05</td>
-                    <td>Referencia</td>
+                    <td>Doc al que hace Referencia</td>
                     <td>
-                        {{ $documento->tdocRef }}
+                        <b>CUD de Referencia: </b>{{ $documento[0]->tdocRef }}
                     </td>
                 </tr>
                 <tr>
                     <td>06</td>
                     <td>Archivo digital</td>
                     <td>
-                        {{ $documento->tdocFileName }} -
-                        {{ $documento->tdocPathFile }}
+                        <b>Nombre del archivo: </b>{{ $documento[0]->tdocFileName }} <br>
+                        <b>Ubicación del archivo: </b> {{ $documento[0]->tdocPathFile }}
                     </td>
                 </tr>
                 <tr>
                     <td>07</td>
                     <td>Usuario registrador</td>
                     <td>
-                        {{ $documento->tdocRegisterBy }}
+                        {{ $documento[0]->tdocRegisterBy }}
                     </td>
                 </tr>
 
@@ -97,34 +154,37 @@
                 <tr>
                     <td>01</td>
                     <td>Codigos del Proceso</td>
-                    <td>{{ $expediente->tarcId.' - '.$expediente->tarcExp }}</td>
+                    <td>
+                        <b>CPD: </b>{{ $expediente[0]->tarcId }}
+                        <b>CODIGO: </b>{{ $expediente[0]->tarcExp }}
+                    </td>
                 </tr>
                 <tr>
                     <td>02</td>
                     <td>Título</td>
                     <td>
-                        {{ $expediente->tarcTitulo }}
+                        {{ $expediente[0]->tarcTitulo }}
                     </td>
                 </tr>
                 <tr>
                     <td>03</td>
                     <td>Fecha de Origen</td>
                     <td>
-                        {{ $expediente->tarcDatePres }}
+                        {{ $expediente[0]->tarcDatePres }}
                     </td>
                 </tr>
                 <tr>
                     <td>04</td>
                     <td>Estado</td>
                     <td>
-                        {{ $expediente->tarcStatus }}
+                        {{ $expediente[0]->tarcStatus }}
                     </td>
                 </tr>
                 <tr>
                     <td>05</td>
                     <td>Proyecto</td>
                     <td>
-                        {{ $expediente->tarcAsoc }}
+                        {{ $expediente[0]->tarcAsoc }} : {{ $expediente[0]->proyecto }}
                     </td>
                 </tr>
                 <tr>
@@ -168,40 +228,43 @@
             <tbody>
                 <tr>
                     <td>01</td>
-                    <td>Codigos del Historial - CUD</td>
-                    <td>{{ $historialDoc[0]->thisId.' - '.$historialDoc[0]->thisDoc }}</td>
+                    <td>Codigos del Historial</td>
+                    <td>
+                        <b>ID Historial: </b>{{ $historialDoc[0]->thisId }}
+                        <b> del CUD: </b>{{ $historialDoc[0]->thisDoc }}
+                    </td>
                 </tr>
                 <tr>
                     <td>02</td>
                     <td>Destino derivación</td>
                     <td>
-                        {{ $historialDoc[0]->thisDepT }}
+                        {{ $historialDoc[0]->thisDepT }} : {{ $historialDoc[0]->destinatario }}
                     </td>
                 </tr>
                 <tr>
                     <td>03</td>
                     <td>Estado de Registro - Fecha</td>
                     <td>
-                        {{ $historialDoc[0]->thisFlagR }} -
-                        {{ $historialDoc[0]->thisDateTimeR }}
+                        <b>Estado: </b> {{ $historialDoc[0]->thisFlagR==1?'Registrado':'' }} <br>
+                        <b>Fecha: </b> {{ $historialDoc[0]->thisDateTimeR }}
                     </td>
                 </tr>
                 <tr>
                     <td>04</td>
-                    <td>Estado de Derivación - Fecha - Descripción</td>
+                    <td>Estado de Derivación - Fecha - Detalle</td>
                     <td>
-                        {{ $historialDoc[0]->thisFlagD }} - 
-                        {{ $historialDoc[0]->thisDateTimeD }} - 
-                        {{ $historialDoc[0]->thisDscD }}
+                        <b>Estado: </b>{{ $historialDoc[0]->thisFlagD==1?'Derivado':'No derivado' }} <br>
+                        <b>Fecha: </b>{{ $historialDoc[0]->thisDateTimeD }} <br> 
+                        <b>Detalle: </b>{{ $historialDoc[0]->thisDscD }}
                     </td>
                 </tr>
                 <tr>
                     <td>05</td>
-                    <td>Estado de Atención - Fecha - Descripción</td>
+                    <td>Estado de Atención - Fecha - Detalle</td>
                     <td>
-                        {{ $historialDoc[0]->thisFlagA }} - 
-                        {{ $historialDoc[0]->thisDateTimeA }} - 
-                        {{ $historialDoc[0]->thisDscA }}
+                        <b>Estado: </b>{{ $historialDoc[0]->thisFlagA==1?'Atendido':'' }} <br>
+                        <b>Fecha: </b>{{ $historialDoc[0]->thisDateTimeA }} <br>
+                        <b>Detalle: </b>{{ $historialDoc[0]->thisDscA }}
                     </td>
                 </tr>
                 <tr>
@@ -221,7 +284,7 @@
                         <table class="table table-condensed">
                             <thead>
                                 <tr>
-                                    <th>CUH</th>
+                                    <th>ID Historial</th>
                                     <th>CUD</th>
                                     <th>Proceso</th>
                                     <th>Registrado</th>

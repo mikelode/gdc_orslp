@@ -630,8 +630,6 @@ class DocumentController extends Controller {
 		$docId = $claves[0];
 		$expId = $claves[1];
 
-		dd($request->claves);
-
 		/* SQL Version
 		$documentos = Document::select(DB::raw('*,dbo.fnTramGetDestinatario(thisDepT) AS destino, dbo.fnTramGetRegistroRef(thisIdRef) AS ref, dbo.fnTramGetTimeAtention(tdocId,thisId,tdocRef) AS tiempo'))
 					->join('tramHistorial','thisDoc','=','tdocId')

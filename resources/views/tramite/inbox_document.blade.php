@@ -106,7 +106,13 @@
                                         @endif
 
                                     </td>
-                                    <td>{{ $doc->plazo }}</td>
+                                    <td>
+                                        @if($doc->thisFlagA == true)
+                                            {{ Carbon\Carbon::parse($doc->thisDateTimeA)->format('d-m-Y') }}
+                                        @else
+                                            {{ $doc->plazo }}
+                                        @endif
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

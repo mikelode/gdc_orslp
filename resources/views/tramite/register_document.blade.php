@@ -17,7 +17,8 @@
                 <span style="float: left; height: 34px; padding: 5px; font-size: 20px; font-weight: bold">REGISTRO DE INGRESO:</span>
                 <input type="text" class="form-control" style="width: 60px; float: left" id="periodoTramite" value="{{ \Session::get('periodo') }}" readonly>
                 <div class="input-group" style="float: left;">
-                    <input type="text" class="form-control" style="width: 160px; float: left; margin-left: 3px" id="docId" name="ndocId" onkeydown="ejecutar_teclado(event,'interno')" readonly>
+                    <input type="text" class="form-control" style="width: 160px; float: left; margin-left: 3px" id="sdocId" name="sndocId" onkeydown="ejecutar_teclado(event,'interno')" readonly>
+                    <input type="hidden" id="docId" name="ndocId"  readonly>
                     <span class="input-group-btn" style="float: left;">
                         <!--<button type="button" id="btnIngresarDoc" class="btn btn-success" style="width: 66px; height: 33px;" data-estado="desactivado" onclick="modo_buscar(this)">-->
                         <button type="button" id="btnIngresarDoc" class="btn btn-success" style="width: 66px;" data-toggle="modal" data-target="#modalEncontrarDocumento" data-origen="busqueda">
@@ -25,8 +26,10 @@
                         </button>
                     </span>
                 </div>
-                <button type="button" onclick="mostrar_documento('anterior','interno')" class="btn btn-success btn-recorrer" style="float: left; margin-left: 10px;"><span class="glyphicon glyphicon-step-backward"></span></button>
+                <button type="button" onclick="mostrar_documento('first','interno')" class="btn btn-success" style="float: left; margin-left: 10px;"><span class="glyphicon glyphicon-fast-backward"></span></button>
+                <button type="button" onclick="mostrar_documento('anterior','interno')" class="btn btn-success btn-recorrer" style="float: left;"><span class="glyphicon glyphicon-step-backward"></span></button>
                 <button type="button" onclick="mostrar_documento('posterior','interno')" class="btn btn-success btn-recorrer" style="float: left;"><span class="glyphicon glyphicon-step-forward"></span></button>
+                <button type="button" onclick="mostrar_documento('last','interno')" class="btn btn-success" style="float: left;"><span class="glyphicon glyphicon-fast-forward"></span></button>
                 <div class="pull-right">
                     @if(Auth::user()->can(1))
                     <button type="button" id="btnNuevoDoc" class="btn btn-success" style="width: 100px;" onclick="nuevo_documento('interno')">Nuevo</button>
@@ -65,6 +68,7 @@
                                                         <option value="respuesta">Respuesta</option>
                                                         <option value="reapertura">Reapertura</option>
                                                         <option value="atendido-salida">Atendido (salida)</option>
+                                                        <option value="adjuntado">Adjuntado</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-3">
@@ -75,7 +79,10 @@
                                                         </span>
                                                         <input type="text" name="ndocRefRegistro" id="docRefRegistro" class="form-control input-sm" readonly>
                                                         <input type="hidden" name="ndocReferencia" id="docReferencia">
-                                                    </div>
+                                                    </div>                                                    
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <span id="docRefMsg" class="bg-info">Referencia no encontrada</span>
                                                 </div>
                                             </div>
                                             <div id="sin_referencia" style="display: none;">
@@ -214,6 +221,9 @@
                                             <button type="button" class="btn btn-primary" data-toggle="modal" id="btnEstadoEnvio" value="sending">
                                                 Enviar Documento
                                             </button>
+                                            <button type="button" class="btn btn-warning" data-toggle="modal" id="btnEstadoFiled" value="filing">
+                                                Archivar Documento
+                                            </button>
                                             @endif
                                         </div>
                                     </div>
@@ -315,7 +325,7 @@
                 <form id="frmEnvDoc" method="post" action="hist/envio">
                     {!! csrf_field() !!}
                     <div class="row">
-                        <div class="col-md-4"><label class="lbl-frm">El documento con registro:</label></div>
+                        <div class="col-md-3"><label class="lbl-frm">Nro de Registro:</label></div>
                         <div class="col-md-3">
                             <div class="form-control input-sm" id="docEnvioExp"></div>
                             <input type="hidden" name="ndocEnvioExp" id="hdocEnvioExp"><!-- ndocEnvioExp envia el codigo del documento id -->
@@ -328,8 +338,8 @@
                         <input type="hidden" name="ndocEnvioOrigen" id="hdocEnvioOrigen">
                     </div>-->
                     <div class="row">
-                        <div class="col-md-4"><label class="lbl-frm">Fecha de Envío</label></div>
-                        <div class="col-md-8">
+                        <div class="col-md-3"><label class="lbl-frm">Fecha de Envío</label></div>
+                        <div class="col-md-9">
                             <div class="input-group" style="padding: 5px 0px;">
                                 <input type="text" class="form-control" id="docFecEnvio" name="ndocFecEnvio">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
@@ -337,8 +347,8 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4"><label class="lbl-frm">Será enviado a:</label></div>
-                        <div class="col-md-8">
+                        <div class="col-md-3"><label class="lbl-frm">Será enviado a:</label></div>
+                        <div class="col-md-9">
                             <select name="ndocEnvioDestino" id="docEnvioDestino" style="width: 100%;">
                                 <optgroup label="Especialista, supervisor, evaluador u otros">
                                     @foreach($dest as $d)
@@ -358,8 +368,8 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4"><label class="lbl-frm">Detalle u Observación:</label></div>
-                        <div class="col-md-8">
+                        <div class="col-md-3"><label class="lbl-frm">Detalle u Observación:</label></div>
+                        <div class="col-md-9">
                             <textarea id="docEnvioMensaje" name="ndocEnvioMensaje" class="form-control" style="margin-top: 5px"></textarea>
                         </div>
                     </div>
@@ -368,6 +378,61 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-primary" onclick="enviar_documento('interno')">Registrar envío</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalOperacionArchivar" role="dialog" aria-labelledby="archivarDocumento" aria-hidden="true" style="color:#cd953c">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="enviarDocumento">Archivar Documento</h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmArchDoc" method="post" action="hist/filing">
+                    {!! csrf_field() !!}
+                    <div class="row">
+                        <div class="col-md-3"><label class="lbl-frm">Nro de Registro:</label></div>
+                        <div class="col-md-3">
+                            <div class="form-control input-sm" id="docArchExp"></div>
+                            <input type="hidden" name="ndocArchExp" id="hdocArchExp"><!-- ndocEnvioExp envia el codigo del documento id -->
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"><label class="lbl-frm">Tipo de Archivado</label></div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="docTipoArch" name="ndocTipoArch" style="margin-top: 5px">
+                                <option value="NA">-- Seleccione una opción --</option>
+                                <option value="AP"> Todo el proceso documentario </option>
+                                <option value="OD"> Solo el documento seleccionado </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"><label class="lbl-frm">Fecha de Archivado</label></div>
+                        <div class="col-md-9">
+                            <div class="input-group" style="padding: 5px 0px;">
+                                <input type="text" class="form-control" id="docFecArch" name="ndocFecArch">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"><label class="lbl-frm">Detalle u Observación:</label></div>
+                        <div class="col-md-9">
+                            <textarea id="docArchMensaje" name="ndocArchMensaje" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning" onclick="archivar_documento('interno')">Registrar Archivado</button>
             </div>
         </div>
     </div>
@@ -514,15 +579,41 @@ $(document).ready(function(){
         }
         else{
             var ok = confirm('¿Está seguro de anular la operación de envío realizada?');
-            var data = {'doc':$('#docId').val()}
+            var id = $('#docId').val();
+            var data = {'doc': id};
 
             if(ok){
                 $.get('hist/unsend', data, function(response) {
-                    console.log(response);
+                    alert(response.msg);
+                    if(response.idMsg == 200){
+                        mostrar_documento(id,'busqueda');
+                    }
                 });
             }
         }
 
+    });
+
+    $('#btnEstadoFiled').click(function(evt){
+        evt.preventDefault();
+
+        if($(this).val() == 'filing'){
+            $('#modalOperacionArchivar').modal('show');
+        }
+        else{
+            var ok = confirm('¿Está seguro de desarchivar el documento seleccionado?');
+            var id = $('#docId').val();
+            var data = {'doc':id};
+
+            if(ok){
+                $.get('hist/unfiling', data, function(response) {
+                    alert(response.msg);
+                    if(response.idMsg == 200){
+                        mostrar_documento(id,'busqueda');
+                    }
+                });
+            }
+        }
     });
 
     $('#docEnvioDestino').select2();
@@ -543,6 +634,11 @@ $(document).ready(function(){
         showClose: true
     });
     $('#docFecEnvio').datetimepicker({
+        format: "YYYY-MM-DD",
+        showClear: true,
+        showClose: true
+    });
+    $('#docFecArch').datetimepicker({
         format: "YYYY-MM-DD",
         showClear: true,
         showClose: true
@@ -604,6 +700,35 @@ $(document).ready(function(){
         {
             evt.preventDefault();
             encontrar_documento('interno',$('#frmEncontrarDocRemitP'));
+        }
+    });
+
+    $('input#docRefRegistro').keydown(function(evt) {
+        if(evt.altKey && evt.keyCode == 82){
+
+            var data = $('#frmEncontrarDocRegistro').serializeArray();
+
+            $.post('doc/reg', {ndescRegistro: $(this).val(), nidFuncion: 'kbReferencia', _token: data[0].value}, function(data){
+
+                if(data.cant > 1){
+                    var msg = 'Es posible que mas de un documento tenga el mismo número de registro. ';
+
+                    $.each(data.docs, function(i, doc) {
+                         msg += ' CUD-' + doc.tdocId;
+                    });
+
+                    alert(msg);
+                }
+                else if(data.cant == 0){
+                    $('#docRefMsg').html('Referencia no encontrada :/');
+                }
+                else{
+                    if(data.docs[0].tdocStatus != 'derivado')
+                        alert('El registro del documento seleccionado no puede ser referenciado, porque su estado es: ' + data.docs[0].tdocStatus.toUpperCase());
+                    else
+                        mostrar_documento(data.docs[0].tdocId, 'referencia');
+                }
+            });
         }
     });
 

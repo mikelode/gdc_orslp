@@ -86,8 +86,12 @@ Route::post('hist/register', 'Document\HistorialController@storeHistorialDerived
 Route::post('hist/registerdc', 'Document\HistorialController@storeHistorialDerivedDc');
 
 Route::post('fhist/register', 'Document\HistorialController@firstHistorialDerived');
+
 Route::post('hist/envio','Document\HistorialController@envioHistorial');
 Route::get('hist/unsend','Document\HistorialController@anularEnvioHistorial');
+
+Route::post('hist/filing','Document\HistorialController@archivarDocumento');
+Route::get('hist/unfiling','Document\HistorialController@desarchivarDocumento');
 
 Route::put('hist/update/{id}', [
     'as' => 'receive', 'uses' => 'Document\HistorialController@acceptDocumentDerived'

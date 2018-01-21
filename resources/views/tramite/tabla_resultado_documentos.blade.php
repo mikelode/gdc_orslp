@@ -16,7 +16,9 @@
         @foreach($docs as $Fila)
             <tr>
                 <td>
-                    <a href="javascript:void(0)" onclick="mostrar_documento('{{ $Fila['tdocId'] }}','{{ $funcion }}')">{{ $Fila['tdocRegistro'] }}</a>
+                    <a href="javascript:void(0)" onclick="mostrar_documento('{{ $Fila['tdocId'] }}','{{ $funcion }}')">
+                        {{ $Fila['tdocRegistro'] }}
+                    </a>
                 </td>
                 <td>{{ $Fila['ttypDesc'] }}</td>
                 <td>{{ $Fila['tdocNumber'] }}</td>

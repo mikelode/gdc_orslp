@@ -163,9 +163,14 @@ class ArchivadorController extends Controller {
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->where('tdocRegistro',$registro)
-                    ->whereRaw('year(tarcDatePres) = '.trim($request->period))
+                    ->whereRaw('year(tarcDatePres) = '.Session::get('periodo')) //trim($request->period))
                     ->orderBy('tarcDatePres','DESC')
                     ->get();
+
+        if($funcion == 'kbReferencia'){
+            $cant = $docs->count();
+            return response()->json(compact('cant','docs'));
+        }
 
         if($docs){
             if($docs->count() == 0){

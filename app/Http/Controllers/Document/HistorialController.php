@@ -61,6 +61,7 @@ class HistorialController extends Controller {
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
+                    ->join('tramHistorial','thisDoc','=','tdocId')
                     ->where('tarcYear',Session::get('periodo'))
                     ->where('tdocRef',null)
                     ->orderby('tdocId','DESC')
@@ -156,6 +157,9 @@ class HistorialController extends Controller {
                     $documento->tdocStatus = 'derivado';
                     $documento->save();
                 }
+                else if($doc[0]->tdocAccion == 'adjuntado'){
+                    throw new Exception("No es posible enviar el documento, ya que ha registado el documento como acción ADJUNTADO");
+                }
                 else{
 
                     $hist = Historial::find($doc[0]->thisId);
@@ -183,8 +187,7 @@ class HistorialController extends Controller {
                 $idMsg = 200;
             }
             else{
-                $msg = $exception;
-                $idMsg = 500;
+                throw new Exception($exception);
             }
         } catch (Exception $e) {
             $msg = 'Error encontrado:' . $e . "\n";
@@ -298,7 +301,7 @@ class HistorialController extends Controller {
             });
 
             if(is_null($exception)){
-                $msg = 'Envío del documento registrado con éxito';
+                $msg = 'Envío registrado anulado correctamente';
                 $idMsg = 200;
             }
             else{
@@ -605,5 +608,135 @@ class HistorialController extends Controller {
             }
         }
         return false;
+    }
+
+    public function archivarDocumento(Request $request)
+    {
+        try {
+            $exception = DB::transaction(function($request) use ($request){
+
+                $doc = Document::select('*')
+                        ->join('tramHistorial','tdocId','=','thisDoc')
+                        ->where('tdocId',$request->ndocArchExp)
+                        ->get(); //ndocArchExp recibe el codigo del documento id que se va registrar su envio
+
+                if($doc[0]->thisFlagD == true)
+                    throw new Exception("El documento ha sido derivado por lo tanto no es posible archivarlo.");
+                
+                $hist = Historial::find($doc[0]->thisId);
+                $hist->thisFlagF = true;
+                $hist->thisDateTimeF = $request->ndocFecArch; //Carbon::now();//->format('d/m/Y h:i:s A');
+                $hist->thisDscF = trim($request->ndocArchMensaje);
+                $hist->rec_date_at = Carbon::now()->toDateString();
+                $hist->rec_time_at = Carbon::now()->toTimeString();
+                $hist->save();
+
+                $documento = Document::find($doc[0]->tdocId);
+                $documento->tdocStatus = 'archivado';
+                $documento->save();
+
+                /* if the all process option is selected, find the origin doc and change status to attend in tramdoc and tramhist */
+                if($request->ndocTipoArch == 'AP'){
+                    $docOrigen = Document::select('tdocId','thisId','tdocExp')
+                                ->join('tramHistorial','tdocId','=','thisDoc')
+                                ->where('tdocExp',$doc[0]->tdocExp)
+                                ->where('tdocRef',null)
+                                ->get();
+
+                    $histOrigen = Historial::find($docOrigen[0]->thisId);
+                    $histOrigen->thisFlagA = true;
+                    $histOrigen->thisDateTimeA = $request->ndocFecEnvio; //Carbon::now();//->format('d/m/Y h:i:s A');
+                    $histOrigen->thisDscA = trim($request->ndocEnvioMensaje);
+                    $histOrigen->rec_date_at = Carbon::now()->toDateString();
+                    $histOrigen->rec_time_at = Carbon::now()->toTimeString();
+                    $histOrigen->save();
+
+                    /* siendo asi, actualizamos el status del archivador o expediente al que pertenece el documento pues ya 
+                    será atendido */
+                    $exp = Archivador::find($docOrigen[0]->tdocExp);
+                    $exp->tarcStatus = 'atendido';
+                    $exp->updated_at = Carbon::now();
+                    $exp->save();
+                }
+            });
+
+            if(is_null($exception)){
+                $msg = 'El documento o proceso documentario seleccionado ha sido archivado con éxito';
+                $idMsg = 200;
+            }
+            else{
+                throw new Exception($exception);
+            }
+        } catch (Exception $e) {
+            $msg = 'Error encontrado:' . $e . "\n";
+            $idMsg = 500;
+        }
+
+        return response()->json(compact('msg','idMsg'));
+    }
+
+    public function desarchivarDocumento(Request $request)
+    {
+        try {
+            $exception = DB::transaction(function($request) use ($request){
+
+                $doc = Document::select('*')
+                        ->join('tramHistorial','tdocId','=','thisDoc')
+                        ->where('tdocId',$request->doc)
+                        ->get();
+                
+                $hist = Historial::find($doc[0]->thisId);
+                $hist->thisFlagF = false;
+                $hist->thisDateTimeF = null;
+                $hist->thisDscF = null;
+                $hist->rec_date_at = Carbon::now()->toDateString();
+                $hist->rec_time_at = Carbon::now()->toTimeString();
+                $hist->save();
+
+                $documento = Document::find($doc[0]->tdocId);
+                $documento->tdocStatus = 'registrado';
+                $documento->save();
+
+                /* check if origin doc is in attended status */
+                
+                $docOrigen = Document::select('tdocId','thisId','tdocExp')
+                            ->join('tramHistorial','tdocId','=','thisDoc')
+                            ->where('tdocExp',$doc[0]->tdocExp)
+                            ->where('tdocRef',null)
+                            ->get();
+
+                $histOrigen = Historial::find($docOrigen[0]->thisId);
+
+                if($histOrigen->thisFlagA == true){
+                    /* if it's, rollback as process status document*/
+                    $histOrigen->thisFlagA = false;
+                    $histOrigen->thisDateTimeA = null;
+                    $histOrigen->thisDscA = null;
+                    $histOrigen->rec_date_at = Carbon::now()->toDateString();
+                    $histOrigen->rec_time_at = Carbon::now()->toTimeString();
+                    $histOrigen->save();
+
+                    /* siendo asi, actualizamos el status del archivador o expediente al que pertenece el documento pues ya 
+                    será atendido */
+                    $exp = Archivador::find($docOrigen[0]->tdocExp);
+                    $exp->tarcStatus = 'procesando';
+                    $exp->updated_at = Carbon::now();
+                    $exp->save();
+                }
+            });
+
+            if(is_null($exception)){
+                $msg = 'El documento o proceso documentario seleccionado ha desarchivado correctamente';
+                $idMsg = 200;
+            }
+            else{
+                throw new Exception($exception);
+            }
+        } catch (Exception $e) {
+            $msg = 'Error encontrado:' . $e . "\n";
+            $idMsg = 500;
+        }
+
+        return response()->json(compact('msg','idMsg'));
     }
 } 

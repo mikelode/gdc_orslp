@@ -108,7 +108,7 @@ class DocumentController extends Controller {
 		try{
 			$exception = DB::transaction(function($request) use ($request){
 
-				if($request->ndocProceso == "no"){
+				if($request->ndocProceso == "no"){ // ¿Does it belong to a documentary process?
 					
 					$pref = 'EXP';
 					$code_exp = '';
@@ -139,7 +139,9 @@ class DocumentController extends Controller {
 					$code_exp = $docRef[0]->tdocExp1;
 
 					if($docRef[0]->tdocStatus == 'registrado' || $docRef[0]->thisFlagD == false)
-						throw new Exception("El documento al que hace referencia debe estar derivado, por favor ubíquelo y registre su derivación");
+						throw new Exception("El documento al que hace referencia está NO DERIVADO, ubíquelo y registre su envío");
+					if($docRef[0]->tdocStatus == 'archivado' || $docRef[0]->thisFlagF == true)
+						throw new Exception("El documento al que hace referencia esta ARCHIVADO, no puede referenciarlo");		
 				}
 
 				$file = $request->file('ndocFile');
@@ -250,15 +252,21 @@ class DocumentController extends Controller {
 
 					$hist->save();
 
-					$hist_prev = Historial::select('*')
+					if($request->ndocAccion == 'adjuntado'){
+						// Nothing to do
+					}
+					else{
+
+						$hist_prev = Historial::select('*')
 									->where('thisDoc',$request->ndocReferencia)
 									->where('thisFlagR',true)
 									->where('thisFlagD',true)
 									->get();
 
-					$hist_ref = Historial::find($hist_prev[0]->thisId);
-					$hist_ref->thisIdRef = $hist->thisId;
-					$hist_ref->save();
+						$hist_ref = Historial::find($hist_prev[0]->thisId);
+						$hist_ref->thisIdRef = $hist->thisId;
+						$hist_ref->save();
+					}
 				}
 			});
 
@@ -266,6 +274,54 @@ class DocumentController extends Controller {
 
 		}catch(Exception $e){
 			return 'Error encontrado: '.$e->getMessage()."\n";
+		}
+	}
+
+	public function storeEditDocument1(Request $request)
+	{
+		try{
+			$exception = DB::transaction(function() use ($request){
+				$doc = Document::find($request->ndocId);
+
+				/* REFERENCE DATA SECTION */
+
+				$belongProcess = $request->ndocProceso;
+				if($belongProcess == 'NO'){
+					$filer = Archivador::find($doc->tdocExp);
+					$filer->tarcTitulo = $request->ndocTitulo;
+					$filer->save();
+				}
+				else if($belongProcess == 'SI'){
+					$currentAction = $doc->tdocAccion;
+					$doc->tdocAccion = $request->ndocAccion;
+					switch ($request->ndocAccion) {
+						case 'respuesta':
+							# code...
+							break;
+						case 'reapertura':
+							
+							break;
+						case 'atendido-salida':
+							# code...
+							break;
+						case 'adjuntado':
+							# code...
+							break;
+						default:
+							# code...
+							break;
+					}
+				}
+				else{
+					throw new Exception("No se puede identificar si el documento pertenece o no a un proceso documentario", 1);
+					
+				}
+
+				/* DOCUMENT DATA SECTION */
+
+			});
+		}catch(Exception $e){
+
 		}
 	}
 
@@ -301,9 +357,55 @@ class DocumentController extends Controller {
 				$file = $request->file('ndocFile');
 				$code_exp = $exp->tarcExp;
 				$code_doc = $doc->tdocCod;
-				
+
+				if($request->ndocProceso == "si"){ /* actualizamos las refencias en la tabla documento e historial */
+					
+					if($actualRef != $nuevaRef){
+						
+						$histNewRef = Document::find($nuevaRef)->historial;
+
+						if($doc->tdocAccion != 'adjuntado' && $histNewRef->thisIdRef != null){
+							throw new Exception("No se puede referenciar al registro elegido, puesto que dicho registro ya tiene otro documento que le hace referencia");
+						}
+						else if($doc->tdocAccion != 'adjuntado' && $histNewRef->thisIdRef == null){
+							
+							$doc->tdocRef = $request->ndocReferencia; // datos del nuevo doc al que hace referencia
+							$docPrevHist = Document::find($actualRef)->historial; // actualizamos datos del doc anterior ref
+							$docPrevHist->thisIdRef = null;
+							$docPrevHist->save();
+
+							if($histNewRef->thisFlagD == false)
+								throw new Exception("El documento al que hace referencia debe estar derivado, por favor ubíquelo y registre su derivación");
+
+							$histId = Document::find($doc->tdocId)->historial;
+							$histId->thisExp = $code_exp;
+							$histId->save();
+
+							$histNewRef->thisIdRef = $histId[0]->thisId;
+							$histNewRef->save();
+
+							/* si se cambia a una refernecia de otro expediente se debe mover el doc al nuevo archivero */
+
+							$current_location = substr($doc->tdocPathFile, 9).'/'.$doc->tdocFileName;
+							$new_location = $code_exp.'/'.$doc->tdocFileName;
+							\Storage::move($current_location,$new_location);
+
+							$doc->tdocPathFile = 'docscase/'.$code_exp;
+						}
+						else if($doc->tdocAccion == 'adjuntado' && $histNewRef->thisIdRef == null){
+							if($newDocRef->tdocExp == $doc->tdocExp)
+								$doc->tdocRef = $request->ndocReferencia; // datos del nuevo doc al que hace referencia
+							else
+								throw new Exception("El documento adjuntado debe hacer referencia a un documento que pertenezca al mismo proceso documentario");
+								
+						}
+					}
+					
+					$doc->tdocAccion = $request->ndocAccion;
+				}
+
 				$doc->tdocExp = $exp->tarcId;
-				$doc->tdocExp1 = $code_exp; 
+				$doc->tdocExp1 = $code_exp;
 				$doc->tdocDependencia = $request->ndocDepend;
 				$doc->tdocProject = $request->ndocProy;
 				$doc->tdocSender = $request->ndocSender;
@@ -316,29 +418,6 @@ class DocumentController extends Controller {
 				$doc->tdocFolio = $request->ndocFolio;
 				$doc->tdocSubject = $request->ndocAsunto;
 				$doc->tdocDetail = $request->ndocDetalle;
-
-				if($request->ndocProceso == "si"){ /* actualizamos las refencias en la tabla documento e historial */
-					$doc->tdocAccion = $request->ndocAccion;
-					$doc->tdocRef = $request->ndocReferencia; // datos del nuevo doc al que hace referencia
-
-					if($actualRef != $nuevaRef){
-						$docPrevHist = Document::find($actualRef)->historial; // actualizamos datos del doc anterior ref
-						$docPrevHist->thisIdRef = null;
-						$docPrevHist->save();
-
-						$docNewHist = Document::find($nuevaRef)->historial;
-
-						if($docNewHist->thisFlagD == false)
-							throw new Exception("El documento al que hace referencia debe estar derivado, por favor ubíquelo y registre su derivación");
-
-						$histId = Historial::select('*')
-									->where('thisDoc',$doc->tdocId)
-									->get();
-						
-						$docNewHist->thisIdRef = $histId[0]->thisId;
-						$docNewHist->save();
-					}
-				}
 
 				if($file){ // entra aqui si esta cambiando de archivo
 
@@ -358,6 +437,11 @@ class DocumentController extends Controller {
 				}
 
 				$doc->save();
+
+				$filer = Archivador::find($doc->tdocExp);
+				$filer->tarcTitulo = $request->ndocTitulo;
+				$filer->save();
+
 			});
 
 			if(is_null($exception)){
@@ -365,7 +449,7 @@ class DocumentController extends Controller {
                 $idMsg = 200;
             }
             else{
-                $msg = $exception;
+                throw new Exception($exception);
                 $idMsg = 500;
             }
 
@@ -441,7 +525,8 @@ class DocumentController extends Controller {
 		}
 
 		if($request->ndocPers != 'all'){
-			$list_docs = $list_docs->where('tdocDni', $request->ndocPers); // DNI se almacena el ID de la tabla persona que guarda a los trabajadores del área de supervision
+			$list_docs = $list_docs->where('tdocDni', $request->ndocPers); 
+			// DNI se almacena el ID de la tabla persona que guarda a los trabajadores del área de supervision
 		}
 
 		$list_docs = $list_docs->get();
@@ -542,7 +627,29 @@ class DocumentController extends Controller {
 		$docId = $request->docActual;
 		$newDocId = 0;
 
-		if($request->posicion == 'anterior')
+		if($request->posicion == 'first'){
+
+			$minDocId = Document::select(DB::raw('min(tdocId) as minId'))
+							->whereRaw('year(tdocDate) = '.Session::get('periodo'))
+							->first();
+
+			$resultado = Document::where('tdocId',$minDocId->minId)
+							->whereRaw('year(tdocDate) = '.Session::get('periodo'))
+							->first();
+
+		}
+		else if($request->posicion == 'last'){
+
+			$maxDocId = Document::select(DB::raw('max(tdocId) as maxId'))
+							->whereRaw('year(tdocDate) = '.Session::get('periodo'))
+							->first();
+
+			$resultado = Document::where('tdocId',$maxDocId->maxId)
+							->whereRaw('year(tdocDate) = '.Session::get('periodo'))
+							->first();
+
+		}
+		else if($request->posicion == 'anterior')
 		{
 			$beforeDocId = (int) $docId - 1;
 

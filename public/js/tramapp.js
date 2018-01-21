@@ -295,6 +295,7 @@ function nuevo_documento(origen)
         $('#operacionEnviar').hide();
         $('#operacionEnviado').hide();
 
+        $('#sdocId').val('');
         $('#docId').val('');
         $('#docDepend').prop('disabled', false).val(1);
         $('#docProy').prop('disabled', false).val(1).trigger('change');
@@ -314,10 +315,12 @@ function nuevo_documento(origen)
         $('#withoutDigFile').show();
 
         $('#docProceso').prop('disabled', false).val('na').trigger('change');
+        $('#docProceso option:not(:selected)').attr('disabled', false);
         $('#docTitulo').prop('readonly', false).val('');
         $('#docAccion').prop('disabled', false).val('');
         $('#docRefRegistro').prop('readonly', false).val('');
         $('#docReferencia').prop('readonly', false).val('');
+        $('#docRefMsg').html('Referencia no encontrada');
 
         $('#btnGuardarDoc').show();
     }
@@ -336,6 +339,8 @@ function editar_documento(origen)
     {
         $('#btnEditarDoc').html('Cancelar');
         $('#btnEditarDoc').prop('class','btn btn-warning');
+        $('#btnNuevoDoc').hide();
+        $('#btnEliminarDoc').hide();
 
         $('#operacionEnviar').hide();
 
@@ -358,6 +363,8 @@ function editar_documento(origen)
 
         /* para evitar que edite si pertenece o no a un proceso*/
         $('#docProceso').prop('disabled', false);
+        $('#docProceso option:not(:selected)').attr('disabled', true);
+
         $('#docTitulo').prop('readonly', false);
         $('#docAccion').prop('disabled', false);
         $('#docRefRegistro').prop('readonly', true);
@@ -531,11 +538,11 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
     var data = {'posicion': pos, 'docActual': actual, 'origen': origen};
 
     //if(actual == '') return;
-    if($('#btnEditarDoc').html() == 'Cancelar' && origen == 'busqueda'){
+    if($('#btnEditarDoc').html() == 'Cancelar' && (origen == 'busqueda' || origen == 'interno')){
         alert('No puede mostrar el documento seleccionado, mientras esta editando otro documento');
         return;
     }
-    if($('#btnNuevoDoc').html() == 'Cancelar' && origen == 'busqueda'){
+    if($('#btnNuevoDoc').html() == 'Cancelar' && (origen == 'busqueda' || origen == 'interno')){
         alert('No puede mostrar el documento seleccionado, mientras esta registro un nuevo documento')
         return;
     }
@@ -543,9 +550,16 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
     $.get(url, data, function(response){
         
         if(origen == "referencia"){
-            $('#docRefRegistro').val(response.docElegido[0].tdocRegistro);
-            $('#docReferencia').val(response.docElegido[0].tdocId);
-            $('#docProy').val(response.docElegido[0].tdocProject).trigger('change');// change cambia tmbn las acciones de docProy | change.select2 solo cambia el select
+            if(response.docElegido[0].tdocStatus != 'derivado'){
+                alert('El registro del documento seleccionado no puede ser referenciado, porque su estado es: ' + response.docElegido[0].tdocStatus.toUpperCase());
+                return;
+            }
+            else{
+                $('#docRefRegistro').val(response.docElegido[0].tdocRegistro);
+                $('#docReferencia').val(response.docElegido[0].tdocId);
+                $('#docRefMsg').html('Doc.Referencia: ' + response.docElegido[0].tdocType + ' - ' + response.docElegido[0].tdocNumber);
+                $('#docProy').val(response.docElegido[0].tdocProject).trigger('change');// change cambia tmbn las acciones de docProy | change.select2 solo cambia el select
+            }
         }
         else{
             pantallazo_documento(response);
@@ -584,6 +598,7 @@ function pantallazo_documento(cadena)
 {
     console.log('pantallazo');
     /* SENDER DATA */
+    $('#sdocId').prop('readonly',true).val('CUD-' + cadena.docElegido[0].tdocId);
     $('#docId').prop('readonly',true).val(cadena.docElegido[0].tdocId);
     $('#docDepend').prop('disabled',true).val(cadena.docElegido[0].tdocDependencia);
     $('#docProy').prop('disabled',true).val(cadena.docElegido[0].tdocProject).trigger('change');// change cambia tmbn las acciones de docProy | change.select2 solo cambia el select
@@ -619,11 +634,14 @@ function pantallazo_documento(cadena)
         $('#docAccion').prop('disabled',true).val(cadena.docElegido[0].tdocAccion);
         $('#docRefRegistro').prop('readonly',true).val(cadena.docReferencia.tdocRegistro);
         $('#docReferencia').prop('readonly',true).val(cadena.docElegido[0].tdocRef);
+        $('#docRefMsg').html('REF: CUD-' + cadena.docReferencia.tdocId + ' DOC:' + cadena.docReferencia.tdocType + ' - ' + cadena.docReferencia.tdocNumber);
     }
 
+    /* identifier for document's modal, sender and filed */
+    $("#docEnvioExp, #docArchExp").html(cadena.docElegido[0].tdocRegistro);
+    $("#hdocEnvioExp, #hdocArchExp").val(cadena.docElegido[0].tdocId);
 
-    $("#docEnvioExp").html(cadena.docElegido[0].tdocRegistro);
-    $("#hdocEnvioExp").val(cadena.docElegido[0].tdocId);
+    $('#btnNuevoDoc').show();
     
     if(cadena.docElegido[0].tdocStatus == 'registrado'){
         $('#operacionEnviar').show();
@@ -632,21 +650,30 @@ function pantallazo_documento(cadena)
         $('#operacionEnviar #btnEstadoEnvio').attr('class', 'btn btn-primary');
         $('#operacionEnviar #btnEstadoEnvio').attr('value', 'sending');
         $('#operacionEnviar #btnEstadoEnvio').html('Enviar Documento');
+        $('#operacionEnviar #btnEstadoEnvio').show();
+
+        $('#operacionEnviar #btnEstadoFiled').attr('class', 'btn btn-warning');
+        $('#operacionEnviar #btnEstadoFiled').attr('value', 'filing');
+        $('#operacionEnviar #btnEstadoFiled').html('Archivar Documento');
+        $('#operacionEnviar #btnEstadoFiled').show();
+
         $('#operacionEnviado').hide();
 
         $('#btnEditarDoc').show();
         $('#btnEliminarDoc').show();
     }
-    else{
+    else if(cadena.docElegido[0].tdocStatus == 'derivado'){
         
         if(cadena.docHistorial[0].thisIdRef == null){
             $('#operacionEnviar').show();
             $('#operacionEnviar #txtEstadoEnvio').attr('class', 'bg-info');
             $('#operacionEnviar #txtEstadoEnvio').html('El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención. Fecha: '+cadena.docHistorial[0].thisDateTimeD);
-            $('#operacionEnviar #btnEstadoEnvio').attr('class', 'btn btn-warning');
+            $('#operacionEnviar #btnEstadoEnvio').attr('class', 'btn btn-info');
             $('#operacionEnviar #btnEstadoEnvio').attr('value', 'unsending');
-            $('#operacionEnviar #btnEstadoEnvio').html('Anular Envio');
+            $('#operacionEnviar #btnEstadoEnvio').html('Anular Envío');
             $('#operacionEnviado').hide();
+            $('#operacionEnviar #btnEstadoEnvio').show();
+            $('#operacionEnviar #btnEstadoFiled').hide();
         }
         else{
             $('#operacionEnviar').hide();
@@ -654,6 +681,20 @@ function pantallazo_documento(cadena)
             $('#operacionEnviado').empty();
             $('#operacionEnviado').html('<div class="col-md-10"><div class="alert alert-info">El documento ha sido derivado a '+cadena.docHistorial[0].destino+' para su correspondiente atención, y también referenciado. <br> Fecha: '+cadena.docHistorial[0].thisDateTimeD+'</div></div>');
         }
+        $('#btnEditarDoc').hide();
+        $('#btnEliminarDoc').hide();
+    }
+    else if(cadena.docElegido[0].tdocStatus == 'archivado'){
+        $('#operacionEnviar').show();
+        $('#operacionEnviar #txtEstadoEnvio').attr('class', 'bg-warning');
+        $('#operacionEnviar #txtEstadoEnvio').html('El documento ha sido ARCHIVADO, <br> Nota: '+cadena.docHistorial[0].thisDscF+'. <br> Fecha: '+cadena.docHistorial[0].thisDateTimeF);
+        $('#operacionEnviar #btnEstadoFiled').attr('class', 'btn btn-warning');
+        $('#operacionEnviar #btnEstadoFiled').attr('value', 'unfiling');
+        $('#operacionEnviar #btnEstadoFiled').html('Desarchivar');
+        $('#operacionEnviado').hide();
+        $('#operacionEnviar #btnEstadoFiled').show();
+        $('#operacionEnviar #btnEstadoEnvio').hide();
+
         $('#btnEditarDoc').hide();
         $('#btnEliminarDoc').hide();
     }
@@ -676,6 +717,39 @@ function enviar_documento(origen)
         {
             alert(response.msg);
             $('#modalOperacionEnviar').modal('hide');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+
+            mostrar_documento(id,'busqueda');
+            
+            //cargarSubmodulo(1,'.html/modulo1/m1submod1.html');
+        }
+        else
+        {
+            alert(response.msg);
+        }
+
+    });
+
+}
+
+function archivar_documento(origen)
+{
+    var url = $('#frmArchDoc').prop('action');
+    var data = $('#frmArchDoc').serialize();
+    var id = $('#hdocArchExp').val();
+
+    if(id == ''){
+        alert('Lo lamentamos, actualice la página por favor presionando ctrl + F5');
+        return;
+    }
+
+    $.post(url, data, function(response){
+        
+        if(response.idMsg == '200')
+        {
+            alert(response.msg);
+            $('#modalOperacionArchivar').modal('hide');
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 

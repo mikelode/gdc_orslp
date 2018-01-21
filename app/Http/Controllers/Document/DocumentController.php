@@ -771,7 +771,7 @@ class DocumentController extends Controller {
 		// plazo se refiere al tiempo transcurrido de atención
 
         /* MySQL Version */
-        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo'))
+        $inbox = Document::select(DB::raw('*,fnTramDateDiff(tarcDatePres, NOW()) as plazo, fnDescDependencia(tdocDependencia,2) as dep'))
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
@@ -838,17 +838,15 @@ class DocumentController extends Controller {
     				$docId = $doc->tdocId;
     				
     				$hist = Historial::select('*')->where('thisDoc',$docId)->get();
-
 					$histId = $hist[0]->thisId;
 
     				if(count($hist)>1) throw new Exception("No se puede eliminar, existen mas de 1 registro al que hace referencia");
-    				$doc->delete(); // en cascada se elimina su registro en historial que le corresponde
     				
     				$histPrev = Historial::select('*')->where('thisIdRef',$histId)->get();
     				$histPrev = Historial::find($histPrev[0]->thisId);
     				/* se comenta por el doc mantiene su estado derivado, solo se anula al que hacia ref 
     				$histPrev->thisDepT = Auth::user()->tusId;
-    				$histPrev->thisFlagD = false; 
+    				$histPrev->thisFlagD = false;
     				$histPrev->thisDateTimeD = null;
     				$histPrev->thisDscD = null;*/
     				$histPrev->thisIdRef = null;
@@ -857,7 +855,7 @@ class DocumentController extends Controller {
     				/*$docPrev = Document::find($histPrev->thisDoc);
     				$docPrev->tdocStatus = 'registrado';
     				$docPrev->save();*/
-    				
+    				$doc->delete(); // en cascada se elimina su registro en historial que le corresponde
     			}
     		});
 

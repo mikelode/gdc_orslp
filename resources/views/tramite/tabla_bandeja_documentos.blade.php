@@ -5,7 +5,7 @@
             <th>Reg.</th>
             <th>Titulo Proc.</th>
             <th>Doc.</th>
-            <th>Remitente</th>
+            <th>Remitente (Dependencia)</th>
             <th>Asunto</th>
             <th>Fecha</th>
             <th>Estado</th>
@@ -24,10 +24,9 @@
             </td>
             <td>{{ $doc->tarcTitulo }}</td>
             <td>{{ $doc->ttypDesc.' - '.$doc->tdocNumber }}</td>
-            <td>{{ $doc->tdocSender }}</td>
+            <td>{{ $doc->tdocJobSender.' '.$doc->tdocSender. ' ('.$doc->dep.')' }}</td>
             <td>{{ $doc->tdocSubject }}</td>
             <td>{{ $doc->tdocDate }}</td>
-            <td>{{ $doc->tarcStatus }}</td>
             <td>
                 @if($doc->tarcStatus != 'atendido')
                     @if($doc->plazo <= 4)
@@ -39,6 +38,13 @@
                     @if($doc->plazo > 7)
                         <button type="button" class="btn btn-danger btn-xs">Vencido</button>
                     @endif
+                @endif
+            </td>
+            <td>
+                @if($doc->thisFlagA == true)
+                    {{ Carbon\Carbon::parse($doc->thisDateTimeA)->format('d-m-Y') }}
+                @else
+                    {{ $doc->plazo }}
                 @endif
             </td>
         </tr>

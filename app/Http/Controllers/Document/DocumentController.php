@@ -141,7 +141,7 @@ class DocumentController extends Controller {
 					if($docRef[0]->tdocStatus == 'registrado' || $docRef[0]->thisFlagD == false)
 						throw new Exception("El documento al que hace referencia está NO DERIVADO, ubíquelo y registre su envío");
 					if($docRef[0]->tdocStatus == 'archivado' || $docRef[0]->thisFlagF == true)
-						throw new Exception("El documento al que hace referencia esta ARCHIVADO, no puede referenciarlo");		
+						throw new Exception("El documento al que hace referencia esta ARCHIVADO, no puede referenciarlo");
 				}
 
 				$file = $request->file('ndocFile');
@@ -277,55 +277,138 @@ class DocumentController extends Controller {
 		}
 	}
 
-	public function storeEditDocument1(Request $request)
+	public function storeEditDocument(Request $request)
 	{
 		try{
 			$exception = DB::transaction(function() use ($request){
 				$doc = Document::find($request->ndocId);
 
+				$code_exp = $doc->tdocExp1;
+				$code_doc = $doc->tdocCod;
+				$file = $request->file('ndocFile');
+				$moveDocument = false;
+
 				/* REFERENCE DATA SECTION */
 
 				$belongProcess = $request->ndocProceso;
-				if($belongProcess == 'NO'){
+				if($belongProcess == 'no'){
 					$filer = Archivador::find($doc->tdocExp);
 					$filer->tarcTitulo = $request->ndocTitulo;
+					$filer->tarcAsoc = $request->ndocProy;
 					$filer->save();
+
+					$code_exp = $filer->tarcExp;
 				}
-				else if($belongProcess == 'SI'){
-					$currentAction = $doc->tdocAccion;
+				else if($belongProcess == 'si'){
+					$currentDocIdRef = $doc->tdocRef;
 					$doc->tdocAccion = $request->ndocAccion;
-					switch ($request->ndocAccion) {
-						case 'respuesta':
-							# code...
-							break;
-						case 'reapertura':
-							
-							break;
-						case 'atendido-salida':
-							# code...
-							break;
-						case 'adjuntado':
-							# code...
-							break;
-						default:
-							# code...
-							break;
+
+					if($currentDocIdRef != $request->ndocReferencia){
+
+						$histRef = Document::find($request->ndocReferencia)->historial;
+						$docRef = Document::find($request->ndocReferencia);
+
+						if($histRef->thisFlagD == false)
+							throw new Exception("El documento al que hace referencia está NO DERIVADO, ubíquelo y registre su envío");
+
+						if($histRef->thisFlagF == true)
+							throw new Exception("El documento al que hace referencia esta ARCHIVADO, no puede referenciarlo");
+
+						if($doc->tdocAccion!='adjuntado' && $histRef->thisIdRef != null){
+							throw new Exception("No se puede referenciar al registro elegido, puesto que dicho registro ya tiene otro documento que le hace referencia");
+						}
+
+						if($currentDocIdRef != '0'){ /* si hace ref a 0 indica que se registro por el método rápido */
+							$currentHistRef = Document::find($currentDocIdRef)->historial;
+							$currentHistRef->thisIdRef = null;
+							$currentHistRef->save();
+						}
+
+						$doc->tdocRef = $request->ndocReferencia;
+						$doc->tdocExp = $docRef->tdocExp;
+						$doc->tdocExp1 = $docRef->tdocExp1;
+
+						$histDoc = Document::find($request->ndocId)->historial;
+						$histDoc->thisExp = $docRef->tdocExp1;
+						$histDoc->save();
+
+						if($doc->tdocAccion != 'adjuntado'){
+							$histRef->thisIdRef = $histDoc->thisId;
+							$histRef->save();
+						}
+
+						/* si se hace referencia a un documento de otro expediente se debe mover el doc al nuevo archivero */
+						$moveDocument = true;
+						$current_location = substr($doc->tdocPathFile, 9).'/'.$doc->tdocFileName;
+						$new_location = $docRef->tdocExp1.'/'.$doc->tdocFileName;
+
+						$doc->tdocPathFile = 'docscase/'.$docRef->tdocExp1;
+
+						$code_exp = $docRef->tdocExp1;
 					}
+
 				}
 				else{
-					throw new Exception("No se puede identificar si el documento pertenece o no a un proceso documentario", 1);
-					
+					throw new Exception("No se puede identificar si el documento pertenece o no a un proceso documentario");
 				}
 
 				/* DOCUMENT DATA SECTION */
 
-			});
-		}catch(Exception $e){
+				$doc->tdocDependencia = $request->ndocDepend;
+				$doc->tdocProject = $request->ndocProy;
+				$doc->tdocSender = $request->ndocSender;
+				$doc->tdocDni = $request->ndocSenderId;
+				$doc->tdocJobSender = $request->ndocJob;
+				$doc->tdocType = $request->ndocTipo;
+				$doc->tdocNumber = $request->ndocNro;
+				$doc->tdocRegistro = $request->ndocReg;
+				$doc->tdocDate = $request->ndocFecha;
+				$doc->tdocFolio = $request->ndocFolio;
+				$doc->tdocSubject = $request->ndocAsunto;
+				$doc->tdocDetail = $request->ndocDetalle;
 
+				if($file){ // entra aqui si esta cambiando de archivo
+
+					if($doc->tdocFileName != null){
+						$file_actual = public_path($doc->tdocPathFile).'/'.$doc->tdocFileName;
+						if(\File::exists($file_actual))
+							\File::delete($file_actual);
+					}
+
+					$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
+					\Storage::disk('local')->put($filename, \File::get($file));
+
+					$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
+					$doc->tdocFileExt = $file->getClientOriginalExtension();
+					$doc->tdocPathFile = 'docscase/'.$code_exp;
+					$doc->tdocFileMime = $file->getMimeType();
+				}
+
+				$doc->save();
+
+				if($moveDocument){
+					\Storage::move($current_location,$new_location);
+				}
+
+			});
+
+			if(is_null($exception)){
+                $msg = 'El cambio realizado en el documento se ha guardado con éxito';
+                $idMsg = 200;
+            }
+            else{
+                throw new Exception($exception);
+            }
+
+		}catch(Exception $e){
+			$msg = 'Error encontrado:' . $e->getMessage() . ' -- ' . $e->getFile() . ' - ' . $e->getLine() . " \n";
+            $idMsg = 500;
 		}
+
+		return response()->json(compact('msg','idMsg'));
 	}
 
-	public function storeEditDocument(Request $request)
+	public function storeEditDocument1(Request $request)
 	{
 		try{
 			$exception = DB::transaction(function($request) use ($request){
@@ -450,7 +533,6 @@ class DocumentController extends Controller {
             }
             else{
                 throw new Exception($exception);
-                $idMsg = 500;
             }
 
 		}catch(Exception $e){

@@ -457,6 +457,7 @@ function terminar_edicion_documento(origen)
             if(response.idMsg == 200)
             {
                 alert(response.msg);
+                console.log(response.msg);
                 //pantallazo_documento(res.cadena);
                 $('#btnEditarDoc').html('Editar');
                 $('#btnEditarDoc').prop('class','btn btn-info');
@@ -596,7 +597,7 @@ function registrar_persona()
 
 function pantallazo_documento(cadena)
 {
-    console.log('pantallazo');
+    console.log(cadena);
     /* SENDER DATA */
     $('#sdocId').prop('readonly',true).val('CUD-' + cadena.docElegido[0].tdocId);
     $('#docId').prop('readonly',true).val(cadena.docElegido[0].tdocId);
@@ -632,9 +633,11 @@ function pantallazo_documento(cadena)
     else{
         $('#docProceso').prop('disabled',true).val('si').trigger('change');
         $('#docAccion').prop('disabled',true).val(cadena.docElegido[0].tdocAccion);
-        $('#docRefRegistro').prop('readonly',true).val(cadena.docReferencia.tdocRegistro);
+        if(cadena.docReferencia != null)
+            $('#docRefRegistro').prop('readonly',true).val(cadena.docReferencia.tdocRegistro);
         $('#docReferencia').prop('readonly',true).val(cadena.docElegido[0].tdocRef);
-        $('#docRefMsg').html('REF: CUD-' + cadena.docReferencia.tdocId + ' DOC:' + cadena.docReferencia.tdocType + ' - ' + cadena.docReferencia.tdocNumber);
+        if(cadena.docReferencia != null)
+            $('#docRefMsg').html('REF: CUD-' + cadena.docReferencia.tdocId + ' DOC:' + cadena.docReferencia.tdocType + ' - ' + cadena.docReferencia.tdocNumber);
     }
 
     /* identifier for document's modal, sender and filed */

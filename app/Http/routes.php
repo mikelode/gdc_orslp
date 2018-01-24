@@ -18,6 +18,11 @@ Route::get('/',[
     'uses' => 'HomeController@index'
 ]);
 
+Route::get('test', function(){
+    return view('welcome');
+});
+Route::post('read/files', 'WelcomeController@readFiles');
+
 Route::get('homei','HomeController@index_section');
 
 /*Route::get('/', function () {
@@ -52,9 +57,6 @@ Route::get('period/change', 'Document\SettingsController@getChangePeriodo');
 Route::get('fire', function(){
     //event(new \aidocs\Events\TramiteEvent());
     return 'event fired';
-});
-Route::get('test', function(){
-    return view('tramite.prueba');
 });
 
 /*

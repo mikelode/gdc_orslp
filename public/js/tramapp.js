@@ -507,6 +507,10 @@ function habilitar_busqueda(tipo)
     {
         $('form#frmEncontrarDocRemitP').show();
     }
+    else if(tipo == 'cud')
+    {
+        $('form#frmEncontrarDocCud').show();
+    }
 }
 
 function encontrar_documento(origen, frm)
@@ -551,6 +555,7 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
     $.get(url, data, function(response){
         
         if(origen == "referencia"){
+            console.log(response.docElegido);
             if(response.docElegido[0].tdocStatus != 'derivado'){
                 alert('El registro del documento seleccionado no puede ser referenciado, porque su estado es: ' + response.docElegido[0].tdocStatus.toUpperCase());
                 return;
@@ -558,7 +563,7 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
             else{
                 $('#docRefRegistro').val(response.docElegido[0].tdocRegistro);
                 $('#docReferencia').val(response.docElegido[0].tdocId);
-                $('#docRefMsg').html('Doc.Referencia: ' + response.docElegido[0].tdocType + ' - ' + response.docElegido[0].tdocNumber);
+                $('#docRefMsg').html('Esta haciendo referencia al documento: <p><a href="' + response.docElegido[0].tdocPathFile+'/'+response.docElegido[0].tdocFileName + '" target="_blank" >' + response.docElegido[0].ttypDesc + ' - ' + response.docElegido[0].tdocNumber + ' (CUD-' + response.docElegido[0].tdocId + ')</a></p>');
                 $('#docProy').val(response.docElegido[0].tdocProject).trigger('change');// change cambia tmbn las acciones de docProy | change.select2 solo cambia el select
             }
         }

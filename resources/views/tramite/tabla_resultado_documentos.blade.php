@@ -1,9 +1,10 @@
 <table class="display compact" cellspacing="0" width="100%" id="docEncontrado">
     <thead>
     <tr>
-        <th colspan="6">DOCUMENTOS</th>
+        <th colspan="7">DOCUMENTOS</th>
     </tr>
     <tr>
+        <th>CUD</th>
         <th>Reg.</th>
         <th>Doc</th>
         <th>Num.</th>
@@ -15,6 +16,7 @@
     <tbody>
         @foreach($docs as $Fila)
             <tr>
+                <td>{{ $Fila['tdocId'] }}</td>
                 <td>
                     <a href="javascript:void(0)" onclick="mostrar_documento('{{ $Fila['tdocId'] }}','{{ $funcion }}')">
                         {{ $Fila['tdocRegistro'] }}

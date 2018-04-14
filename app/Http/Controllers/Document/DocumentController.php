@@ -925,14 +925,17 @@ class DocumentController extends Controller {
     				if(count($hist)>1) throw new Exception("No se puede eliminar, existen mas de 1 registro al que hace referencia");
     				
     				$histPrev = Historial::select('*')->where('thisIdRef',$histId)->get();
-    				$histPrev = Historial::find($histPrev[0]->thisId);
-    				/* se comenta por el doc mantiene su estado derivado, solo se anula al que hacia ref 
-    				$histPrev->thisDepT = Auth::user()->tusId;
-    				$histPrev->thisFlagD = false;
-    				$histPrev->thisDateTimeD = null;
-    				$histPrev->thisDscD = null;*/
-    				$histPrev->thisIdRef = null;
-    				$histPrev->save();
+
+    				if(count($histPrev)>0){
+	    				$histPrev = Historial::find($histPrev[0]->thisId);
+	    				/* se comenta por el doc mantiene su estado derivado, solo se anula al que hacia ref 
+	    				$histPrev->thisDepT = Auth::user()->tusId;
+	    				$histPrev->thisFlagD = false;
+	    				$histPrev->thisDateTimeD = null;
+	    				$histPrev->thisDscD = null;*/
+	    				$histPrev->thisIdRef = null;
+	    				$histPrev->save();
+	    			}
 
     				/*$docPrev = Document::find($histPrev->thisDoc);
     				$docPrev->tdocStatus = 'registrado';

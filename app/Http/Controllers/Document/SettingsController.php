@@ -54,7 +54,7 @@ class SettingsController extends Controller
 
     public function  postRegisterUser(CreateUserRequest $request)
     {
-        DB::transaction(function($request) use ($request){
+        DB::transaction(function() use ($request){
 
             $user = new User();
 
@@ -186,7 +186,7 @@ class SettingsController extends Controller
     {
         try{
 
-            $exception = DB::transaction(function($request) use ($request, &$py){
+            $exception = DB::transaction(function() use ($request, &$py){
 
                 $asoc = new Proyecto();
 
@@ -249,7 +249,7 @@ class SettingsController extends Controller
         return $view;
     }
 
-    public function postUpdateProfile(Request $request)
+    /* public function postUpdateProfile(Request $request)
     {
         DB::transaction(function($request) use ($request){
 
@@ -282,11 +282,11 @@ class SettingsController extends Controller
         }
 
         return false;
-    }
+    } */
 
     public function postUpdateStateUser(Request $request)
     {
-        DB::transaction(function($request) use($request){
+        DB::transaction(function() use($request){
 
             $user = User::find($request->id);
             $user->tusState = $request->active;
@@ -319,7 +319,7 @@ class SettingsController extends Controller
 
     public function postUpdatePasswordUser(Request $request)
     {
-        DB::transaction(function($request) use($request){
+        DB::transaction(function() use($request){
 
             $dni = $request->idUser;
 
@@ -339,7 +339,7 @@ class SettingsController extends Controller
 
     public function getResetPasswordUser(Request $request)
     {
-        DB::transaction(function($request) use($request){
+        DB::transaction(function() use($request){
 
             $dni = $request->idUser;
 
@@ -372,7 +372,7 @@ class SettingsController extends Controller
     {
         try{
 
-            $exception = DB::transaction(function($request) use($request){
+            $exception = DB::transaction(function() use($request){
 
                 $persona = new Persona();
                 $persona->tprDni = $request->nprsDni;
@@ -504,7 +504,7 @@ class SettingsController extends Controller
     {
         try{
 
-            $exception = DB::transaction(function($request) use ($request, &$dep){
+            $exception = DB::transaction(function() use ($request, &$dep){
                 
                 $dep = new Dependencia();
                 $dep->depDsc = $request->ndpName;

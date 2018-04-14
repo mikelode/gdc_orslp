@@ -225,6 +225,33 @@ class ArchivadorController extends Controller {
         return response()->json(compact('Respuesta','msg','resultado'));
     }
 
+    public function findByCud(Request $request)
+    {
+        $docCud = trim($request->ndocCud);
+        $funcion = $request->nidFuncion;
+
+        $docs = Document::where('tdocId',$docCud)->get();
+
+        if($docs){
+            if(is_null($docs)){
+                $resultado = 'No se ha encontrado ningún registro';
+            }
+            else{
+                $view = view('tramite.tabla_resultado_documentos',compact('docs','funcion'));
+                $resultado = $view->render();
+            }
+            $msg = "Recuperado correctamente";
+            $Respuesta = 200;
+        }
+        else{
+            $resultado = '';
+            $msg = 'Error: no se pudo recuperar la información solicitada';
+            $Respuesta = 500;
+        }
+
+        return response()->json(compact('Respuesta','msg','resultado'));
+    }
+
     public function findByAttaches(Request $request)
     {
         $attach = trim($request->attachesDoc);

@@ -82,7 +82,9 @@
                                                     </div>                                                    
                                                 </div>
                                                 <div class="col-md-7">
-                                                    <span id="docRefMsg" class="bg-info">Referencia no encontrada</span>
+                                                    <span id="docRefMsg" class="bg-info">
+                                                        Referencia no encontrada
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div id="sin_referencia" style="display: none;">
@@ -448,12 +450,13 @@
                 </button>
                 <h5 class="modal-title pull-left" id="encontrarDocumento">Buscar Documento Por: &nbsp;&nbsp;</h5>
                 <div class="pull-left">
-                    <select onchange="habilitar_busqueda(this.value);">
+                    <select class="form-control" onchange="habilitar_busqueda(this.value);">
                         <option value="na" selected>-- Elegir --</option>
                         <option value="fecha">Fecha</option>
                         <option value="asunto">Asunto</option>
                         <option value="registro">Registro</option>
                         <option value="remitente">Remitente</option>
+                        <option value="cud">CUD</option>
                     </select>
                 </div>
             </div>
@@ -528,6 +531,22 @@
                             </div>
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocRemitP'))">Encontrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <form id="frmEncontrarDocCud" class="frm-busqueda-rapida" method="post" action="doc/cud" style="display: none;">
+                    {!! csrf_field() !!}
+                    <div class="form-group">
+                        <input type="hidden" name="nidConsulta" value="cud">
+                        <input type="hidden" name="nidFuncion" class="devolver_a">
+                        <label class="lbl-frm" style="display: block;">C.U.D:</label>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <input type="text" class="form-control input-sm" id="docCud" name="ndocCud" autocomplete="off">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocCud'))">Encontrar</button>
                             </div>
                         </div>
                     </div>
@@ -700,6 +719,14 @@ $(document).ready(function(){
         {
             evt.preventDefault();
             encontrar_documento('interno',$('#frmEncontrarDocRemitP'));
+        }
+    });
+
+    $('input#docCud').keypress(function(evt){
+        if(evt.which == 13)
+        {
+            evt.preventDefault();
+            encontrar_documento('interno',$('#frmEncontrarDocCud'));
         }
     });
 

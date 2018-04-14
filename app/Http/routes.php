@@ -183,6 +183,10 @@ Route::post('doc/attach',[
     'as' => 'findAttach', 'uses' => 'Document\ArchivadorController@findByAttaches'
 ]);
 
+Route::post('doc/cud',[
+    'as' => 'findCud', 'uses' => 'Document\ArchivadorController@findByCud'
+]);
+
 Route::get('doc/filtrar','Document\DocumentController@filtrarDocumento');
 
 /*
@@ -204,7 +208,7 @@ Route::get('settings',[
 Route::get('settings/new_user', 'Document\SettingsController@getRegisterUser');
 Route::post('settings/new_user', 'Document\SettingsController@postRegisterUser');
 Route::get('settings/list_users', 'Document\SettingsController@getListUsers');
-Route::post('settings/updt_profile', 'Document\SettingsController@postUpdateProfile');
+//Route::post('settings/updt_profile', 'Document\SettingsController@postUpdateProfile');
 Route::get('settings/updt_state', 'Document\SettingsController@postUpdateStateUser');
 Route::get('settings/updt_pass', 'Document\SettingsController@getUpdatePasswordUser');
 Route::post('settings/updt_pass', 'Document\SettingsController@postUpdatePasswordUser');

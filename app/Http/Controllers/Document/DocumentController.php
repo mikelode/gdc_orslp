@@ -876,8 +876,6 @@ class DocumentController extends Controller {
         				->where('tarcYear',Session::get('periodo'))
         				->where('tdocRegistro',$request->key)
 						->get();
-						
-			dd($request->key);
 
         	$inbox = $inbox->where('tdocRef',null)
 						->where('tdocExp',$doc[0]->tdocExp);

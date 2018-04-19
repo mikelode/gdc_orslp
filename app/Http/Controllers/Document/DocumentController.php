@@ -346,6 +346,11 @@ class DocumentController extends Controller {
 
 						$code_exp = $docRef->tdocExp1;
 					}
+					else{
+						if($currentDocIdRef == 0){
+							throw new Exception("Debe elegir un documento de referencia.\nCodigo 0x0000");
+						}
+					}
 
 				}
 				else{
@@ -857,7 +862,7 @@ class DocumentController extends Controller {
                     ->join('tramArchivador','tarcId','=','tdocExp')
                     ->join('tramProyecto','tpyId','=','tdocProject')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
-                    ->where('tarcYear',Session::get('periodo'));
+					->where('tarcYear',Session::get('periodo'));
 
         if($campo == 'proyecto'){
         	$inbox = $inbox->where('tdocRef',null)
@@ -870,7 +875,9 @@ class DocumentController extends Controller {
         				->join('tramArchivador','tarcId','=','tdocExp')
         				->where('tarcYear',Session::get('periodo'))
         				->where('tdocRegistro',$request->key)
-        				->get();
+						->get();
+						
+			dd($request->key);
 
         	$inbox = $inbox->where('tdocRef',null)
 						->where('tdocExp',$doc[0]->tdocExp);
@@ -890,7 +897,7 @@ class DocumentController extends Controller {
 						->whereIn('tdocExp',$idExps);
         }
 
-    	$inbox = $inbox->orderby('tdocId','DESC')->get();
+		$inbox = $inbox->orderby('tdocId','DESC')->get();
 
         $view = view('tramite.tabla_bandeja_documentos',compact('inbox'));
 

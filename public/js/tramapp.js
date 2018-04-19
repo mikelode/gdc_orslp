@@ -640,9 +640,14 @@ function pantallazo_documento(cadena)
         $('#docAccion').prop('disabled',true).val(cadena.docElegido[0].tdocAccion);
         if(cadena.docReferencia != null)
             $('#docRefRegistro').prop('readonly',true).val(cadena.docReferencia.tdocRegistro);
+        else
+            $('#docRefRegistro').prop('readonly',true).val('');
+
         $('#docReferencia').prop('readonly',true).val(cadena.docElegido[0].tdocRef);
         if(cadena.docReferencia != null)
             $('#docRefMsg').html('REF: CUD-' + cadena.docReferencia.tdocId + ' DOC:' + cadena.docReferencia.tdocType + ' - ' + cadena.docReferencia.tdocNumber);
+        else
+            $('#docRefMsg').html('Referencia no definida');
     }
 
     /* identifier for document's modal, sender and filed */

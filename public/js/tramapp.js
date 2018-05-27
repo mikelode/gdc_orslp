@@ -457,7 +457,7 @@ function terminar_edicion_documento(origen)
             if(response.idMsg == 200)
             {
                 alert(response.msg);
-                console.log(response.msg);
+                //console.log(response.msg);
                 //pantallazo_documento(res.cadena);
                 $('#btnEditarDoc').html('Editar');
                 $('#btnEditarDoc').prop('class','btn btn-info');
@@ -491,25 +491,23 @@ function terminar_edicion_documento(origen)
 function habilitar_busqueda(tipo)
 {
     $('form.frm-busqueda-rapida').hide();
-    if(tipo == 'fecha')
-    {
+    if(tipo == 'fecha'){
         $('form#frmEncontrarDocFechas').show();
     }
-    else if(tipo == 'asunto')
-    {
+    else if(tipo == 'asunto'){
         $('form#frmEncontrarDocAsunto').show();
     }
-    else if(tipo == 'registro')
-    {
+    else if(tipo == 'registro'){
         $('form#frmEncontrarDocRegistro').show();
     }
-    else if(tipo == 'remitente')
-    {
+    else if(tipo == 'remitente'){
         $('form#frmEncontrarDocRemitP').show();
     }
-    else if(tipo == 'cud')
-    {
+    else if(tipo == 'cud'){
         $('form#frmEncontrarDocCud').show();
+    }
+    else if(tipo == 'documento'){
+        $('form#frmEncontrarDocTipo').show();
     }
 }
 
@@ -555,7 +553,7 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
     $.get(url, data, function(response){
         
         if(origen == "referencia"){
-            console.log(response.docElegido);
+            //console.log(response.docElegido);
             if(response.docElegido[0].tdocStatus != 'derivado'){
                 alert('El registro del documento seleccionado no puede ser referenciado, porque su estado es: ' + response.docElegido[0].tdocStatus.toUpperCase());
                 return;
@@ -602,7 +600,7 @@ function registrar_persona()
 
 function pantallazo_documento(cadena)
 {
-    console.log(cadena);
+    //console.log(cadena);
     /* SENDER DATA */
     $('#sdocId').prop('readonly',true).val('CUD-' + cadena.docElegido[0].tdocId);
     $('#docId').prop('readonly',true).val(cadena.docElegido[0].tdocId);

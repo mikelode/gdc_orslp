@@ -187,6 +187,10 @@ Route::post('doc/cud',[
     'as' => 'findCud', 'uses' => 'Document\ArchivadorController@findByCud'
 ]);
 
+Route::post('doc/kind',[
+    'as' => 'findKind', 'uses' => 'Document\ArchivadorController@findByKind'
+]);
+
 Route::get('doc/filtrar','Document\DocumentController@filtrarDocumento');
 
 /*

@@ -456,6 +456,7 @@
                         <option value="asunto">Asunto</option>
                         <option value="registro">Registro</option>
                         <option value="remitente">Remitente</option>
+                        <option value="documento">Documento</option>
                         <option value="cud">CUD</option>
                     </select>
                 </div>
@@ -531,6 +532,35 @@
                             </div>
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocRemitP'))">Encontrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <form id="frmEncontrarDocTipo" class="frm-busqueda-rapida" method="post" action="doc/kind" style="display: none;">
+                    {!! csrf_field() !!}
+                    <div class="form-group">
+                        <input type="hidden" name="nidConsulta" value="dockind">
+                        <input type="hidden" name="nidFuncion" class="devolver_a">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label class="lbl-frm">Tipo:</label>
+                                <div class="input-group input-sm date">
+                                    <select name="ndocKind" id="docKind" class="form-control input-sm">
+                                        @foreach($tipos as $t)
+                                            <option value="{{ $t->ttypDoc }}">{{ $t->ttypDesc }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="lbl-frm">Número:</label>
+                                <div class="input-group input-sm date">
+                                    <input type="text" class="form-control" id="docKindNumber" name="ndocKindNumber">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="lbl-frm">&nbsp;</label>
+                                <button type="button" class="btn btn-warning btn-sm" onclick="encontrar_documento('interno',$('#frmEncontrarDocTipo'))">Encontrar</button>
                             </div>
                         </div>
                     </div>

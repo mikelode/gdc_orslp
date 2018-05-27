@@ -46,7 +46,10 @@ class DocumentController extends Controller {
 						->take(1)
 						->get();
 
-		$view = view('tramite.register_document',compact('tipos','assoc','dep','dest'));
+		$exp = Document::where('tdocExp',$document[0]->tdocExp)->get();
+		//dd($exp[0]->tdocid);
+
+		$view = view('tramite.register_document',compact('tipos','assoc','dep','dest','exp'));
 
 		if($request->ajax())
 		{
@@ -792,8 +795,10 @@ class DocumentController extends Controller {
 							->where('thisDoc',$docElegido[0]->tdocId)
 							->get();
 
+		$docExp = Document::where('tdocExp',$docElegido[0]->tdocExp)->get();
+
 		//return $docElegido;
-		return response()->json(array('docElegido' => $docElegido,'docReferencia' => $docReferencia,'docHistorial' => $docHistorial));
+		return response()->json(array('docElegido' => $docElegido,'docReferencia' => $docReferencia,'docHistorial' => $docHistorial, 'docExp' => $docExp));
 
 		/*while ($Fila = $docElegido -> fetch_row())
 		{

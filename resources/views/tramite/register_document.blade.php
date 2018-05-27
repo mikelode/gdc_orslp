@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Datos del remitente</h3>
@@ -112,7 +112,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label class="lbl-frm">Dependencia</label>
-                                            <select name="ndocDepend" id="docDepend" class="form-control input-sm" disabled="required">
+                                            <select name="ndocDepend" id="docDepend" class="form-control input-sm" disabled required>
                                                 @foreach($dep as $d)
                                                     <option value="{{ $d->depId }}">{{ $d->depDsc }}</option>
                                                 @endforeach
@@ -130,7 +130,7 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-7">
                                             <label class="lbl-frm">Remitente</label><br>
                                             <div class="input-group">
                                                 <input type="hidden" name="ndocSenderId" id="docSenderId">
@@ -141,19 +141,27 @@
                                                     </button>
                                                 </span>
                                             </div>
-                                            
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="lbl-frm">Cargo</label>
+                                            <input type="text" name="ndocJob" id="docJob" class="form-control input-sm" placeholder="Cargo laboral" readonly required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label class="lbl-frm">Cargo</label>
-                                            <input type="text" name="ndocJob" id="docJob" class="form-control input-sm" placeholder="Cargo laboral" readonly required>
+                                            <label class="lbl-frm">Proceso documentario</label>
+                                            <div class="table-responsive">
+                                                <table id="tblExp" class="table table-sm">
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Datos del Documento</h3>
@@ -699,8 +707,12 @@ $(document).ready(function(){
         $('#desdeFecha').data("DateTimePicker").maxDate(e.date);
     });
     
-    $('#docProy').select2({
+    $('#docProy, #docDepend').select2({
         width: '100%'
+    });
+
+    $('.select2-selection__rendered').hover(function () {
+        $(this).removeAttr('title');
     });
 
     $('input#dni_sender_input').keypress(function(evt){

@@ -60,7 +60,7 @@ class HomeController extends Controller {
                         ->whereRaw('year(tdocDate) = '.Session::get('periodo'))
                         ->groupBy('tdocDate')
                         ->orderBy('tdocDate','desc')
-                        ->take(10)
+                        //->take(10)
                         ->get();
 
         $data = '';

@@ -156,13 +156,13 @@ class ArchivadorController extends Controller {
 
     public function findByRegistro(Request $request)
     {
-        $registro = trim($request->ndescRegistro);
+        $registro = '%'.trim($request->ndescRegistro);
         $funcion = $request->nidFuncion;
 
         $docs = Document::select('*')
                     ->join('tramTipoDocumento','ttypDoc','=','tdocType')
                     ->join('tramArchivador','tarcId','=','tdocExp')
-                    ->where('tdocRegistro',$registro)
+                    ->where('tdocRegistro','like',$registro)
                     ->whereRaw('year(tarcDatePres) = '.Session::get('periodo')) //trim($request->period))
                     ->orderBy('tarcDatePres','DESC')
                     ->get();
@@ -254,14 +254,14 @@ class ArchivadorController extends Controller {
 
     public function findByKind(Request $request)
     {
-        $docNro = trim($request->ndocKindNumber);
+        $docNro = '%'.trim($request->ndocKindNumber).'%';
         $docKind = $request->ndocKind;
         $funcion = $request->nidFuncion;
 
         $docs = Document::where('tdocType',$docKind);
 
         if($docNro != ''){
-            $docs = $docs->where('tdocNumber',$docNro);
+            $docs = $docs->where('tdocNumber','like',$docNro);
         }
 
         $docs = $docs->get();

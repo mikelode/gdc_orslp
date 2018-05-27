@@ -75,3 +75,7 @@
 .ui-front {
     z-index: 1500 !important;
 }
+
+.table{
+    font-size: 10px;
+}

@@ -610,6 +610,34 @@ function pantallazo_documento(cadena)
     $('#docSenderId').prop('readonly',true).val(cadena.docElegido[0].tdocDni);
     $('#docJob').prop('readonly',true).val(cadena.docElegido[0].tdocJobSender);
 
+    /* Expediente */
+    var tblExp = document.getElementById('tblExp');
+    var tbody = document.createElement('tbody');
+
+    for(i = 0; i < 2; i++){
+        var tr = document.createElement('tr');
+        for(j = 0; j < cadena.docExp.length; j++){
+            if(i == 0){
+                var td = document.createElement('td');
+                td.appendChild(document.createTextNode(cadena.docExp[j].tdocId));
+                tr.appendChild(td);
+            }
+            else{
+                var td = document.createElement('td');
+                var a = document.createElement('a');
+                a.href = cadena.docElegido[0].tdocPathFile+'/'+cadena.docElegido[0].tdocFileName;
+                a.target = '_blank';
+                a.innerHTML = cadena.docExp[j].tdocType + ': ' + cadena.docExp[j].tdocNumber;
+                td.appendChild(a);
+                tr.appendChild(td);
+            }
+            
+        }
+        tbody.appendChild(tr);
+    }
+    
+    tblExp.replaceChild(tbody, tblExp.childNodes[0])
+
     /* DOC SENDER */
     $('#docReg').prop('readonly',true).val(cadena.docElegido[0].tdocRegistro);
     $('#docTipo').prop('disabled',true).val(cadena.docElegido[0].tdocType);

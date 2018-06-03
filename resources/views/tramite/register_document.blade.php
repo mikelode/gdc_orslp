@@ -772,6 +772,13 @@ $(document).ready(function(){
         }
     });
 
+    $('input#docKindNumber').keypress(function(evt) {
+        if(evt.which == 13){
+            evt.preventDefault();
+            encontrar_documento('interno',$('#frmEncontrarDocTipo'));
+        }
+    });
+
     $('input#docRefRegistro').keydown(function(evt) {
         if(evt.altKey && evt.keyCode == 82){
 

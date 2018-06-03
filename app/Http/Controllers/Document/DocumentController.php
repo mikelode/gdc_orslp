@@ -376,14 +376,15 @@ class DocumentController extends Controller {
 				$doc->tdocDetail = $request->ndocDetalle;
 
 				if($file){ // entra aqui si esta cambiando de archivo
-
-					if($doc->tdocFileName != null){
+					
+					if($doc->tdocFileName != null){						
 						$file_actual = public_path($doc->tdocPathFile).'/'.$doc->tdocFileName;
 						if(\File::exists($file_actual))
 							\File::delete($file_actual);
 					}
 
 					$filename = '/'.$code_exp.'/'.$code_doc.'.'.$file->getClientOriginalExtension();
+					
 					\Storage::disk('local')->put($filename, \File::get($file));
 
 					$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
@@ -395,6 +396,10 @@ class DocumentController extends Controller {
 				$doc->save();
 
 				if($moveDocument){
+
+					if(\Storage::disk('local')->exists($new_location))
+						\Storage::disk('local')->delete($new_location);						
+
 					\Storage::move($current_location,$new_location);
 				}
 

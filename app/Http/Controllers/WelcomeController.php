@@ -90,9 +90,9 @@ class WelcomeController extends Controller {
 						$doc->tdocExp1 = $code_exp;
 						//$doc->tdocDependencia = 1;
 						$doc->tdocProject = 1;
-						$doc->tdocType = $data[0];
-						$doc->tdocNumber = $data[1];
-						$doc->tdocRegistro = $data[2];
+						$doc->tdocType = trim($data[0]);
+						$doc->tdocNumber = trim($data[1]);
+						$doc->tdocRegistro = trim($data[2]);
 						$doc->tdocDate = $request->ndateFiles; //Carbon::now()->toDateString();
 						$doc->tdocSubject = 'Editar el asunto del documento';
 						$doc->tdocStatus = 'registrado';

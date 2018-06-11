@@ -174,8 +174,8 @@ class DocumentController extends Controller {
 				$doc->tdocDni = $request->ndocSenderId;
 				$doc->tdocJobSender = $request->ndocJob;
 				$doc->tdocType = $request->ndocTipo;
-				$doc->tdocNumber = $request->ndocNro;
-				$doc->tdocRegistro = $request->ndocReg;
+				$doc->tdocNumber = trim($request->ndocNro);
+				$doc->tdocRegistro = trim($request->ndocReg);
 				$doc->tdocDate = $request->ndocFecha;
 				$doc->tdocFolio = $request->ndocFolio;
 				$doc->tdocSubject = $request->ndocAsunto;

@@ -251,3 +251,8 @@ Route::get('getProfile/{id}', 'Document\SettingsController@showProfileUser');
 
 Route::get('autocompletado', 'AutocompleteController@show');
 Route::get('getdata', 'AutocompleteController@autocomplete');
+
+/* CONTROL DE AVANCE DE REGISTROS */
+
+Route::get('progress','Document\SettingsController@getPanelProgress');
+Route::post('progress/consult','Document\SettingsController@getUserProgress');

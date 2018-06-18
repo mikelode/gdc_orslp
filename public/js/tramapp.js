@@ -846,3 +846,13 @@ function eliminar_documento(origen)
         }
     });
 }
+
+function get_progress_user(frm)
+{
+    var url = frm.attr('action');
+    var data = frm.serialize();
+
+    $.post(url, data, function(data){
+        $('#content-progress').html(data);
+    })
+}

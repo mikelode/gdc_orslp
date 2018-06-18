@@ -100,6 +100,7 @@ class WelcomeController extends Controller {
 						$doc->tdocAccion = $data[3]=='1.pdf'?'respuesta':'ingreso';
 						$doc->tdocRef = $data[3]=='1.pdf'?'0':null;
 						$doc->tdocRegisterBy = Auth::user()->tusId;
+						$doc->tdocRegisterAt = Carbon::now();
 
 						$doc->tdocFileName = $code_doc.'.'.$file->getClientOriginalExtension();
 						$doc->tdocFileExt = $file->getClientOriginalExtension();

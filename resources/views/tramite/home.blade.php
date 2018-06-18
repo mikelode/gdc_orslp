@@ -116,7 +116,7 @@
                 </div>
                 <div class="row">
                     @if(Auth::user()->can(9))
-                    <div class="col-md-6" style="text-align: center;">
+                    <div class="col-md-4" style="text-align: center;">
                         <a href="javascript:void(0)" onclick="change_menu_to('doc/reports')">
                             <img src="{{ asset('img/informe.png') }}" width="100" height="100">
                             <p>Reportes</p>
@@ -124,13 +124,19 @@
                     </div>
                     @endif
                     @if(Auth::user()->can(12))
-                    <div class="col-md-6" style="text-align: center;">
+                    <div class="col-md-4" style="text-align: center;">
                         <a href="javascript:void(0)" onclick="change_menu_to('settings')">
                             <img src="{{ asset('img/configuracion.png') }}" width="100" height="100">
                             <p>Configuración</p>
                         </a>
                     </div>
                     @endif
+                    <div class="col-md-4" style="text-align: center;">
+                        <a href="javascript:void(0)" onclick="change_menu_to('progress')">
+                            <img src="{{ asset('img/progreso.png') }}" width="100" height="100">
+                            <p>Progreso</p>
+                        </a>
+                    </div>
                 </div>
                 <div class="row" style="padding-bottom: 20px;">
                     <div class="col-lg-12">{{ Inspiring::quote() }}</div>

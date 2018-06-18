@@ -182,6 +182,7 @@ class DocumentController extends Controller {
 				$doc->tdocStatus = 'registrado';
 				$doc->tdocDetail = $request->ndocDetalle;
 				$doc->tdocRegisterBy = Auth::user()->tusId;
+				$doc->tdocRegisterAt = Carbon::now();
 
 				if($request->ndocProceso == "si"){
 					$doc->tdocAccion = $request->ndocAccion;
@@ -374,6 +375,8 @@ class DocumentController extends Controller {
 				$doc->tdocFolio = $request->ndocFolio;
 				$doc->tdocSubject = $request->ndocAsunto;
 				$doc->tdocDetail = $request->ndocDetalle;
+				$doc->tdocUpdatedBy = Auth::user()->tusId;
+				$doc->tdocUpdateAt = Carbon::now();
 
 				if($file){ // entra aqui si esta cambiando de archivo
 					

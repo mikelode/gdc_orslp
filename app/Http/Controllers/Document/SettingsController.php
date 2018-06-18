@@ -2,6 +2,7 @@
 
 namespace aidocs\Http\Controllers\Document;
 
+use aidocs\Models\Document;
 use Exception;
 use Session;
 use Carbon\Carbon;
@@ -575,6 +576,36 @@ class SettingsController extends Controller
     public function getSuperEdicionDocumento(Request $request)
     {
         $view = view('setting.supedit_document');
+        return $view;
+    }
+
+    public function getPanelProgress(Request $request)
+    {
+        $usuarios = User::all();
+
+        $view = view('setting.progreso_registros',compact('usuarios'));
+
+        return $view;
+    }
+
+    public function getUserProgress(Request $request)
+    {
+        $usuario = User::find($request->nslcUser);
+
+        $registrados = Document::select(DB::raw('count(*) as numRegistrados, DATE(tdocRegisterAt) as fecRegistrados'))
+                        ->where('tdocRegisterBy',$request->nslcUser)
+                        ->whereBetween(DB::raw('DATE(tdocRegisterAt)'),[$request->ntxtDateFrom, $request->ntxtDateTo])
+                        ->groupBy(DB::raw('DATE(tdocRegisterAt)'))
+                        ->get();
+
+        $editados = Document::select(DB::raw('count(*) as numEditados, DATE(tdocUpdateAt)as fecEditados'))
+                        ->where('tdocUpdatedBy',$request->nslcUser)
+                        ->whereBetween(DB::raw('DATE(tdocUpdateAt)'),[$request->ntxtDateFrom, $request->ntxtDateTo])
+                        ->groupBy(DB::raw('DATE(tdocUpdateAt)'))
+                        ->get();
+
+        $view = view('setting.result_user_progress',compact('registrados','editados','usuario'));
+
         return $view;
     }
 }

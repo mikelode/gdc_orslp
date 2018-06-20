@@ -401,9 +401,10 @@ class DocumentController extends Controller {
 				if($moveDocument){
 
 					if(\Storage::disk('local')->exists($new_location))
-						\Storage::disk('local')->delete($new_location);						
+						\Storage::disk('local')->delete($new_location);
 
-					\Storage::move($current_location,$new_location);
+					if(\Storage::disk('local')->exists($current_location))
+					    \Storage::move($current_location,$new_location);
 				}
 
 			});

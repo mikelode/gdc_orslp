@@ -804,7 +804,9 @@ class DocumentController extends Controller {
 							->where('thisDoc',$docElegido[0]->tdocId)
 							->get();
 
-		$docExp = Document::where('tdocExp',$docElegido[0]->tdocExp)->get();
+		$docExp = Document::where('tdocExp',$docElegido[0]->tdocExp)
+                    ->orderby('tdocDate','ASC')
+                    ->get();
 
 		//return $docElegido;
 		return response()->json(array('docElegido' => $docElegido,'docReferencia' => $docReferencia,'docHistorial' => $docHistorial, 'docExp' => $docExp));

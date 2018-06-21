@@ -625,7 +625,7 @@ function pantallazo_documento(cadena)
             else{
                 var td = document.createElement('td');
                 var a = document.createElement('a');
-                a.href = cadena.docElegido[0].tdocPathFile+'/'+cadena.docElegido[0].tdocFileName;
+                a.href = cadena.docExp[j].tdocPathFile+'/'+cadena.docExp[j].tdocFileName;
                 a.target = '_blank';
                 a.innerHTML = cadena.docExp[j].tdocType + ': ' + cadena.docExp[j].tdocNumber;
                 td.appendChild(a);

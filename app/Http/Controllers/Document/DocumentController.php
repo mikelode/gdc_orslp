@@ -134,6 +134,10 @@ class DocumentController extends Controller {
 				}
 				else if($request->ndocProceso == "si"){
 					$docId = $request->ndocReferencia;
+
+					if($docId == "")
+					    throw new Exception("Debe seleccionar el documento al que dese hacer la referencia");
+
 					$docRef = Document::select('*')
 								->join('tramHistorial','thisDoc','=','tdocId')
 								->where('tdocId',$docId)
@@ -145,6 +149,9 @@ class DocumentController extends Controller {
 						throw new Exception("El documento al que hace referencia está NO DERIVADO, ubíquelo y registre su envío");
 					if($docRef[0]->tdocStatus == 'archivado' || $docRef[0]->thisFlagF == true)
 						throw new Exception("El documento al que hace referencia esta ARCHIVADO, no puede referenciarlo");
+                    if($docRef[0]->tdocAccion!='adjuntado' && $docRef[0]->thisIdRef != null){
+                        throw new Exception("No se puede referenciar al registro elegido, puesto que dicho registro ya tiene otro documento que le hace referencia");
+                    }
 				}
 
 				$file = $request->file('ndocFile');

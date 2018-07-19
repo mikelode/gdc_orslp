@@ -558,6 +558,10 @@ function mostrar_documento(pos, origen) //(docId|anterior|posterior, busqueda|re
                 alert('El registro del documento seleccionado no puede ser referenciado, porque su estado es: ' + response.docElegido[0].tdocStatus.toUpperCase());
                 return;
             }
+            else if(response.docElegido[0].tdocAccion != 'adjuntado' && response.docHistorial[0].thisIdRef != null){
+                alert('El registro seleccionado como referencia, ya está utilizado por otro documento, verifique nuevamente el documento precedente.');
+                return;
+            }
             else{
                 $('#docRefRegistro').val(response.docElegido[0].tdocRegistro);
                 $('#docReferencia').val(response.docElegido[0].tdocId);

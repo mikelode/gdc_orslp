@@ -121,7 +121,7 @@ class WelcomeController extends Controller {
 						$hist->thisFlagD = false;
 						$hist->rec_date_at = Carbon::now()->toDateString();
 						$hist->rec_time_at = Carbon::now()->toTimeString();
-						$hist->thisDateTimeR = Carbon::now();
+						$hist->thisDateTimeR = $request->ndateFiles; //Carbon::now();
 
 						$saveHist = $hist->save();
 

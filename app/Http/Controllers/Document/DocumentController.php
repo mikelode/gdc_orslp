@@ -861,6 +861,7 @@ class DocumentController extends Controller {
 					->join('tramTipoDocumento','ttypDoc','=','tdocType')
 					->join('tramProyecto','tpyId','=','tdocProject')
 					->where('tdocExp',$expId)
+					->orderby('tdocDate','asc')
 					->get();
 
 		$view = view('tramite.tabla_proceso_documentario', compact('documentos'));

@@ -109,7 +109,7 @@ class DocumentController extends Controller {
 	public function storeDocument(StoreDocumentRequest $request)
 	{
 		try{
-			$exception = DB::transaction(function($request) use ($request){
+			$exception = DB::transaction(function() use ($request){
 
 				if($request->ndocProceso == "no"){ // ¿Does it belong to a documentary process?
 					
@@ -329,7 +329,7 @@ class DocumentController extends Controller {
 							throw new Exception("No se puede referenciar al registro elegido, puesto que dicho registro ya tiene otro documento que le hace referencia");
 						}
 
-						if($currentDocIdRef != '0'){ /* si hace ref a 0 indica que se registro por el método rápido */
+						if($currentDocIdRef != '0' && $currentDocIdRef != null){ /* si hace ref a 0 indica que se registro por el método rápido */
 							$currentHistRef = Document::find($currentDocIdRef)->historial;
 							$currentHistRef->thisIdRef = null;
 							$currentHistRef->save();
@@ -435,7 +435,7 @@ class DocumentController extends Controller {
 	public function storeEditDocument1(Request $request)
 	{
 		try{
-			$exception = DB::transaction(function($request) use ($request){
+			$exception = DB::transaction(function() use ($request){
 
 				$doc = Document::find($request->ndocId);
 

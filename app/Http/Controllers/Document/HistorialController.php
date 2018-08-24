@@ -65,6 +65,7 @@ class HistorialController extends Controller {
                     ->where('tarcYear',Session::get('periodo'))
                     ->where('tdocRef',null)
                     ->orderby('tdocId','DESC')
+                    ->take(500)
                     ->get();
                     
         $dependencys = Dependencia::select('*')

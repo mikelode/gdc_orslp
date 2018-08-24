@@ -363,11 +363,11 @@ function editar_documento(origen)
 
         /* para evitar que edite si pertenece o no a un proceso*/
         $('#docProceso').prop('disabled', false);
-        $('#docProceso option:not(:selected)').attr('disabled', true);
+        /*$('#docProceso option:not(:selected)').attr('disabled', true);*/
 
         $('#docTitulo').prop('readonly', false);
         $('#docAccion').prop('disabled', false);
-        $('#docRefRegistro').prop('readonly', true);
+        $('#docRefRegistro').prop('readonly', false);// estaba en true
         $('#docReferencia').prop('readonly', false);
 
         $('#btnGuardarEdicionDoc').show();

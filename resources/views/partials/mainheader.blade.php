@@ -1,4 +1,7 @@
 <!-- Main Header -->
+<div id="loading-screen" style="display:none">
+    <img src="{{ asset('img/gear.svg') }}">
+</div>
 <header class="main-header">
 
     <!-- Logo -->

@@ -53,7 +53,7 @@
                                     <div class="row">
                                         <div class="col-md-2">
                                             <label class="lbl-frm">¿Refiere a otro documento?</label>
-                                            <select name="ndocProceso" class="form-control input-sm" id="docProceso" disabled="required">
+                                            <select name="ndocProceso" class="form-control input-sm" id="docProceso">
                                                 <option value="na">-- Seleccionar --</option>
                                                 <option value="no">NO</option>
                                                 <option value="si">SI</option>

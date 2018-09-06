@@ -49,7 +49,7 @@
 <script type="text/javascript">
 
     var screen = $('#loading-screen');
-	configureLoadingScreen(screen);
+	//configureLoadingScreen(screen);
 
 	function configureLoadingScreen(screen){
 		$(document)
